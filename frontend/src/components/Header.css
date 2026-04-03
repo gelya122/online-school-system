@@ -1,0 +1,139 @@
+.header {
+  width: 100%;
+  background: white;
+  border-bottom: 1px solid #f1f1f1;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.nav a {
+  color: #4B5563;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.nav a:hover {
+  color: #111827;
+}
+
+.nav-link {
+  color: #4B5563;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #111827;
+}
+
+.btn-login-link {
+  padding: 8px 24px;
+  border: 1px solid #E5E7EB;
+  border-radius: 999px;
+  background: white;
+  color: #111827;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-login-link:hover {
+  background: #F9FAFB;
+}
+
+.nav-cart {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid #E5E7EB;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: white;
+  color: #111827;
+  transition: all 0.2s;
+  text-decoration: none;
+  font-size: 0;
+}
+
+.nav-cart-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+}
+
+.nav-cart:hover {
+  background: #F9FAFB;
+  color: #2563EB;
+  border-color: #D1D5DB;
+}
+
+.btn-logout {
+  padding: 8px 24px;
+  border: 1px solid #E5E7EB;
+  border-radius: 999px;
+  background: white;
+  color: #111827;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #F9FAFB;
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    height: auto;
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+}

@@ -1,0 +1,59 @@
+# Build / .NET
+**/bin/
+**/obj/
+**/out/
+**/_buildcheck*/
+**/_buildcheck*/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+[Dd]ebug/
+[Rr]elease/
+*.dll
+*.exe
+*.pdb
+*.cache
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.DotSettings.user
+
+# Node / frontend
+**/node_modules/
+**/dist/
+**/.vite/
+*.tsbuildinfo
+.npm
+.eslintcache
+
+# Environment and secrets (не коммитить локальные ключи и прод-строки)
+**/.env
+**/.env.local
+**/.env.*.local
+**/appsettings.*.local.json
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Tests / coverage
+coverage/
+*.coverage
+.nyc_output/
+
+# Misc
+*.orig
+*.tmp
+*.temp
+.vscode/*
+!.vscode/extensions.json

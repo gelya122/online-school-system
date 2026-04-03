@@ -1,0 +1,94 @@
+.login-page {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: rgba(243, 244, 246, 1);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(243, 244, 246, 1);
+}
+
+.login-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #646cff;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: rgba(75, 85, 99, 1);
+  font-weight: 500;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(217, 217, 217, 1);
+  background-color: transparent;
+  color: rgba(75, 85, 99, 1) !important;
+  -webkit-text-fill-color: rgba(75, 85, 99, 1) !important;
+  font-size: 1rem;
+  transition: border-color 0.25s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: rgba(156, 163, 175, 1);
+  color: rgba(75, 85, 99, 1) !important;
+  -webkit-text-fill-color: rgba(75, 85, 99, 1) !important;
+}
+
+.form-group input::placeholder {
+  color: rgba(156, 163, 175, 1);
+}
+
+/* Chrome/Safari автозаполнение может сбрасывать цвет */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgba(75, 85, 99, 1) !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.error-message {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff6b6b;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: rgba(75, 85, 99, 1);
+}
+
+.register-link a {
+  color: #646cff;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+

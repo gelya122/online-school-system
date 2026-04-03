@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{54CA312B-1A5D-4C33-A946-157A21E07CCF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OnlineSchoolAPI", "OnlineSchoolAPI", "{197BD54B-BF87-41A0-841E-7B7C589141BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolAPI", "backend\OnlineSchoolAPI\OnlineSchoolAPI\OnlineSchoolAPI.csproj", "{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{197BD54B-BF87-41A0-841E-7B7C589141BD} = {54CA312B-1A5D-4C33-A946-157A21E07CCF}
+		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B} = {197BD54B-BF87-41A0-841E-7B7C589141BD}
+	EndGlobalSection
+EndGlobal
