@@ -28,7 +28,8 @@ public class PaymentsController : ControllerBase
                 ExternalPaymentId = p.ExternalPaymentId,
                 Amount = p.Amount,
                 PaymentStatusId = p.PaymentStatusId,
-                PaymentMethod = p.PaymentMethod,
+                MethodId = p.MethodId,
+                MethodName = p.Method != null ? p.Method.MethodName : null,
                 CardLastFour = p.CardLastFour,
                 PaidAt = p.PaidAt,
                 CreatedAt = p.CreatedAt
@@ -40,7 +41,9 @@ public class PaymentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<PaymentDto>> GetPayment(int id)
     {
-        var payment = await _context.Payments.FindAsync(id);
+        var payment = await _context.Payments
+            .Include(p => p.Method)
+            .FirstOrDefaultAsync(p => p.PaymentId == id);
         if (payment == null) return NotFound();
 
         return Ok(new PaymentDto
@@ -50,7 +53,8 @@ public class PaymentsController : ControllerBase
             ExternalPaymentId = payment.ExternalPaymentId,
             Amount = payment.Amount,
             PaymentStatusId = payment.PaymentStatusId,
-            PaymentMethod = payment.PaymentMethod,
+            MethodId = payment.MethodId,
+            MethodName = payment.Method?.MethodName,
             CardLastFour = payment.CardLastFour,
             PaidAt = payment.PaidAt,
             CreatedAt = payment.CreatedAt
@@ -66,12 +70,14 @@ public class PaymentsController : ControllerBase
             ExternalPaymentId = dto.ExternalPaymentId,
             Amount = dto.Amount,
             PaymentStatusId = dto.PaymentStatusId,
-            PaymentMethod = dto.PaymentMethod,
+            MethodId = dto.MethodId,
             CardLastFour = dto.CardLastFour
         };
 
         _context.Payments.Add(payment);
         await _context.SaveChangesAsync();
+
+        await _context.Entry(payment).Reference(p => p.Method).LoadAsync();
 
         return CreatedAtAction(nameof(GetPayment), new { id = payment.PaymentId }, new PaymentDto
         {
@@ -80,7 +86,8 @@ public class PaymentsController : ControllerBase
             ExternalPaymentId = payment.ExternalPaymentId,
             Amount = payment.Amount,
             PaymentStatusId = payment.PaymentStatusId,
-            PaymentMethod = payment.PaymentMethod,
+            MethodId = payment.MethodId,
+            MethodName = payment.Method?.MethodName,
             CardLastFour = payment.CardLastFour,
             PaidAt = payment.PaidAt,
             CreatedAt = payment.CreatedAt
@@ -95,7 +102,7 @@ public class PaymentsController : ControllerBase
 
         if (dto.ExternalPaymentId != null) payment.ExternalPaymentId = dto.ExternalPaymentId;
         if (dto.PaymentStatusId.HasValue) payment.PaymentStatusId = dto.PaymentStatusId;
-        if (dto.PaymentMethod != null) payment.PaymentMethod = dto.PaymentMethod;
+        if (dto.MethodId.HasValue) payment.MethodId = dto.MethodId;
         if (dto.CardLastFour != null) payment.CardLastFour = dto.CardLastFour;
         if (dto.PaidAt.HasValue) payment.PaidAt = dto.PaidAt;
 
@@ -114,4 +121,3 @@ public class PaymentsController : ControllerBase
         return NoContent();
     }
 }
-

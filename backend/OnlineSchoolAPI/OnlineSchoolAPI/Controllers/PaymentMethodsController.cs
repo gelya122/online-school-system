@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSchoolAPI;
+using OnlineSchoolAPI.Dto;
 
 namespace OnlineSchoolAPI.Controllers;
 
@@ -16,33 +17,32 @@ public class PaymentMethodsController : ControllerBase
     }
 
     /// <summary>
-    /// Возвращает уникальные значения payment_method из заказов.
+    /// Активные способы оплаты из таблицы payment_method.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<string>>> GetPaymentMethods()
+    public async Task<ActionResult<IEnumerable<PaymentMethodDto>>> GetPaymentMethods()
     {
-        var appOrderMethods = _context.AppOrders
-            .Where(o => o.PaymentMethod != null && o.PaymentMethod != "")
-            .Select(o => o.PaymentMethod!);
-
-        var paymentMethods = _context.Payments
-            .Where(p => p.PaymentMethod != null && p.PaymentMethod != "")
-            .Select(p => p.PaymentMethod!);
-
-        var methods = await appOrderMethods
-            .Union(paymentMethods)
-            .Distinct()
-            .OrderBy(x => x)
+        var list = await _context.PaymentMethods
+            .Where(m => m.IsActive != false)
+            .OrderBy(m => m.MethodName)
+            .Select(m => new PaymentMethodDto
+            {
+                MethodId = m.MethodId,
+                MethodName = m.MethodName,
+                Description = m.Description
+            })
             .ToListAsync();
 
-        // Если в БД пока нет данных (таблицы пустые/NULL), вернем базовый набор
-        // чтобы форма checkout не была пустой.
-        if (methods.Count == 0)
+        if (list.Count == 0)
         {
-            methods = new List<string> { "Банковская карта", "Онлайн‑кошелёк", "Безналичный расчёт" };
+            list =
+            [
+                new PaymentMethodDto { MethodId = 0, MethodName = "Банковская карта" },
+                new PaymentMethodDto { MethodId = 0, MethodName = "Онлайн‑кошелёк" },
+                new PaymentMethodDto { MethodId = 0, MethodName = "Безналичный расчёт" }
+            ];
         }
 
-        return Ok(methods);
+        return Ok(list);
     }
 }
-

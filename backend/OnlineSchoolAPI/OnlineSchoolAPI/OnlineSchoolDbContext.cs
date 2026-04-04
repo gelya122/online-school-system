@@ -70,6 +70,8 @@ public partial class OnlineSchoolDbContext : DbContext
 
     public virtual DbSet<PaymentStatus> PaymentStatuses { get; set; }
 
+    public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+
     public virtual DbSet<DiscountType> DiscountTypes { get; set; }
 
     public virtual DbSet<PromoCode> PromoCodes { get; set; }
@@ -129,9 +131,7 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.PaidAt)
                 .HasColumnType("datetime")
                 .HasColumnName("paid_at");
-            entity.Property(e => e.PaymentMethod)
-                .HasMaxLength(50)
-                .HasColumnName("payment_method");
+            entity.Property(e => e.MethodId).HasColumnName("method_id");
             entity.Property(e => e.StudentId).HasColumnName("student_id");
             entity.Property(e => e.TotalAmount)
                 .HasColumnType("decimal(10, 2)")
@@ -145,6 +145,10 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasForeignKey(d => d.StudentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__app_order__stude__4B7734FF");
+
+            entity.HasOne(d => d.Method).WithMany(p => p.AppOrders)
+                .HasForeignKey(d => d.MethodId)
+                .HasConstraintName("FK_app_order_payment_method");
         });
 
         modelBuilder.Entity<ApplicationStatus>(entity =>
@@ -843,9 +847,7 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.PaidAt)
                 .HasColumnType("datetime")
                 .HasColumnName("paid_at");
-            entity.Property(e => e.PaymentMethod)
-                .HasMaxLength(50)
-                .HasColumnName("payment_method");
+            entity.Property(e => e.MethodId).HasColumnName("method_id");
             entity.Property(e => e.PaymentStatusId)
                 .HasDefaultValue(1)
                 .HasColumnName("payment_status_id");
@@ -858,6 +860,28 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.HasOne(d => d.PaymentStatus).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.PaymentStatusId)
                 .HasConstraintName("FK__payment__payment__58D1301D");
+
+            entity.HasOne(d => d.Method).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.MethodId)
+                .HasConstraintName("FK_payment_payment_method");
+        });
+
+        modelBuilder.Entity<PaymentMethod>(entity =>
+        {
+            entity.HasKey(e => e.MethodId);
+
+            entity.ToTable("payment_method");
+
+            entity.Property(e => e.MethodId).HasColumnName("method_id");
+            entity.Property(e => e.Description)
+                .HasMaxLength(200)
+                .HasColumnName("description");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.MethodName)
+                .HasMaxLength(50)
+                .HasColumnName("method_name");
         });
 
         modelBuilder.Entity<PaymentStatus>(entity =>
@@ -891,6 +915,7 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasMaxLength(200)
                 .HasColumnName("description");
             entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
                 .HasColumnName("is_active");
         });
 
@@ -924,13 +949,18 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.MaxUses).HasColumnName("max_uses");
             entity.Property(e => e.ValidFrom).HasColumnName("valid_from");
             entity.Property(e => e.ValidUntil).HasColumnName("valid_until");
+
+            entity.HasOne(d => d.DiscountType).WithMany(p => p.PromoCodes)
+                .HasForeignKey(d => d.TypeId)
+                .HasConstraintName("FK_promo_code_discount_type");
         });
 
         modelBuilder.Entity<Review>(entity =>
         {
             entity.HasKey(e => e.ReviewId).HasName("PK__review__60883D901B037C57");
 
-            entity.ToTable("review");
+            entity.ToTable("review", t =>
+                t.HasCheckConstraint("CK_review_rating", "[rating] IS NULL OR ([rating] >= 1 AND [rating] <= 5)"));
 
             entity.Property(e => e.ReviewId).HasColumnName("review_id");
             entity.Property(e => e.Comment).HasColumnName("comment");
@@ -978,11 +1008,15 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.AboutSchoolText)
                 .HasMaxLength(int.MaxValue)
                 .HasColumnName("about_school_text");
-            entity.Property(e => e.PrivacyPolicyUrl).HasColumnName("privacy_policy_url");
+            entity.Property(e => e.PrivacyPolicyUrl)
+                .HasMaxLength(500)
+                .HasColumnName("privacy_policy_url");
             entity.Property(e => e.SchoolName)
                 .HasMaxLength(200)
                 .HasColumnName("school_name");
-            entity.Property(e => e.TermsOfUseUrl).HasColumnName("terms_of_use_url");
+            entity.Property(e => e.TermsOfUseUrl)
+                .HasMaxLength(500)
+                .HasColumnName("terms_of_use_url");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")

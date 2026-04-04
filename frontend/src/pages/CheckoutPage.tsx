@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import './CheckoutPage.css';
-import { getPaymentMethods } from '../api/paymentMethods';
+import { getPaymentMethods, type PaymentMethodOption } from '../api/paymentMethods';
 import { useCart } from '../contexts/CartContext';
 
 const CheckoutPage = () => {
@@ -10,9 +10,9 @@ const CheckoutPage = () => {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
 
-  const [methods, setMethods] = useState<string[]>([]);
+  const [methods, setMethods] = useState<PaymentMethodOption[]>([]);
   const [loadingMethods, setLoadingMethods] = useState(true);
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodOption | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,12 +21,21 @@ const CheckoutPage = () => {
       try {
         const data = await getPaymentMethods();
         if (cancelled) return;
-        const next = data.length ? data : ['Банковская карта', 'Онлайн‑кошелёк', 'Безналичный расчёт'];
+        const fallback: PaymentMethodOption[] = [
+          { methodId: 0, methodName: 'Банковская карта' },
+          { methodId: 0, methodName: 'Онлайн‑кошелёк' },
+          { methodId: 0, methodName: 'Безналичный расчёт' },
+        ];
+        const next = data.length ? data : fallback;
         setMethods(next);
         setSelectedMethod(next[0] ?? null);
       } catch {
         if (cancelled) return;
-        const fallback = ['Банковская карта', 'Онлайн‑кошелёк', 'Безналичный расчёт'];
+        const fallback: PaymentMethodOption[] = [
+          { methodId: 0, methodName: 'Банковская карта' },
+          { methodId: 0, methodName: 'Онлайн‑кошелёк' },
+          { methodId: 0, methodName: 'Безналичный расчёт' },
+        ];
         setMethods(fallback);
         setSelectedMethod(fallback[0] ?? null);
       } finally {
@@ -105,10 +114,12 @@ const CheckoutPage = () => {
                 <p className="checkout-methods-empty">Способы оплаты недоступны</p>
               ) : (
                 methods.map((m) => {
-                  const active = selectedMethod === m;
+                  const active =
+                    selectedMethod?.methodId === m.methodId &&
+                    selectedMethod?.methodName === m.methodName;
                   return (
                     <div
-                      key={m}
+                      key={`${m.methodId}-${m.methodName}`}
                       className={`payment-option ${active ? 'active' : ''}`}
                       role="button"
                       tabIndex={0}
@@ -119,7 +130,7 @@ const CheckoutPage = () => {
                     >
                       <div className="payment-radio" />
                       <div>
-                        <div className="payment-title">{m}</div>
+                        <div className="payment-title">{m.methodName}</div>
                         <div className="payment-subtitle">Выбран</div>
                       </div>
                     </div>

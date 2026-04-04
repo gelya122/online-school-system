@@ -9,15 +9,15 @@ public partial class TrialApplication
 
     public string FirstName { get; set; } = null!;
 
-    public string LastName { get; set; } = null!;
+    public string? LastName { get; set; }
 
     public string Phone { get; set; } = null!;
 
     public string? Email { get; set; }
 
-    public int ClassNumber { get; set; }
+    public int? ClassNumber { get; set; }
 
-    public string SelectedSubjects { get; set; } = null!;
+    public string? SelectedSubjects { get; set; }
 
     public int? ApplicationStatusId { get; set; }
 

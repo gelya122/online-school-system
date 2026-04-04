@@ -1,7 +1,12 @@
 import axiosInstance from './axiosInstance';
 
-export async function getPaymentMethods(): Promise<string[]> {
-  const res = await axiosInstance.get<string[]>('/PaymentMethods');
+export type PaymentMethodOption = {
+  methodId: number;
+  methodName: string;
+  description?: string | null;
+};
+
+export async function getPaymentMethods(): Promise<PaymentMethodOption[]> {
+  const res = await axiosInstance.get<PaymentMethodOption[]>('/PaymentMethods');
   return res.data;
 }
-

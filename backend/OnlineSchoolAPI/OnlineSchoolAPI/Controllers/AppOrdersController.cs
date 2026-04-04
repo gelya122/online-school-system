@@ -30,7 +30,8 @@ public class AppOrdersController : ControllerBase
                 DiscountAmount = o.DiscountAmount,
                 FinalAmount = o.FinalAmount,
                 OrderStatusId = o.OrderStatusId,
-                PaymentMethod = o.PaymentMethod,
+                MethodId = o.MethodId,
+                MethodName = o.Method != null ? o.Method.MethodName : null,
                 CreatedAt = o.CreatedAt,
                 PaidAt = o.PaidAt
             })
@@ -41,7 +42,9 @@ public class AppOrdersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<AppOrderDto>> GetAppOrder(int id)
     {
-        var order = await _context.AppOrders.FindAsync(id);
+        var order = await _context.AppOrders
+            .Include(o => o.Method)
+            .FirstOrDefaultAsync(o => o.OrderId == id);
         if (order == null) return NotFound();
 
         return Ok(new AppOrderDto
@@ -53,7 +56,8 @@ public class AppOrdersController : ControllerBase
             DiscountAmount = order.DiscountAmount,
             FinalAmount = order.FinalAmount,
             OrderStatusId = order.OrderStatusId,
-            PaymentMethod = order.PaymentMethod,
+            MethodId = order.MethodId,
+            MethodName = order.Method?.MethodName,
             CreatedAt = order.CreatedAt,
             PaidAt = order.PaidAt
         });
@@ -70,11 +74,13 @@ public class AppOrdersController : ControllerBase
             DiscountAmount = dto.DiscountAmount,
             FinalAmount = dto.FinalAmount,
             OrderStatusId = dto.OrderStatusId,
-            PaymentMethod = dto.PaymentMethod
+            MethodId = dto.MethodId
         };
 
         _context.AppOrders.Add(order);
         await _context.SaveChangesAsync();
+
+        await _context.Entry(order).Reference(o => o.Method).LoadAsync();
 
         return CreatedAtAction(nameof(GetAppOrder), new { id = order.OrderId }, new AppOrderDto
         {
@@ -85,7 +91,8 @@ public class AppOrdersController : ControllerBase
             DiscountAmount = order.DiscountAmount,
             FinalAmount = order.FinalAmount,
             OrderStatusId = order.OrderStatusId,
-            PaymentMethod = order.PaymentMethod,
+            MethodId = order.MethodId,
+            MethodName = order.Method?.MethodName,
             CreatedAt = order.CreatedAt,
             PaidAt = order.PaidAt
         });
@@ -100,7 +107,7 @@ public class AppOrdersController : ControllerBase
         if (dto.DiscountAmount.HasValue) order.DiscountAmount = dto.DiscountAmount;
         if (dto.FinalAmount.HasValue) order.FinalAmount = dto.FinalAmount.Value;
         if (dto.OrderStatusId.HasValue) order.OrderStatusId = dto.OrderStatusId;
-        if (dto.PaymentMethod != null) order.PaymentMethod = dto.PaymentMethod;
+        if (dto.MethodId.HasValue) order.MethodId = dto.MethodId;
         if (dto.PaidAt.HasValue) order.PaidAt = dto.PaidAt;
 
         await _context.SaveChangesAsync();
@@ -118,4 +125,3 @@ public class AppOrdersController : ControllerBase
         return NoContent();
     }
 }
-

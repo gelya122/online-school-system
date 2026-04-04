@@ -17,6 +17,9 @@ public class ReviewsController : ControllerBase
         _context = context;
     }
 
+    private static bool IsRatingOutOfRange(int? rating) =>
+        rating is { } r && (r < 1 || r > 5);
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviews()
     {
@@ -56,6 +59,9 @@ public class ReviewsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ReviewDto>> CreateReview(CreateReviewDto dto)
     {
+        if (IsRatingOutOfRange(dto.Rating))
+            return BadRequest("Оценка должна быть в диапазоне от 1 до 5.");
+
         var review = new Review
         {
             StudentId = dto.StudentId,
@@ -86,7 +92,12 @@ public class ReviewsController : ControllerBase
         var review = await _context.Reviews.FindAsync(id);
         if (review == null) return NotFound();
 
-        if (dto.Rating.HasValue) review.Rating = dto.Rating;
+        if (dto.Rating.HasValue)
+        {
+            if (IsRatingOutOfRange(dto.Rating))
+                return BadRequest("Оценка должна быть в диапазоне от 1 до 5.");
+            review.Rating = dto.Rating;
+        }
         if (dto.Comment != null) review.Comment = dto.Comment;
         if (dto.IsPublished.HasValue) review.IsPublished = dto.IsPublished;
 

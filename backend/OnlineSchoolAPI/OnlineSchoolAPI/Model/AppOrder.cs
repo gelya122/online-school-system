@@ -19,7 +19,7 @@ public partial class AppOrder
 
     public int? OrderStatusId { get; set; }
 
-    public string? PaymentMethod { get; set; }
+    public int? MethodId { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
@@ -34,4 +34,6 @@ public partial class AppOrder
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual Student Student { get; set; } = null!;
+
+    public virtual PaymentMethod? Method { get; set; }
 }

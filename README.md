@@ -20,7 +20,7 @@
 
 ## База данных
 
-Строка подключения: `ConnectionStrings:OnlineSchoolConnection` в `backend/OnlineSchoolAPI/OnlineSchoolAPI/appsettings.json` (по умолчанию LocalDB).
+Строка подключения: `ConnectionStrings:OnlineSchoolConnection`. В режиме **Development** подхватывается **`appsettings.Development.json`** (удобно указать свой экземпляр SQL Server); в `appsettings.json` остаётся запасной вариант (LocalDB). Переопределение: переменная `ConnectionStrings__OnlineSchoolConnection`.
 
 Применить миграции из корня репозитория:
 

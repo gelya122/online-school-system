@@ -24,4 +24,6 @@ public partial class PromoCode
     public bool? IsActive { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public virtual DiscountType? DiscountType { get; set; }
 }

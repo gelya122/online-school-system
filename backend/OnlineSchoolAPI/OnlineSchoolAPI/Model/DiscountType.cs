@@ -12,5 +12,6 @@ public partial class DiscountType
     public string? Description { get; set; }
 
     public bool? IsActive { get; set; }
-}
 
+    public virtual ICollection<PromoCode> PromoCodes { get; set; } = new List<PromoCode>();
+}

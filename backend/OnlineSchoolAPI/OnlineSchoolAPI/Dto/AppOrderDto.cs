@@ -9,7 +9,8 @@ public class AppOrderDto
     public decimal? DiscountAmount { get; set; }
     public decimal FinalAmount { get; set; }
     public int? OrderStatusId { get; set; }
-    public string? PaymentMethod { get; set; }
+    public int? MethodId { get; set; }
+    public string? MethodName { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? PaidAt { get; set; }
 }
@@ -22,7 +23,7 @@ public class CreateAppOrderDto
     public decimal? DiscountAmount { get; set; }
     public decimal FinalAmount { get; set; }
     public int? OrderStatusId { get; set; }
-    public string? PaymentMethod { get; set; }
+    public int? MethodId { get; set; }
 }
 
 public class UpdateAppOrderDto
@@ -30,7 +31,7 @@ public class UpdateAppOrderDto
     public decimal? DiscountAmount { get; set; }
     public decimal? FinalAmount { get; set; }
     public int? OrderStatusId { get; set; }
-    public string? PaymentMethod { get; set; }
+    public int? MethodId { get; set; }
     public DateTime? PaidAt { get; set; }
 }
 

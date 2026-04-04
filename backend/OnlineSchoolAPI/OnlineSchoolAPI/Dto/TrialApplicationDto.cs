@@ -4,11 +4,11 @@ public class TrialApplicationDto
 {
     public int ApplicationId { get; set; }
     public string FirstName { get; set; } = null!;
-    public string LastName { get; set; } = null!;
+    public string? LastName { get; set; }
     public string Phone { get; set; } = null!;
     public string? Email { get; set; }
-    public int ClassNumber { get; set; }
-    public string SelectedSubjects { get; set; } = null!;
+    public int? ClassNumber { get; set; }
+    public string? SelectedSubjects { get; set; }
     public int? ApplicationStatusId { get; set; }
     public int? AssignedManagerId { get; set; }
     public string? ManagerComment { get; set; }
@@ -19,11 +19,11 @@ public class TrialApplicationDto
 public class CreateTrialApplicationDto
 {
     public string FirstName { get; set; } = null!;
-    public string LastName { get; set; } = null!;
+    public string? LastName { get; set; }
     public string Phone { get; set; } = null!;
     public string? Email { get; set; }
-    public int ClassNumber { get; set; }
-    public string SelectedSubjects { get; set; } = null!;
+    public int? ClassNumber { get; set; }
+    public string? SelectedSubjects { get; set; }
     public int? ApplicationStatusId { get; set; }
 }
 

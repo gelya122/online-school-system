@@ -5,9 +5,7 @@ using OnlineSchoolAPI;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<OnlineSchoolDbContext>(opt =>
-{
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("OnlineSchoolConnection"));
-});
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("OnlineSchoolConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

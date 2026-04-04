@@ -15,7 +15,7 @@ public partial class Payment
 
     public int? PaymentStatusId { get; set; }
 
-    public string? PaymentMethod { get; set; }
+    public int? MethodId { get; set; }
 
     public string? CardLastFour { get; set; }
 
@@ -26,4 +26,6 @@ public partial class Payment
     public virtual AppOrder Order { get; set; } = null!;
 
     public virtual PaymentStatus? PaymentStatus { get; set; }
+
+    public virtual PaymentMethod? Method { get; set; }
 }
