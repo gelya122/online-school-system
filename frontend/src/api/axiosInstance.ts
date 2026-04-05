@@ -26,7 +26,11 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         if (error.response?.status === 401) {
-            // Токен истек или невалиден - очищаем и перенаправляем на логин
+            const url = String(error.config?.url ?? '');
+            // Неверные учётные данные при входе — не считаем истечением сессии
+            if (url.includes('/Registration/login') || url.includes('/auth/login')) {
+                return Promise.reject(error);
+            }
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = '/login';

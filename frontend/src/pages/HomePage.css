@@ -215,7 +215,7 @@ body {
 }
 
 .form-group input::placeholder {
-  color: rgba(156, 163, 175, 1);
+  color: rgba(148, 163, 184, 0.75);
 }
 
 .form-group input:focus {

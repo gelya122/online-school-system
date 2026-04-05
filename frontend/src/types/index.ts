@@ -5,6 +5,7 @@ export interface User {
   firstName?: string;
   lastName?: string;
   role?: string;
+  avatarUrl?: string;
 }
 
 // Типы для аутентификации
@@ -16,8 +17,14 @@ export interface LoginCredentials {
 export interface RegisterData {
   email: string;
   password: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
+  classNumber: number;
+  phone: string;
+  dateOfBirth: string;
+  parentPhone: string;
+  parentEmail: string;
+  avatarBase64?: string | null;
 }
 
 export interface AuthResponse {

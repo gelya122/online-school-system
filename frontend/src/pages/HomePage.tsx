@@ -5,6 +5,9 @@ import { getFaqItems } from '../api/faq';
 import { getReviews } from '../api/reviews';
 import { getSubjects } from '../api/filters';
 import { createTrialApplication } from '../api/trialApplications';
+import { isValidEmailFormat } from '../utils/emailValidation';
+import { MaskedPhoneInput } from '../components/MaskedPhoneInput';
+import { isRuPhoneComplete, ruPhoneToStoredString } from '../utils/phoneMask';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -21,7 +24,7 @@ const HomePage = () => {
   const [leadLastName, setLeadLastName] = useState('');
   const [leadFirstName, setLeadFirstName] = useState('');
   const [leadEmail, setLeadEmail] = useState('');
-  const [leadPhone, setLeadPhone] = useState('');
+  const [leadPhoneDigits, setLeadPhoneDigits] = useState('');
   const [leadClassNumber, setLeadClassNumber] = useState('');
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -152,8 +155,14 @@ const HomePage = () => {
       setLeadError('Введите имя');
       return;
     }
-    if (!leadPhone.trim()) {
-      setLeadError('Введите телефон');
+    if (!isRuPhoneComplete(leadPhoneDigits)) {
+      setLeadError('Введите полный номер телефона (+7 (000) 000-00-00)');
+      return;
+    }
+
+    const em = leadEmail.trim();
+    if (em && !isValidEmailFormat(em)) {
+      setLeadError('Введите корректный адрес электронной почты');
       return;
     }
 
@@ -184,8 +193,8 @@ const HomePage = () => {
       await createTrialApplication({
         FirstName: leadFirstName.trim(),
         LastName: leadLastName.trim(),
-        Email: leadEmail.trim() || undefined,
-        Phone: leadPhone.trim(),
+        Email: em || undefined,
+        Phone: ruPhoneToStoredString(leadPhoneDigits),
         ClassNumber: classNumberNum,
         SelectedSubjects: selectedSubjectsText,
       });
@@ -194,7 +203,7 @@ const HomePage = () => {
       setLeadLastName('');
       setLeadFirstName('');
       setLeadEmail('');
-      setLeadPhone('');
+      setLeadPhoneDigits('');
       setLeadClassNumber('');
       setSelectedSubjectIds([]);
     } catch (err: unknown) {
@@ -296,20 +305,23 @@ const HomePage = () => {
               </div>
               <div className="form-group">
                 <input
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
                   placeholder="Email (необязательно)"
                   value={leadEmail}
                   onChange={(e) => setLeadEmail(e.target.value)}
                 />
               </div>
               <div className="form-group">
-                <input
-                  type="tel"
-                  placeholder="Телефон"
-                  value={leadPhone}
-                  onChange={(e) => setLeadPhone(e.target.value)}
-                  required
+                <MaskedPhoneInput
+                  id="lead-phone"
+                  valueDigits={leadPhoneDigits}
+                  onDigitsChange={setLeadPhoneDigits}
                 />
+                <p className="form-hint" style={{ marginTop: 6, fontSize: 13 }}>
+                  Формат: +7 (000) 000-00-00
+                </p>
               </div>
               <button type="submit" className="btn btn-primary btn-full" disabled={leadSubmitting}>
                 Записаться на курс

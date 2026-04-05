@@ -91,6 +91,22 @@
   outline: none;
 }
 
+.course-detail-form input::placeholder {
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.course-detail-phone-hint {
+  margin: -0.35rem 0 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.course-detail-form-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
 .course-detail-form input:focus {
   border-color: rgba(217, 217, 217, 1);
 }

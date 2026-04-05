@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineSchoolAPI;
 using OnlineSchoolAPI.Dto;
 using OnlineSchoolAPI.Models;
+using OnlineSchoolAPI.Services;
 
 namespace OnlineSchoolAPI.Controllers;
 
@@ -66,6 +67,9 @@ public class TrialApplicationsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TrialApplicationDto>> CreateTrialApplication(CreateTrialApplicationDto dto)
     {
+        if (!string.IsNullOrWhiteSpace(dto.Email) && !EmailValidator.IsValid(dto.Email))
+            return BadRequest("Введите корректный адрес электронной почты.");
+
         var application = new TrialApplication
         {
             FirstName = dto.FirstName,

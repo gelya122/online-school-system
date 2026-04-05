@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { Course } from '../types';
 import { getCourse } from '../api/courses';
+import { isValidEmailFormat } from '../utils/emailValidation';
+import { MaskedPhoneInput } from '../components/MaskedPhoneInput';
+import { isRuPhoneComplete } from '../utils/phoneMask';
 import './CourseDetailPage.css';
 
 const CourseDetailPage = () => {
@@ -9,6 +12,11 @@ const CourseDetailPage = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [leadName, setLeadName] = useState('');
+  const [leadEmail, setLeadEmail] = useState('');
+  const [leadPhoneDigits, setLeadPhoneDigits] = useState('');
+  const [leadFormError, setLeadFormError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,13 +81,46 @@ const CourseDetailPage = () => {
             <h3>Оставить заявку на курс</h3>
             <form
               className="course-detail-form"
+              noValidate
               onSubmit={(e) => {
                 e.preventDefault();
+                setLeadFormError(null);
+                if (!leadName.trim()) {
+                  setLeadFormError('Введите имя');
+                  return;
+                }
+                if (!isValidEmailFormat(leadEmail)) {
+                  setLeadFormError('Введите корректный адрес электронной почты');
+                  return;
+                }
+                if (!isRuPhoneComplete(leadPhoneDigits)) {
+                  setLeadFormError('Введите полный номер телефона (+7 (000) 000-00-00)');
+                  return;
+                }
+                setLeadFormError(null);
               }}
             >
-              <input type="text" placeholder="Ваше имя" required />
-              <input type="email" placeholder="Email" required />
-              <input type="tel" placeholder="+7 (___) ___‑__‑__" required />
+              <input
+                type="text"
+                placeholder="Ваше имя"
+                value={leadName}
+                onChange={(e) => setLeadName(e.target.value)}
+              />
+              <input
+                type="text"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="Email"
+                value={leadEmail}
+                onChange={(e) => setLeadEmail(e.target.value)}
+              />
+              <MaskedPhoneInput
+                id="course-lead-phone"
+                valueDigits={leadPhoneDigits}
+                onDigitsChange={setLeadPhoneDigits}
+              />
+              <p className="course-detail-phone-hint">Формат: +7 (000) 000-00-00</p>
+              {leadFormError && <p className="course-detail-form-error">{leadFormError}</p>}
               <button type="submit" className="btn btn-primary btn-full">
                 Отправить заявку
               </button>

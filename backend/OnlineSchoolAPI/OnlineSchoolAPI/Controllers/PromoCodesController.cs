@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineSchoolAPI;
 using OnlineSchoolAPI.Dto;
 using OnlineSchoolAPI.Models;
+using OnlineSchoolAPI.Services;
 
 namespace OnlineSchoolAPI.Controllers;
 
@@ -122,10 +123,10 @@ public class PromoCodesController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Проверка промокода и расчёт скидки. Счётчик использований в БД не меняется — он увеличивается при успешном оформлении заказа (POST /api/Checkout).</summary>
     [HttpPost("validate")]
     public async Task<ActionResult<ValidatePromoCodeResponseDto>> ValidatePromoCode([FromBody] ValidatePromoCodeDto dto)
     {
-        // Проверка на пустой код
         if (dto == null || string.IsNullOrWhiteSpace(dto.Code))
         {
             return Ok(new ValidatePromoCodeResponseDto
@@ -136,7 +137,6 @@ public class PromoCodesController : ControllerBase
             });
         }
 
-        // Проверка корзины
         if (dto.CartTotal <= 0)
         {
             return Ok(new ValidatePromoCodeResponseDto
@@ -147,11 +147,10 @@ public class PromoCodesController : ControllerBase
             });
         }
 
-        // Нормализуем код для сравнения без учета регистра
         var codeNormalized = dto.Code.Trim();
 
-        // Получаем промокод из базы данных
         var promo = await _context.PromoCodes
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Code != null && p.Code.ToLower() == codeNormalized.ToLower());
 
         if (promo == null)
@@ -164,145 +163,21 @@ public class PromoCodesController : ControllerBase
             });
         }
 
-        // Проверка активности
-        if (promo.IsActive.HasValue && promo.IsActive.Value == false)
-        {
-            return Ok(new ValidatePromoCodeResponseDto
-            {
-                IsValid = false,
-                Message = "Промокод деактивирован",
-                DiscountAmount = 0m
-            });
-        }
-
-        var today = DateOnly.FromDateTime(DateTime.Today);
-
-        // Проверка даты начала действия
-        if (today < promo.ValidFrom)
-        {
-            return Ok(new ValidatePromoCodeResponseDto
-            {
-                IsValid = false,
-                Message = $"Промокод начнёт действовать с {promo.ValidFrom:dd.MM.yyyy}",
-                DiscountAmount = 0m
-            });
-        }
-
-        // Проверка даты окончания действия
-        if (promo.ValidUntil.HasValue && today > promo.ValidUntil.Value)
-        {
-            return Ok(new ValidatePromoCodeResponseDto
-            {
-                IsValid = false,
-                Message = "Срок действия промокода истёк",
-                DiscountAmount = 0m
-            });
-        }
-
-        // Проверка лимита использований
-        if (promo.MaxUses.HasValue)
-        {
-            var currentUses = promo.CurrentUses ?? 0;
-            if (currentUses >= promo.MaxUses.Value)
-            {
-                return Ok(new ValidatePromoCodeResponseDto
-                {
-                    IsValid = false,
-                    Message = "Лимит использований промокода исчерпан",
-                    DiscountAmount = 0m
-                });
-            }
-        }
-
-        // Получаем тип промокода
         string? typeName = null;
         if (promo.TypeId.HasValue)
         {
-            var discountType = await _context.DiscountTypes
-                .FirstOrDefaultAsync(t => t.TypeId == promo.TypeId.Value);
-            typeName = discountType?.TypeName;
+            typeName = await _context.DiscountTypes.AsNoTracking()
+                .Where(t => t.TypeId == promo.TypeId.Value)
+                .Select(t => t.TypeName)
+                .FirstOrDefaultAsync();
         }
 
-        // Рассчитываем скидку в зависимости от типа
-        decimal discountAmount = 0;
-        string successMessage = "";
-
-        var normalizedTypeName = (typeName ?? string.Empty).Trim().ToLowerInvariant();
-
-        // Проверяем тип промокода
-        if (normalizedTypeName.Contains("free") ||
-            normalizedTypeName.Contains("бесплатно") ||
-            normalizedTypeName.Contains("full") ||
-            normalizedTypeName.Contains("полный"))
-        {
-            // Бесплатный доступ - скидка на всю сумму
-            discountAmount = dto.CartTotal;
-            successMessage = $"Промокод применён! Полная стоимость ({dto.CartTotal:N0} ₽) списана. Итоговая сумма: 0 ₽";
-        }
-        else if (normalizedTypeName.Contains("percent") ||
-                 normalizedTypeName.Contains("%") ||
-                 normalizedTypeName.Contains("процент") ||
-                 normalizedTypeName.Contains("percentage"))
-        {
-            // Процентная скидка
-            discountAmount = dto.CartTotal * promo.DiscountValue / 100m;
-            successMessage = $"Промокод применён! Скидка {promo.DiscountValue}% ({discountAmount:N0} ₽)";
-        }
-        else if (normalizedTypeName.Contains("fixed") ||
-                 normalizedTypeName.Contains("flat") ||
-                 normalizedTypeName.Contains("amount") ||
-                 normalizedTypeName.Contains("руб") ||
-                 normalizedTypeName.Contains("сумм"))
-        {
-            // Фиксированная скидка
-            discountAmount = promo.DiscountValue;
-            // Скидка не может превышать сумму корзины
-            if (discountAmount > dto.CartTotal)
-            {
-                discountAmount = dto.CartTotal;
-            }
-            successMessage = $"Промокод применён! Скидка {promo.DiscountValue:N0} ₽";
-        }
-        else
-        {
-            // Если тип не определён, считаем по значению discountValue
-            if (promo.DiscountValue <= 100)
-            {
-                // Процентная скидка
-                discountAmount = dto.CartTotal * promo.DiscountValue / 100m;
-                successMessage = $"Промокод применён! Скидка {promo.DiscountValue}% ({discountAmount:N0} ₽)";
-            }
-            else if (promo.DiscountValue >= dto.CartTotal)
-            {
-                // Бесплатный доступ
-                discountAmount = dto.CartTotal;
-                successMessage = $"Промокод применён! Полная стоимость ({dto.CartTotal:N0} ₽) списана. Итоговая сумма: 0 ₽";
-            }
-            else
-            {
-                // Фиксированная скидка
-                discountAmount = promo.DiscountValue;
-                successMessage = $"Промокод применён! Скидка {promo.DiscountValue:N0} ₽";
-            }
-        }
-
-        // Округляем до целых рублей вверх для большей прозрачности
-        discountAmount = Math.Ceiling(discountAmount);
-
-        // Убеждаемся, что скидка не превышает сумму корзины
-        if (discountAmount > dto.CartTotal)
-        {
-            discountAmount = dto.CartTotal;
-        }
-
-        // Обновляем количество использований промокода
-        promo.CurrentUses = (promo.CurrentUses ?? 0) + 1;
-        await _context.SaveChangesAsync();
+        var (ok, message, discountAmount) = PromoCodeDiscountCalculator.Compute(promo, typeName, dto.CartTotal);
 
         return Ok(new ValidatePromoCodeResponseDto
         {
-            IsValid = true,
-            Message = successMessage,
+            IsValid = ok,
+            Message = message,
             DiscountAmount = discountAmount
         });
     }

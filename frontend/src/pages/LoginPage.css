@@ -35,7 +35,7 @@
 }
 
 .form-group label {
-  color: rgba(75, 85, 99, 1);
+  color: rgba(156, 163, 175, 1);
   font-weight: 500;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .form-group input::placeholder {
-  color: rgba(156, 163, 175, 1);
+  color: rgba(203, 210, 220, 1);
 }
 
 /* Chrome/Safari автозаполнение может сбрасывать цвет */
@@ -90,5 +90,31 @@
 
 .register-link a:hover {
   text-decoration: underline;
+}
+
+.register-container-wide {
+  max-width: 440px;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(180, 188, 202, 1);
+}
+
+.field-hint.ok {
+  color: rgba(22, 163, 74, 1);
+}
+
+.field-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #dc2626;
+}
+
+.form-group input[type='file'] {
+  padding: 0.5rem 0;
+  border: none;
+  font-size: 0.95rem;
 }
 

@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, LoginCredentials, RegisterData } from '../types';
+import { loginStudent, registerStudent } from '../api/registration';
+import { publicApiFileUrl } from '../utils/publicUrl';
 
 interface AuthContextType {
   user: User | null;
@@ -45,33 +47,66 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setLoading(false);
   }, []);
 
-  // Временная реализация без запросов к бэкенду
   const login = async (credentials: LoginCredentials) => {
-    const mockUser: User = {
-      id: 1,
-      email: credentials.email,
-      firstName: 'Demo',
-      lastName: 'User',
-      role: 'Student',
-    };
+    try {
+      const res = await loginStudent({
+        email: credentials.email,
+        password: credentials.password,
+      });
 
-    localStorage.setItem('token', 'demo-token');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    setUser(mockUser);
+      const nextUser: User = {
+        id: res.userId,
+        email: res.email,
+        firstName: res.firstName ?? undefined,
+        lastName: res.lastName ?? undefined,
+        role: 'Student',
+        avatarUrl: publicApiFileUrl(res.avatarUrl ?? undefined),
+      };
+
+      localStorage.setItem('token', 'session');
+      localStorage.setItem('user', JSON.stringify(nextUser));
+      setUser(nextUser);
+    } catch (e: unknown) {
+      const ax = e as { response?: { data?: unknown } };
+      const d = ax.response?.data;
+      if (typeof d === 'string') throw new Error(d);
+      throw e;
+    }
   };
 
   const register = async (data: RegisterData) => {
-    const mockUser: User = {
-      id: 1,
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      role: 'Student',
-    };
+    try {
+      const res = await registerStudent({
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        classNumber: data.classNumber,
+        phone: data.phone.trim(),
+        dateOfBirth: data.dateOfBirth,
+        parentPhone: data.parentPhone.trim(),
+        parentEmail: data.parentEmail.trim(),
+        avatarBase64: data.avatarBase64 ?? undefined,
+      });
 
-    localStorage.setItem('token', 'demo-token');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    setUser(mockUser);
+      const nextUser: User = {
+        id: res.userId,
+        email: res.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: 'Student',
+        avatarUrl: publicApiFileUrl(res.avatarUrl ?? undefined),
+      };
+
+      localStorage.setItem('token', 'session');
+      localStorage.setItem('user', JSON.stringify(nextUser));
+      setUser(nextUser);
+    } catch (e: unknown) {
+      const ax = e as { response?: { data?: unknown } };
+      const d = ax.response?.data;
+      if (typeof d === 'string') throw new Error(d);
+      throw e;
+    }
   };
 
   const logout = () => {

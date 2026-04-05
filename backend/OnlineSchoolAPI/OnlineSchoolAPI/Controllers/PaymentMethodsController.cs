@@ -33,16 +33,6 @@ public class PaymentMethodsController : ControllerBase
             })
             .ToListAsync();
 
-        if (list.Count == 0)
-        {
-            list =
-            [
-                new PaymentMethodDto { MethodId = 0, MethodName = "Банковская карта" },
-                new PaymentMethodDto { MethodId = 0, MethodName = "Онлайн‑кошелёк" },
-                new PaymentMethodDto { MethodId = 0, MethodName = "Безналичный расчёт" }
-            ];
-        }
-
         return Ok(list);
     }
 }

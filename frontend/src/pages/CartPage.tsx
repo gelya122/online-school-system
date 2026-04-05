@@ -1,11 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import { validatePromoCode } from '../api/promoCodes';
 import './CartPage.css';
 
 const CartPage = () => {
   const { items, total, removeFromCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [registerHint, setRegisterHint] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [promoMessage, setPromoMessage] = useState<string | null>(null);
@@ -13,15 +17,10 @@ const CartPage = () => {
   const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null);
 
   const itemsCount = items.length;
-  
-  // Исправлено: итоговая сумма после скидки
+
   const finalTotal = useMemo(() => Math.max(0, total - discountAmount), [total, discountAmount]);
   const finalTotalFormatted = useMemo(() => `${finalTotal} ₽`, [finalTotal]);
-  
-  // Исправлено: сумма товаров с учетом скидки (для отображения в строке "Товары")
   const itemsTotalWithDiscountFormatted = useMemo(() => `${finalTotal} ₽`, [finalTotal]);
-  
-  // Оригинальная сумма без скидки (для информации)
   const originalTotalFormatted = useMemo(() => `${total} ₽`, [total]);
   const discountFormatted = useMemo(() => `${discountAmount} ₽`, [discountAmount]);
 
@@ -35,6 +34,10 @@ const CartPage = () => {
 
     return () => window.clearTimeout(t);
   }, [total]);
+
+  useEffect(() => {
+    if (isAuthenticated) setRegisterHint(false);
+  }, [isAuthenticated]);
 
   const handleApplyPromo = () => {
     (async () => {
@@ -83,6 +86,16 @@ const CartPage = () => {
     setPromoCode('');
   };
 
+  const handleCheckoutClick = () => {
+    setRegisterHint(false);
+    if (itemsCount === 0) return;
+    if (!isAuthenticated) {
+      setRegisterHint(true);
+      return;
+    }
+    navigate('/checkout', { state: { promoCode: appliedPromoCode } });
+  };
+
   return (
     <div className="cart-page">
       <div className="cart-inner">
@@ -117,22 +130,19 @@ const CartPage = () => {
 
           <aside className="cart-summary">
             <h2>Итого</h2>
-            
-            {/* Исправлено: отображаем итоговую сумму с учетом скидки */}
+
             <div className="cart-summary-row">
               <span>Товары ({itemsCount})</span>
               <span>{itemsTotalWithDiscountFormatted}</span>
             </div>
 
-            {/* Показываем скидку отдельно, если она применена */}
             {discountAmount > 0 && (
               <>
                 <div className="cart-summary-row discount-row">
                   <span>Скидка по промокоду</span>
                   <span className="discount-value">-{discountFormatted}</span>
                 </div>
-                
-                {/* Опционально: показываем оригинальную сумму */}
+
                 <div className="cart-summary-row original-price-row">
                   <span>Было</span>
                   <span className="original-price">{originalTotalFormatted}</span>
@@ -176,10 +186,27 @@ const CartPage = () => {
               <span>К оплате</span>
               <span>{finalTotalFormatted}</span>
             </div>
-            
-            <Link to="/checkout" className="btn btn-primary btn-full">
+
+            {registerHint && (
+              <div className="cart-register-hint" role="alert">
+                <p>
+                  Для оформления заказа необходимо{' '}
+                  <strong>зарегистрироваться на платформе</strong>.
+                </p>
+                <Link to="/register" className="btn btn-primary btn-full cart-register-link">
+                  Перейти к регистрации
+                </Link>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="btn btn-primary btn-full"
+              onClick={handleCheckoutClick}
+              disabled={itemsCount === 0}
+            >
               Оформить заказ
-            </Link>
+            </button>
           </aside>
         </div>
       </div>

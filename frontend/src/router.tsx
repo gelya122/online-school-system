@@ -9,6 +9,7 @@ import CourseDetailPage from './pages/CourseDetailPage.tsx';
 import AboutPage from './pages/AboutPage.tsx';
 import CartPage from './pages/CartPage.tsx';
 import CheckoutPage from './pages/CheckoutPage.tsx';
+import RegisterPage from './pages/RegisterPage.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
       { path: 'cart', element: <CartPage /> },
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
       {
         path: 'profile',
         element: (

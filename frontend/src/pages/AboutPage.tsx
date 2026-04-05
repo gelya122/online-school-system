@@ -18,18 +18,6 @@ const AboutPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeFaq, setActiveFaq] = useState<number | null>(null); // Все закрыты по умолчанию
 
-// Форматирование телефона по маске 8 (...) ...-..-..
-  const formatPhoneNumber = (phone: string): string => {
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length === 11) {
-      return `8 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 9)}-${digits.slice(9, 11)}`;
-    }
-    if (digits.length === 10) {
-      return `8 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 8)}-${digits.slice(8, 10)}`;
-    }
-    return phone;
-  };
-
   useEffect(() => {
     let cancelled = false;
 

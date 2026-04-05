@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { LoginCredentials, RegisterData, AuthResponse } from '../types';
+import type { LoginCredentials, RegisterData, AuthResponse } from '../types';
 
 export const login = (data: LoginCredentials) => 
   axiosInstance.post<AuthResponse>('/auth/login', data);
