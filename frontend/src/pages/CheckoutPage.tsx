@@ -123,7 +123,7 @@ const CheckoutPage = () => {
         return;
       }
       if (!isCardNumberValid(cardNumber)) {
-        setError('Проверьте номер карты (16–19 цифр).');
+        setError('Номер карты должен содержать 16 цифр.');
         return;
       }
       if (!isCardExpiryValid(cardExpiry)) {
@@ -256,7 +256,6 @@ const CheckoutPage = () => {
                 <div className="form-group">
                   <label htmlFor="phone">Телефон</label>
                   <MaskedPhoneInput id="phone" valueDigits={phoneDigits} onDigitsChange={setPhoneDigits} />
-                  <p className="checkout-field-hint">Формат: +7 (000) 000-00-00</p>
                 </div>
                 <div className="form-group">
                   <label htmlFor="email">Email</label>

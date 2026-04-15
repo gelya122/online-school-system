@@ -14,4 +14,7 @@ public class LoginStudentResponseDto
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? AvatarUrl { get; set; }
+
+    /// <summary>Отображаемое название роли: описание из справочника или имя роли.</summary>
+    public string? RoleLabel { get; set; }
 }

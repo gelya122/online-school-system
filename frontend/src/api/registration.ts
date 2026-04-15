@@ -18,6 +18,7 @@ export type RegisterStudentResponse = {
   studentId: number;
   email: string;
   avatarUrl?: string | null;
+  roleLabel?: string | null;
 };
 
 export type LoginStudentPayload = {
@@ -32,6 +33,7 @@ export type LoginStudentResponse = {
   firstName: string | null;
   lastName: string | null;
   avatarUrl?: string | null;
+  roleLabel?: string | null;
 };
 
 /** Серверная проверка (те же правила, что при регистрации). Не бросает при невалидной почте — только при сетевой ошибке. */

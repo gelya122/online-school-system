@@ -9,7 +9,7 @@ export function extractRuMobileDigits(fromDisplay: string): string {
 /** Маска: +7 (XXX) XXX-XX-XX; при 0 цифр — «+7 (», ввод по сути начинается после скобки. */
 export function formatRuMobileMask(digits: string): string {
   const d = digits.replace(/\D/g, '').slice(0, 10);
-  if (d.length === 0) return '+7 (';
+  if (d.length === 0) return '';
 
   let out = '+7 (' + d.slice(0, 3);
   if (d.length <= 3) return out;

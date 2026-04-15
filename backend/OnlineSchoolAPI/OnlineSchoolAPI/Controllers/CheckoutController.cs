@@ -11,10 +11,12 @@ namespace OnlineSchoolAPI.Controllers;
 public class CheckoutController : ControllerBase
 {
     private readonly OnlineSchoolDbContext _context;
+    private readonly IOrderReceiptEmailService _receiptEmail;
 
-    public CheckoutController(OnlineSchoolDbContext context)
+    public CheckoutController(OnlineSchoolDbContext context, IOrderReceiptEmailService receiptEmail)
     {
         _context = context;
+        _receiptEmail = receiptEmail;
     }
 
     /// <summary>
@@ -232,6 +234,29 @@ public class CheckoutController : ControllerBase
 
         await _context.SaveChangesAsync();
         await tx.CommitAsync();
+
+        var receiptLines = preparedLines
+            .Select(x => (x.Course.Title, x.UnitPrice, x.Line.Quantity))
+            .ToList();
+
+        var recipientEmail = await _context.Users.AsNoTracking()
+            .Where(u => u.UserId == dto.UserId)
+            .Select(u => u.Email)
+            .FirstOrDefaultAsync();
+
+        if (!string.IsNullOrWhiteSpace(recipientEmail))
+        {
+            await _receiptEmail.SendCheckoutReceiptAsync(
+                recipientEmail,
+                orderNumber,
+                receiptLines,
+                subtotal,
+                discountAmount,
+                finalAmount,
+                promoMessage,
+                useInstallment,
+                useInstallment ? dto.InstallmentCount : null);
+        }
 
         return Ok(new CheckoutResponseDto
         {

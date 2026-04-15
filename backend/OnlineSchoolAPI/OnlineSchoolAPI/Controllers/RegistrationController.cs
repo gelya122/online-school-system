@@ -125,12 +125,16 @@ public class RegistrationController : ControllerBase
 
             await tx.CommitAsync(cancellationToken);
 
+            var roleRow = await _context.UserRoles.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.RoleId == StudentRoleId, cancellationToken);
+
             return Ok(new RegisterStudentResponseDto
             {
                 UserId = user.UserId,
                 StudentId = student.StudentId,
                 Email = user.Email,
-                AvatarUrl = avatarUrl
+                AvatarUrl = avatarUrl,
+                RoleLabel = FormatRoleLabel(roleRow)
             });
         }
         catch
@@ -151,6 +155,7 @@ public class RegistrationController : ControllerBase
 
         var emailNorm = dto.Email.Trim();
         var user = await _context.Users
+            .Include(u => u.Role)
             .FirstOrDefaultAsync(u => u.Email.ToLower() == emailNorm.ToLower(), cancellationToken);
 
         if (user == null || !PasswordHasher.Verify(dto.Password, user.PasswordHash))
@@ -165,8 +170,17 @@ public class RegistrationController : ControllerBase
             Email = user.Email,
             FirstName = student?.FirstName,
             LastName = student?.LastName,
-            AvatarUrl = student?.AvatarUrl
+            AvatarUrl = student?.AvatarUrl,
+            RoleLabel = FormatRoleLabel(user.Role)
         });
+    }
+
+    private static string? FormatRoleLabel(UserRole? role)
+    {
+        if (role == null) return null;
+        if (!string.IsNullOrWhiteSpace(role.Description))
+            return role.Description.Trim();
+        return role.RoleName;
     }
 
 }

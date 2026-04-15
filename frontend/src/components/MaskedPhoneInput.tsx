@@ -6,6 +6,7 @@ type MaskedPhoneInputProps = {
   onDigitsChange: (digits: string) => void;
   disabled?: boolean;
   className?: string;
+  placeholder?: string;
   'aria-invalid'?: boolean | 'true' | 'false';
 };
 
@@ -19,6 +20,7 @@ export function MaskedPhoneInput({
   onDigitsChange,
   disabled,
   className,
+  placeholder = '+7 (000) 000-00-00',
   'aria-invalid': ariaInvalid,
 }: MaskedPhoneInputProps) {
   return (
@@ -30,6 +32,7 @@ export function MaskedPhoneInput({
       disabled={disabled}
       className={className}
       title="Формат: +7 (000) 000-00-00"
+      placeholder={placeholder}
       value={formatRuMobileMask(valueDigits)}
       onChange={(e) => onDigitsChange(extractRuMobileDigits(e.target.value))}
       aria-invalid={ariaInvalid}

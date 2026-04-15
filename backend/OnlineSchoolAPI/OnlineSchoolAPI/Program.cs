@@ -2,11 +2,13 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OnlineSchoolAPI;
+using OnlineSchoolAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<OnlineSchoolDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("OnlineSchoolConnection")));
+builder.Services.AddScoped<IOrderReceiptEmailService, OrderReceiptEmailService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

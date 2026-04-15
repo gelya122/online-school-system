@@ -4,6 +4,9 @@ export interface User {
   email: string;
   firstName?: string;
   lastName?: string;
+  /** Подпись роли из БД (описание или название). Устаревшее поле `role` в localStorage может остаться после старых сессий. */
+  roleLabel?: string;
+  /** @deprecated Используйте roleLabel */
   role?: string;
   avatarUrl?: string;
 }

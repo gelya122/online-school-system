@@ -3,9 +3,9 @@ export function digitsOnly(s: string): string {
   return s.replace(/\D/g, '');
 }
 
-/** Маска номера карты: группы по 4. */
+/** Маска номера карты: ровно 16 цифр, группы по 4. */
 export function formatCardNumberInput(raw: string): string {
-  const d = digitsOnly(raw).slice(0, 19);
+  const d = digitsOnly(raw).slice(0, 16);
   const parts: string[] = [];
   for (let i = 0; i < d.length; i += 4) {
     parts.push(d.slice(i, i + 4));
@@ -21,8 +21,7 @@ export function formatCardExpiryInput(raw: string): string {
 }
 
 export function isCardNumberValid(formatted: string): boolean {
-  const n = digitsOnly(formatted).length;
-  return n >= 16 && n <= 19;
+  return digitsOnly(formatted).length === 16;
 }
 
 export function isCardExpiryValid(formatted: string): boolean {

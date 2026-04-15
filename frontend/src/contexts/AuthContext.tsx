@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         email: res.email,
         firstName: res.firstName ?? undefined,
         lastName: res.lastName ?? undefined,
-        role: 'Student',
+        roleLabel: res.roleLabel ?? undefined,
         avatarUrl: publicApiFileUrl(res.avatarUrl ?? undefined),
       };
 
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         email: res.email,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: 'Student',
+        roleLabel: res.roleLabel ?? undefined,
         avatarUrl: publicApiFileUrl(res.avatarUrl ?? undefined),
       };
 
