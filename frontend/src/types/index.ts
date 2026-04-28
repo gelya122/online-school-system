@@ -1,6 +1,8 @@
 // Типы для пользователя
 export interface User {
   id: number;
+  /** Идентификатор записи ученика; нужен для сохранения профиля через API. */
+  studentId?: number | null;
   email: string;
   firstName?: string;
   lastName?: string;
@@ -9,6 +11,12 @@ export interface User {
   /** @deprecated Используйте roleLabel */
   role?: string;
   avatarUrl?: string;
+  /** Заполняются после загрузки профиля ученика и при сохранении. */
+  phone?: string;
+  dateOfBirth?: string;
+  classNumber?: number;
+  parentPhone?: string;
+  parentEmail?: string;
 }
 
 // Типы для аутентификации

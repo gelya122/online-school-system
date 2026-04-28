@@ -1,124 +1,433 @@
-.profile-page {
-  max-width: 720px;
+/* Страница аккаунта: светлый фон на всю высоту (без «полосы» тёмной темы body под футером) */
+.profile-page-root {
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  background: #f3f4f6;
+  color: #111827;
+  padding: 32px 20px 48px;
+  /* Иначе поля наследуют тёмную схему страницы и Chrome рисует автозаполнение «как в dark mode». */
+  color-scheme: light;
+}
+
+.profile-shell {
+  max-width: 520px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
-  min-height: calc(100vh - 200px);
-}
-
-.profile-hero {
-  margin-bottom: 1.75rem;
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #3b82f6 100%);
-  color: #fff;
-  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.25);
-  overflow: hidden;
-}
-
-.profile-hero-inner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1.75rem 1.8rem;
 }
 
-.profile-avatar-wrap {
-  flex-shrink: 0;
+.profile-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.profile-avatar {
-  width: 88px;
-  height: 88px;
+.profile-avatar-wrap-center {
+  margin-bottom: 20px;
+}
+
+.profile-avatar-xl {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border: 4px solid #fff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
 }
 
-.profile-avatar-fallback {
+.profile-avatar-xl-fallback {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  font-size: 2rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.profile-hero-text h1 {
-  margin: 0 0 0.35rem;
-  font-size: 1.75rem;
+  background: linear-gradient(145deg, #dbeafe 0%, #eff6ff 100%);
+  color: #2563eb;
+  font-size: 2.75rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
 }
 
-.profile-email-lead {
+.profile-avatar-wrap--editable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-avatar-ring {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.profile-avatar-change-btn {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.profile-avatar-change-btn:hover {
+  background: #1d4ed8;
+  transform: scale(1.03);
+}
+
+.profile-avatar-change-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #93c5fd;
+}
+
+.profile-avatar-change-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-avatar-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.profile-avatar-hint {
+  margin: 10px 0 0;
+  max-width: 280px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6b7280;
+}
+
+.profile-name-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.profile-name-lines {
   margin: 0;
-  font-size: 0.95rem;
-  opacity: 0.92;
-  word-break: break-all;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: #111827;
 }
 
-.profile-card {
-  background: #ffffff;
-  border-radius: 1rem;
+.profile-name-surname,
+.profile-name-given {
+  font-weight: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.profile-pencil {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid #3b82f6;
+  background: #fff;
+  color: #2563eb;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-pencil:hover {
+  background: #f8fafc;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.profile-pencil:active {
+  background: #f1f5f9;
+  border-color: #1d4ed8;
+  color: #1e40af;
+}
+
+.profile-pencil:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #bfdbfe;
+}
+
+.profile-pencil-svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.profile-banner-error {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.profile-data-card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 16px;
   border: 1px solid #e5e7eb;
-  padding: 1.75rem 1.85rem;
-  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.06);
+  padding: 24px 22px 28px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
 }
 
 .profile-card-title {
-  margin: 0 0 1.25rem;
-  font-size: 1.15rem;
-  font-weight: 600;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 1.125rem;
+  font-weight: 700;
   color: #111827;
+  letter-spacing: -0.02em;
 }
 
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.profile-muted {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
 }
 
-.info-item {
+.profile-readonly {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding-bottom: 1rem;
+}
+
+.profile-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 0;
   border-bottom: 1px solid #f3f4f6;
 }
 
-.info-item:last-child {
-  padding-bottom: 0;
+.profile-field-row:last-child {
   border-bottom: none;
 }
 
-.info-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #4b5563;
+.profile-field-row-role .profile-field-value {
+  color: #374151;
 }
 
-.info-value {
-  font-size: 1.05rem;
+.profile-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.profile-field-value {
+  font-size: 16px;
   color: #111827;
   line-height: 1.45;
+  word-break: break-word;
+}
+
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-field-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  color: #111827;
+  background-color: #fff;
+  caret-color: #111827;
+}
+
+.profile-field-input:focus {
+  outline: none;
+  background-color: #fff;
+  color: #111827;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+/* Chrome / Edge: автозаполнение без серого фона и светлого текста */
+.profile-field-input:-webkit-autofill,
+.profile-field-input:-webkit-autofill:hover {
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827;
+  border: 1px solid #d1d5db;
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.profile-field-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #111827 !important;
+  border-color: #3b82f6;
+  -webkit-box-shadow: 0 0 0 1000px #fff inset, 0 0 0 4px rgba(59, 130, 246, 0.18);
+  box-shadow: 0 0 0 1000px #fff inset, 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+.profile-field-input:autofill,
+.profile-field-input:autofill:hover {
+  color: #111827 !important;
+  caret-color: #111827;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.profile-field-input:autofill:focus {
+  color: #111827 !important;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1000px #fff inset, 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+/* Убираем тёмные стрелки у поля «класс» (number) в Chrome / Edge */
+.profile-field-input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.profile-field-input[type='number']::-webkit-outer-spin-button,
+.profile-field-input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.profile-hint {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.profile-form-error {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #dc2626;
+}
+
+.profile-save-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 4px;
+}
+
+.profile-btn-save {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: #2563eb;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.profile-btn-save:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.profile-btn-save:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.profile-btn-cancel {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.profile-btn-cancel:hover:not(:disabled) {
+  background: #f9fafb;
 }
 
 @media (min-width: 640px) {
-  .info-item {
+  .profile-field-row {
     flex-direction: row;
     align-items: baseline;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 20px;
   }
 
-  .info-label {
-    flex: 0 0 140px;
+  /* Только строки «подпись — значение»: иначе в форме редактирования (колонка)
+     flex-basis 130px задаёт высоту подписи и раздувает зазор до input. */
+  .profile-field-row .profile-field-label {
+    flex: 0 0 130px;
   }
 
-  .info-value {
+  .profile-field-row .profile-field-value {
     text-align: right;
+  }
+
+  .profile-save-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .profile-btn-save,
+  .profile-btn-cancel {
+    flex: 1;
+    min-width: 140px;
   }
 }

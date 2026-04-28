@@ -34,8 +34,8 @@ const Header = () => {
 
           {isAuthenticated ? (
             <>
-              <Link to="/profile" className="nav-link">
-                Аккаунт
+              <Link to="/learn" className="nav-link">
+                Личный кабинет
               </Link>
 
               <Link to="/cart" className="nav-cart" aria-label="Корзина">

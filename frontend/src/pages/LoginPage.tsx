@@ -23,7 +23,7 @@ const LoginPage = () => {
 
     try {
       await login({ email: email.trim(), password });
-      navigate('/profile');
+      navigate('/learn');
     } catch (err: unknown) {
       const ax = err as { response?: { data?: unknown } };
       const d = ax.response?.data;

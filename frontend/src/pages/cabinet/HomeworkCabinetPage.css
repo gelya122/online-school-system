@@ -1,0 +1,221 @@
+/* Страница «ДЗ» — карточки и фильтры в духе референса */
+
+.hw-page {
+  max-width: 800px;
+}
+
+.hw-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.hw-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: help;
+  line-height: 1;
+}
+
+.hw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  max-width: 360px;
+}
+
+.hw-select-wrap {
+  flex: 1 1 100%;
+  min-width: 200px;
+}
+
+.hw-select {
+  width: 100%;
+  padding: 10px 32px 10px 12px;
+  font-size: 14px;
+  color: #111827;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M3 4.5L6 8l3-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+}
+
+.hw-select:focus {
+  outline: none;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.hw-cards-legend {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  padding: 0 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: none;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .hw-cards-legend {
+    display: none;
+  }
+}
+
+.hw-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hw-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.hw-card-top {
+  padding: 16px 18px 12px;
+}
+
+.hw-card-kicker {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.hw-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.hw-card-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.85fr) minmax(0, 1fr) auto;
+  gap: 12px 16px;
+  align-items: center;
+  padding: 14px 18px 16px;
+  background: linear-gradient(180deg, #f0f7ff 0%, #eef6ff 100%);
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 720px) {
+  .hw-card-band {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.hw-open-dz {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.hw-open-dz:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.hw-open-dz:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #93c5fd;
+}
+
+.hw-open-dz:disabled,
+.hw-open-dz[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.hw-type {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hw-type-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #2563eb;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.hw-type-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2563eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hw-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: #d97706;
+}
+
+.hw-status--muted {
+  color: #6b7280;
+}
+
+.hw-dates {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.hw-dates-line {
+  display: block;
+}
+
+.hw-empty-filters {
+  text-align: center;
+  padding: 28px 16px;
+  color: #6b7280;
+  font-size: 14px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px dashed #e5e7eb;
+}

@@ -2,7 +2,7 @@ namespace OnlineSchoolAPI.Services;
 
 public static class StudentAvatarStorage
 {
-    private const int MaxBytes = 512 * 1024;
+    public const int MaxAvatarBytes = 512 * 1024;
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 
     /// <summary>Сохраняет изображение из base64 (с префиксом data URL или без) в wwwroot/avatars. Возвращает относительный URL для клиента.</summary>
@@ -34,8 +34,18 @@ public static class StudentAvatarStorage
             throw new ArgumentException("Аватар: неверная строка base64.");
         }
 
-        if (bytes.Length == 0 || bytes.Length > MaxBytes)
-            throw new ArgumentException("Размер аватара должен быть от 1 байта до 512 КБ.");
+        return await SaveValidatedImageBytesAsync(env, bytes, userId, cancellationToken);
+    }
+
+    /// <summary>Сохраняет необработанные байты изображения (проверка сигнатуры и размера).</summary>
+    public static async Task<string> SaveValidatedImageBytesAsync(
+        IWebHostEnvironment env,
+        byte[] bytes,
+        int userId,
+        CancellationToken cancellationToken = default)
+    {
+        if (bytes.Length == 0 || bytes.Length > MaxAvatarBytes)
+            throw new ArgumentException($"Размер аватара должен быть от 1 байта до {MaxAvatarBytes / 1024} КБ.");
 
         var ext = DetectExtension(bytes);
         if (ext == null || !AllowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))

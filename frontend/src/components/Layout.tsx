@@ -15,13 +15,15 @@ const Layout = ({ children }: LayoutProps) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  const hideFooter = location.pathname === '/profile' || location.pathname.startsWith('/learn');
+
   return (
     <div className="layout">
       <Header />
       <main className="main-content">
         {children || <Outlet />}
       </main>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 };

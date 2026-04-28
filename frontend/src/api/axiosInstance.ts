@@ -16,6 +16,15 @@ axiosInstance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        // Глобальный Content-Type: application/json ломает multipart: файл не уходит, сервер отвечает ошибкой.
+        if (config.data instanceof FormData) {
+            const h = config.headers;
+            if (h && typeof (h as { delete?: (key: string) => void }).delete === 'function') {
+                (h as { delete: (key: string) => void }).delete('Content-Type');
+            } else if (h && typeof h === 'object') {
+                delete (h as Record<string, unknown>)['Content-Type'];
+            }
+        }
         return config;
     },
     (error) => Promise.reject(error)

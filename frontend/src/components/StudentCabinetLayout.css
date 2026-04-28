@@ -1,0 +1,115 @@
+/* Личный кабинет — в духе главной: фон hero #EFF6FF, белая «шапка»-боковая панель, акцент #2563EB */
+.student-cabinet {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  background: #eff6ff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.student-cabinet-sidebar {
+  flex: 0 0 240px;
+  background: #ffffff;
+  color: #111827;
+  padding: 24px 0;
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 2px 0 24px rgba(15, 23, 42, 0.04);
+}
+
+.student-cabinet-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 16px;
+}
+
+.sc-nav-link {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.sc-nav-link:hover {
+  background: rgba(37, 99, 235, 0.06);
+  color: #111827;
+}
+
+.sc-nav-link.is-active {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Ссылки меню — перебиваем глобальный `a` из index.css */
+.student-cabinet-sidebar a.sc-nav-link {
+  color: #4b5563;
+}
+
+.student-cabinet-sidebar a.sc-nav-link:hover {
+  color: #111827;
+}
+
+.student-cabinet-sidebar a.sc-nav-link.is-active {
+  color: #2563eb;
+}
+
+.student-cabinet-body {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 24px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  color: #111827;
+}
+
+.student-cabinet-body p,
+.student-cabinet-body li {
+  color: #374151;
+}
+
+/* Не трогаем ссылки-кнопки (например .hw-open-dz) — иначе синий текст на синем фоне */
+.student-cabinet-body a:not(.hw-open-dz) {
+  color: #2563eb;
+}
+
+.student-cabinet-body a:not(.hw-open-dz):hover {
+  color: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .student-cabinet {
+    flex-direction: column;
+  }
+
+  .student-cabinet-sidebar {
+    flex: none;
+    width: 100%;
+    padding: 14px 0;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  }
+
+  .student-cabinet-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .sc-nav-link {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+  }
+
+  .student-cabinet-body {
+    padding: 24px 16px 40px;
+  }
+}

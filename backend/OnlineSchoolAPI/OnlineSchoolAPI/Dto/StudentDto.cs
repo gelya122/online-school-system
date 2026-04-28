@@ -28,6 +28,11 @@ public class CreateStudentDto
     public string? ParentEmail { get; set; }
 }
 
+public class AvatarUploadResponseDto
+{
+    public string AvatarUrl { get; set; } = null!;
+}
+
 public class UpdateStudentDto
 {
     public string? FirstName { get; set; }
@@ -35,6 +40,8 @@ public class UpdateStudentDto
     public string? Phone { get; set; }
     public DateOnly? DateOfBirth { get; set; }
     public string? AvatarUrl { get; set; }
+    /// <summary>Data URL или чистый base64; сохраняется в wwwroot/avatars (как при регистрации).</summary>
+    public string? AvatarBase64 { get; set; }
     public int? ClassNumber { get; set; }
     public string? ParentPhone { get; set; }
     public string? ParentEmail { get; set; }

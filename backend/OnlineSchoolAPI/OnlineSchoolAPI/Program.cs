@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OnlineSchoolAPI;
@@ -18,6 +19,8 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API для онлайн школы"
     });
+    // Иначе при multipart + IFormFile генерация swagger.json может падать с 500.
+    c.MapType<IFormFile>(() => new OpenApiSchema { Type = "string", Format = "binary" });
 });
 
 // Add services to the container.
