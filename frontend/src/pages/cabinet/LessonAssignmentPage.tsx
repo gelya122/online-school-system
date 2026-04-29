@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getCabinetLesson, type StudentCabinetAssignment } from '../../api/studentCabinet';
+import {
+  getCabinetLesson,
+  submitCabinetAssignment,
+  type StudentCabinetAssignment,
+  type StudentCabinetSubmission,
+} from '../../api/studentCabinet';
 import './cabinetPages.css';
 
 function dash(v: unknown): string {
@@ -41,6 +46,10 @@ const LessonAssignmentPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [lessonTitle, setLessonTitle] = useState<string>('');
   const [assignment, setAssignment] = useState<StudentCabinetAssignment | null>(null);
+  const [submissions, setSubmissions] = useState<StudentCabinetSubmission[]>([]);
+  const [answerText, setAnswerText] = useState('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (studentId == null || !Number.isFinite(eid) || !Number.isFinite(lid) || !Number.isFinite(aid)) {
@@ -57,6 +66,7 @@ const LessonAssignmentPage = () => {
         setLessonTitle(d.title ?? '');
         const found = d.assignments.find((x) => x.assignmentId === aid) ?? null;
         setAssignment(found);
+        setSubmissions((d.submissions ?? []).filter((s) => s.assignmentId === aid));
         if (!found) setError('Такого задания нет в этом уроке или нет доступа.');
       } catch {
         if (!cancelled) setError('Урок не найден или нет доступа.');
@@ -70,6 +80,32 @@ const LessonAssignmentPage = () => {
   }, [studentId, eid, lid, aid]);
 
   const lessonPath = useMemo(() => `/learn/courses/${eid}/lessons/${lid}`, [eid, lid]);
+
+  const handleSend = async () => {
+    if (studentId == null || !assignment) return;
+    const trimmed = answerText.trim();
+    if (!trimmed) {
+      setSubmitError('Введите ответ перед отправкой.');
+      return;
+    }
+    setSending(true);
+    setSubmitError(null);
+    try {
+      const created = await submitCabinetAssignment(studentId, eid, lid, assignment.assignmentId, trimmed);
+      setSubmissions((prev) => [created, ...prev]);
+      setAnswerText('');
+    } catch (e: unknown) {
+      const ax = e as { response?: { data?: unknown } };
+      const d = ax.response?.data;
+      if (typeof d === 'string' && d.trim()) {
+        setSubmitError(d);
+      } else {
+        setSubmitError('Не удалось отправить решение.');
+      }
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (studentId == null) {
     return (
@@ -131,10 +167,53 @@ const LessonAssignmentPage = () => {
             <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
               Сдача работы
             </h2>
-            <p style={{ color: '#64748b', margin: 0 }}>
-              Форма ответа (тест, файл, текст) будет подключена к этой странице отдельно. Пока задание можно
-              просмотреть здесь, отправки по уроку отображаются на странице урока.
+            <label style={{ display: 'block', marginBottom: '8px', color: '#334155' }}>Ваш ответ</label>
+            <textarea
+              value={answerText}
+              onChange={(e) => setAnswerText(e.target.value)}
+              rows={6}
+              placeholder="Введите решение, комментарий или ответы на вопросы."
+              style={{
+                width: '100%',
+                border: '1px solid #cbd5e1',
+                borderRadius: 10,
+                padding: 12,
+                fontSize: '1rem',
+                fontFamily: 'inherit',
+                boxSizing: 'border-box',
+              }}
+            />
+            {submitError && <p className="cabinet-error" style={{ marginTop: 10 }}>{submitError}</p>}
+            <button
+              type="button"
+              className="cabinet-assignment-cta"
+              onClick={handleSend}
+              disabled={sending}
+              style={{ marginTop: 12 }}
+            >
+              {sending ? 'Отправка...' : 'Отправить решение'}
+            </button>
+            <p style={{ color: '#64748b', margin: '10px 0 0' }}>
+              Сейчас поддержан текстовый ответ. Файлы и отдельный режим тестирования можно добавить следующим шагом.
             </p>
+          </div>
+
+          <div className="cabinet-panel">
+            <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
+              Мои отправки
+            </h2>
+            {submissions.length === 0 ? (
+              <p style={{ margin: 0 }}>Пока нет отправленных решений.</p>
+            ) : (
+              <ul>
+                {submissions.map((s) => (
+                  <li key={s.submissionId}>
+                    {s.submittedAt ? formatDate(s.submittedAt) : '-'} · статус: {dash(s.submissionStatusName)} · балл:{' '}
+                    {dash(s.score)}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </>
       )}

@@ -97,6 +97,7 @@ export type StudentCabinetLessonProgress = {
 
 export type StudentCabinetSubmission = {
   submissionId: number;
+  assignmentId: number;
   submittedAt?: string | null;
   score?: number | null;
   submissionStatusName?: string | null;
@@ -236,4 +237,18 @@ export async function getCabinetHomework(studentId: number): Promise<StudentCabi
 export async function getCabinetProgress(studentId: number): Promise<StudentCabinetProgressRow[]> {
   const res = await axiosInstance.get<StudentCabinetProgressRow[]>(`/students/${studentId}/cabinet/progress`);
   return res.data ?? [];
+}
+
+export async function submitCabinetAssignment(
+  studentId: number,
+  enrollmentId: number,
+  lessonId: number,
+  assignmentId: number,
+  answerText: string,
+): Promise<StudentCabinetSubmission> {
+  const res = await axiosInstance.post<StudentCabinetSubmission>(
+    `/students/${studentId}/cabinet/enrollments/${enrollmentId}/lessons/${lessonId}/assignments/${assignmentId}/submit`,
+    { answerText },
+  );
+  return res.data;
 }

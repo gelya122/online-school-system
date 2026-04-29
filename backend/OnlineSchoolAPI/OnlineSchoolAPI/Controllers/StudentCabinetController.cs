@@ -218,6 +218,7 @@ public class StudentCabinetController : ControllerBase
                 .Select(s => new StudentCabinetSubmissionDto
                 {
                     SubmissionId = s.SubmissionId,
+                    AssignmentId = s.AssignmentId,
                     SubmittedAt = s.SubmittedAt,
                     Score = s.Score,
                     SubmissionStatusName = s.SubmissionStatus != null ? s.SubmissionStatus.StatusName : null,
@@ -370,6 +371,87 @@ public class StudentCabinetController : ControllerBase
         }).ToList();
 
         return Ok(result.OrderBy(x => x.CourseTitle).ThenBy(x => x.ModuleTitle).ThenBy(x => x.LessonTitle));
+    }
+
+    [HttpPost("enrollments/{enrollmentId:int}/lessons/{lessonId:int}/assignments/{assignmentId:int}/submit")]
+    public async Task<ActionResult<StudentCabinetSubmissionDto>> SubmitAssignment(
+        int studentId,
+        int enrollmentId,
+        int lessonId,
+        int assignmentId,
+        SubmitCabinetAssignmentDto dto)
+    {
+        if (!await _context.Students.AnyAsync(s => s.StudentId == studentId))
+            return NotFound();
+
+        var enrollment = await _context.Enrollments.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId && e.StudentId == studentId);
+        if (enrollment == null)
+            return NotFound();
+
+        var assignment = await _context.Assignments.AsNoTracking()
+            .FirstOrDefaultAsync(a => a.AssignmentId == assignmentId && a.LessonId == lessonId);
+        if (assignment == null)
+            return NotFound();
+
+        var access = await _context.StudentLessonAccesses
+            .FirstOrDefaultAsync(a => a.EnrollmentId == enrollmentId && a.LessonId == lessonId);
+        if (access == null)
+            return BadRequest("Для урока не настроен доступ.");
+
+        var progress = await _context.StudentProgresses
+            .FirstOrDefaultAsync(p => p.EnrollmentId == enrollmentId && p.LessonId == lessonId);
+        if (progress == null)
+        {
+            progress = new StudentProgress
+            {
+                EnrollmentId = enrollmentId,
+                LessonId = lessonId,
+                AccessId = access.AccessId,
+                IsCompleted = false,
+                LastAccessed = DateTime.UtcNow
+            };
+            _context.StudentProgresses.Add(progress);
+            await _context.SaveChangesAsync();
+        }
+
+        var submittedStatus = await _context.SubmissionStatuses.AsNoTracking()
+            .Where(s => s.StatusName != null && s.StatusName.ToLower().Contains("отправ"))
+            .OrderBy(s => s.StatusId)
+            .Select(s => (int?)s.StatusId)
+            .FirstOrDefaultAsync();
+
+        var answer = dto.AnswerText?.Trim();
+        if (string.IsNullOrWhiteSpace(answer))
+            return BadRequest("Введите ответ перед отправкой.");
+
+        var submission = new Submission
+        {
+            ProgressId = progress.ProgressId,
+            AssignmentId = assignmentId,
+            StudentAnswerText = answer,
+            SubmissionStatusId = submittedStatus
+        };
+
+        _context.Submissions.Add(submission);
+        await _context.SaveChangesAsync();
+
+        var statusName = submittedStatus.HasValue
+            ? await _context.SubmissionStatuses.AsNoTracking()
+                .Where(s => s.StatusId == submittedStatus.Value)
+                .Select(s => s.StatusName)
+                .FirstOrDefaultAsync()
+            : null;
+
+        return Ok(new StudentCabinetSubmissionDto
+        {
+            SubmissionId = submission.SubmissionId,
+            AssignmentId = submission.AssignmentId,
+            SubmittedAt = submission.SubmittedAt,
+            Score = submission.Score,
+            SubmissionStatusName = statusName,
+            TeacherComment = submission.TeacherComment
+        });
     }
 
     [HttpGet("progress")]

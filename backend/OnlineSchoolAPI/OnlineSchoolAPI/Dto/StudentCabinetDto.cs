@@ -107,10 +107,16 @@ public class StudentCabinetLessonProgressDto
 public class StudentCabinetSubmissionDto
 {
     public int SubmissionId { get; set; }
+    public int AssignmentId { get; set; }
     public DateTime? SubmittedAt { get; set; }
     public int? Score { get; set; }
     public string? SubmissionStatusName { get; set; }
     public string? TeacherComment { get; set; }
+}
+
+public class SubmitCabinetAssignmentDto
+{
+    public string? AnswerText { get; set; }
 }
 
 public class StudentCabinetLessonDetailDto
