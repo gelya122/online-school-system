@@ -98,10 +98,27 @@ export type StudentCabinetLessonProgress = {
 export type StudentCabinetSubmission = {
   submissionId: number;
   assignmentId: number;
+  studentAnswerText?: string | null;
   submittedAt?: string | null;
   score?: number | null;
   submissionStatusName?: string | null;
   teacherComment?: string | null;
+};
+
+export type StudentCabinetQuestion = {
+  questionId: number;
+  questionOrder: number;
+  questionText: string;
+  questionType?: string | null;
+  maxPoints: number;
+  studentAnswer?: string | null;
+  pointsAwarded?: number | null;
+};
+
+export type StudentCabinetAssignmentResult = {
+  assignmentId: number;
+  totalScore: number;
+  maxScore: number;
 };
 
 export type StudentCabinetLessonDetail = {
@@ -249,6 +266,45 @@ export async function submitCabinetAssignment(
   const res = await axiosInstance.post<StudentCabinetSubmission>(
     `/students/${studentId}/cabinet/enrollments/${enrollmentId}/lessons/${lessonId}/assignments/${assignmentId}/submit`,
     { answerText },
+  );
+  return res.data;
+}
+
+export async function getCabinetAssignmentQuestions(
+  studentId: number,
+  enrollmentId: number,
+  lessonId: number,
+  assignmentId: number,
+): Promise<StudentCabinetQuestion[]> {
+  const res = await axiosInstance.get<StudentCabinetQuestion[]>(
+    `/students/${studentId}/cabinet/enrollments/${enrollmentId}/lessons/${lessonId}/assignments/${assignmentId}/questions`,
+  );
+  return res.data ?? [];
+}
+
+export async function submitCabinetQuestionAnswer(
+  studentId: number,
+  enrollmentId: number,
+  lessonId: number,
+  assignmentId: number,
+  questionId: number,
+  answerText: string,
+): Promise<StudentCabinetQuestion> {
+  const res = await axiosInstance.post<StudentCabinetQuestion>(
+    `/students/${studentId}/cabinet/enrollments/${enrollmentId}/lessons/${lessonId}/assignments/${assignmentId}/questions/${questionId}/answer`,
+    { answerText },
+  );
+  return res.data;
+}
+
+export async function getCabinetAssignmentResult(
+  studentId: number,
+  enrollmentId: number,
+  lessonId: number,
+  assignmentId: number,
+): Promise<StudentCabinetAssignmentResult> {
+  const res = await axiosInstance.get<StudentCabinetAssignmentResult>(
+    `/students/${studentId}/cabinet/enrollments/${enrollmentId}/lessons/${lessonId}/assignments/${assignmentId}/result`,
   );
   return res.data;
 }

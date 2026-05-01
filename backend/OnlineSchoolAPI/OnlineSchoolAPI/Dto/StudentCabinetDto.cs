@@ -108,6 +108,7 @@ public class StudentCabinetSubmissionDto
 {
     public int SubmissionId { get; set; }
     public int AssignmentId { get; set; }
+    public string? StudentAnswerText { get; set; }
     public DateTime? SubmittedAt { get; set; }
     public int? Score { get; set; }
     public string? SubmissionStatusName { get; set; }
@@ -117,6 +118,29 @@ public class StudentCabinetSubmissionDto
 public class SubmitCabinetAssignmentDto
 {
     public string? AnswerText { get; set; }
+}
+
+public class StudentCabinetQuestionDto
+{
+    public int QuestionId { get; set; }
+    public int QuestionOrder { get; set; }
+    public string QuestionText { get; set; } = null!;
+    public string? QuestionType { get; set; }
+    public decimal MaxPoints { get; set; }
+    public string? StudentAnswer { get; set; }
+    public decimal? PointsAwarded { get; set; }
+}
+
+public class SubmitCabinetQuestionAnswerDto
+{
+    public string? AnswerText { get; set; }
+}
+
+public class StudentCabinetAssignmentResultDto
+{
+    public int AssignmentId { get; set; }
+    public decimal TotalScore { get; set; }
+    public decimal MaxScore { get; set; }
 }
 
 public class StudentCabinetLessonDetailDto
