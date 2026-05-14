@@ -29,6 +29,8 @@ public partial class Course
 
     public DateTime? CreatedAt { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public virtual CourseCategory Category { get; set; } = null!;
 
     public virtual ICollection<CourseInstance> CourseInstances { get; set; } = new List<CourseInstance>();

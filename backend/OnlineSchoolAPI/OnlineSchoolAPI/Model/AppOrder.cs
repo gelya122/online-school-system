@@ -21,6 +21,8 @@ public partial class AppOrder
 
     public int? MethodId { get; set; }
 
+    public int? PromoCodeId { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? PaidAt { get; set; }
@@ -36,4 +38,6 @@ public partial class AppOrder
     public virtual Student Student { get; set; } = null!;
 
     public virtual PaymentMethod? Method { get; set; }
+
+    public virtual PromoCode? PromoCode { get; set; }
 }

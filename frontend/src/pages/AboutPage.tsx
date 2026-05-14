@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import type { Employee, FaqItem, Review, SchoolSetting } from '../types';
 import { getEmployees } from '../api/employees';
 import { getFaqItems } from '../api/faq';
@@ -8,7 +7,6 @@ import { getSchoolSettings } from '../api/schoolSettings';
 import './AboutPage.css';
 
 const AboutPage = () => {
-  const location = useLocation();
   const [schoolSettings, setSchoolSettings] = useState<SchoolSetting | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
@@ -61,20 +59,6 @@ const AboutPage = () => {
       cancelled = true;
     };
   }, []);
-
-  // Чтобы при переходах из футера/ссылок происходил корректный скролл
-  useEffect(() => {
-    if (loading) return;
-
-    if (location.hash) {
-      const id = location.hash.replace('#', '');
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
-      else window.scrollTo(0, 0);
-    } else {
-      window.scrollTo(0, 0);
-    }
-  }, [location.hash, location.pathname, loading]);
 
   const aboutText = schoolSettings?.aboutSchoolText?.trim() || '';
 
@@ -189,7 +173,7 @@ const AboutPage = () => {
         </section>
 
         {/* Документы */}
-        <section className="about-section about-section--documents">
+        <section className="about-section about-section--documents" id="about-documents">
           <h2>Документы</h2>
           <div className="documents-list">
             <a

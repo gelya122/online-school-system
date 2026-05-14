@@ -24,15 +24,15 @@ public partial class OnlineSchoolDbContext : DbContext
 
     public virtual DbSet<AssignmentType> AssignmentTypes { get; set; }
 
-    public virtual DbSet<AssignmentVariant> AssignmentVariants { get; set; }
-
     public virtual DbSet<Course> Courses { get; set; }
 
     public virtual DbSet<CourseCategory> CourseCategories { get; set; }
 
     public virtual DbSet<CourseInstance> CourseInstances { get; set; }
 
-    public virtual DbSet<CourseInstanceCoordinator> CourseInstanceCoordinators { get; set; }
+    public virtual DbSet<CourseInstanceStatus> CourseInstanceStatuses { get; set; }
+
+    public virtual DbSet<CourseInstanceStaff> CourseInstanceStaff { get; set; }
 
     public virtual DbSet<CourseModule> CourseModules { get; set; }
 
@@ -82,19 +82,35 @@ public partial class OnlineSchoolDbContext : DbContext
 
     public virtual DbSet<Student> Students { get; set; }
 
-    public virtual DbSet<StudentLessonAccess> StudentLessonAccesses { get; set; }
-
     public virtual DbSet<StudentProgress> StudentProgresses { get; set; }
 
     public virtual DbSet<Submission> Submissions { get; set; }
-
-    public virtual DbSet<SubmissionReview> SubmissionReviews { get; set; }
 
     public virtual DbSet<SubmissionStatus> SubmissionStatuses { get; set; }
 
     public virtual DbSet<Subject> Subjects { get; set; }
 
     public virtual DbSet<TrialApplication> TrialApplications { get; set; }
+
+    public virtual DbSet<StudentNote> StudentNotes { get; set; }
+
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
+
+    public virtual DbSet<TestQuestion> TestQuestions { get; set; }
+
+    public virtual DbSet<QuestionType> QuestionTypes { get; set; }
+
+    public virtual DbSet<TestStudentAnswer> TestStudentAnswers { get; set; }
+
+    public virtual DbSet<MailingCampaign> MailingCampaigns { get; set; }
+
+    public virtual DbSet<MailingRecipient> MailingRecipients { get; set; }
+
+    public virtual DbSet<SiteSetting> SiteSettings { get; set; }
+
+    public virtual DbSet<SiteBanner> SiteBanners { get; set; }
+
+    public virtual DbSet<FileStorage> FileStorages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -122,6 +138,7 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.FinalAmount)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("final_amount");
+            entity.Property(e => e.PromoCodeId).HasColumnName("promo_code_id");
             entity.Property(e => e.OrderNumber)
                 .HasMaxLength(50)
                 .HasColumnName("order_number");
@@ -149,6 +166,10 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.HasOne(d => d.Method).WithMany(p => p.AppOrders)
                 .HasForeignKey(d => d.MethodId)
                 .HasConstraintName("FK_app_order_payment_method");
+
+            entity.HasOne(d => d.PromoCode).WithMany()
+                .HasForeignKey(d => d.PromoCodeId)
+                .HasConstraintName("FK_app_order_promo_code_promo_code_id");
         });
 
         modelBuilder.Entity<ApplicationStatus>(entity =>
@@ -170,13 +191,11 @@ public partial class OnlineSchoolDbContext : DbContext
 
         modelBuilder.Entity<Assignment>(entity =>
         {
-            entity.HasKey(e => e.AssignmentId).HasName("PK__assignme__DA891814914741D1");
+            entity.HasKey(e => e.AssignmentId).HasName("PK_assignment");
 
             entity.ToTable("assignment");
 
             entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
-            entity.Property(e => e.AssignmentTypeId).HasColumnName("assignment_type_id");
-            entity.Property(e => e.CorrectAnswer).HasColumnName("correct_answer");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -189,15 +208,10 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasMaxLength(200)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.AssignmentType).WithMany(p => p.Assignments)
-                .HasForeignKey(d => d.AssignmentTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__assignmen__assig__08B54D69");
-
             entity.HasOne(d => d.Lesson).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.LessonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__assignmen__lesso__07C12930");
+                .HasConstraintName("FK_assignment_lesson");
         });
 
         modelBuilder.Entity<AssignmentType>(entity =>
@@ -217,26 +231,75 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasColumnName("type_name");
         });
 
-        modelBuilder.Entity<AssignmentVariant>(entity =>
+        modelBuilder.Entity<QuestionType>(entity =>
         {
-            entity.HasKey(e => e.VariantId).HasName("PK__assignme__EACC68B7FAD84BD6");
+            entity.HasKey(e => e.QuestionTypeId).HasName("PK_question_type");
+            entity.ToTable("question_type");
+            entity.Property(e => e.QuestionTypeId).HasColumnName("question_type_id");
+            entity.Property(e => e.Title).HasMaxLength(100).HasColumnName("title");
+            entity.Property(e => e.Description).HasMaxLength(300).HasColumnName("description");
+        });
 
-            entity.ToTable("assignment_variant");
-
-            entity.Property(e => e.VariantId).HasColumnName("variant_id");
+        modelBuilder.Entity<TestQuestion>(entity =>
+        {
+            entity.HasKey(e => e.QuestionId).HasName("PK_test_question");
+            entity.ToTable("test_question");
+            entity.Property(e => e.QuestionId).HasColumnName("question_id");
             entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
-            entity.Property(e => e.IsCorrect)
-                .HasDefaultValue(false)
-                .HasColumnName("is_correct");
-            entity.Property(e => e.VariantOrder).HasColumnName("variant_order");
-            entity.Property(e => e.VariantText)
-                .HasMaxLength(500)
-                .HasColumnName("variant_text");
+            entity.Property(e => e.QuestionText).HasColumnName("question_text");
+            entity.Property(e => e.QuestionTypeId).HasColumnName("question_type_id");
+            entity.Property(e => e.MaxPoints).HasColumnType("decimal(10, 2)").HasColumnName("max_points");
+            entity.Property(e => e.QuestionOrder).HasColumnName("question_order");
+            entity.Property(e => e.Explanation).HasColumnName("explanation");
+            entity.Property(e => e.CorrectAnswer).HasColumnName("correct_answer");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime2(0)")
+                .HasColumnName("created_at");
 
-            entity.HasOne(d => d.Assignment).WithMany(p => p.AssignmentVariants)
+            entity.HasOne(d => d.Assignment).WithMany(p => p.TestQuestions)
                 .HasForeignKey(d => d.AssignmentId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_test_question_assignment");
+
+            entity.HasOne(d => d.QuestionType).WithMany(p => p.TestQuestions)
+                .HasForeignKey(d => d.QuestionTypeId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_test_question_question_type");
+        });
+
+        modelBuilder.Entity<TestStudentAnswer>(entity =>
+        {
+            entity.HasKey(e => e.StudentAnswerId).HasName("PK_test_student_answer");
+            entity.ToTable("test_student_answer");
+            entity.HasIndex(e => new { e.SubmissionId, e.QuestionId }, "UQ_test_student_answer_submission_question").IsUnique();
+            entity.Property(e => e.StudentAnswerId).HasColumnName("student_answer_id");
+            entity.Property(e => e.SubmissionId).HasColumnName("submission_id");
+            entity.Property(e => e.QuestionId).HasColumnName("question_id");
+            entity.Property(e => e.ResponseText).HasColumnName("response_text");
+            entity.Property(e => e.PointsAwarded).HasColumnType("decimal(10, 2)").HasColumnName("points_awarded");
+            entity.Property(e => e.IsFullyAutoGraded).HasColumnName("is_fully_auto_graded");
+            entity.Property(e => e.TeacherComment).HasColumnName("teacher_comment");
+            entity.Property(e => e.AnsweredAt)
+                .HasColumnType("datetime2(0)")
+                .HasColumnName("answered_at");
+            entity.Property(e => e.ReviewedByEmployeeId).HasColumnName("reviewed_by_employee_id");
+            entity.Property(e => e.ReviewedAt)
+                .HasColumnType("datetime2(0)")
+                .HasColumnName("reviewed_at");
+
+            entity.HasOne(d => d.Submission).WithMany(p => p.TestStudentAnswers)
+                .HasForeignKey(d => d.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_test_student_answer_submission");
+
+            entity.HasOne(d => d.Question).WithMany(p => p.TestStudentAnswers)
+                .HasForeignKey(d => d.QuestionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__assignmen__assig__0C85DE4D");
+                .HasConstraintName("FK_test_student_answer_question");
+
+            entity.HasOne(d => d.ReviewedByEmployee).WithMany(p => p.TestStudentAnswersReviewed)
+                .HasForeignKey(d => d.ReviewedByEmployeeId)
+                .HasConstraintName("FK_test_student_answer_reviewed_by_employee");
         });
 
         modelBuilder.Entity<Course>(entity =>
@@ -254,6 +317,9 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.DiscountPrice)
                 .HasColumnType("decimal(10, 2)")
@@ -304,6 +370,26 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasConstraintName("FK__course_ca__subject");
         });
 
+        modelBuilder.Entity<CourseInstanceStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId);
+
+            entity.ToTable("course_instance_status");
+
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("code");
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("title");
+            entity.Property(e => e.Description)
+                .HasMaxLength(300)
+                .HasColumnName("description");
+        });
+
         modelBuilder.Entity<CourseInstance>(entity =>
         {
             entity.HasKey(e => e.InstanceId).HasName("PK__course_i__7DBD82E77478442E");
@@ -312,11 +398,17 @@ public partial class OnlineSchoolDbContext : DbContext
 
             entity.Property(e => e.InstanceId).HasColumnName("instance_id");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.CreatedByEmployeeId).HasColumnName("created_by_employee_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.EndDate).HasColumnName("end_date");
+            entity.Property(e => e.EnrollmentEndDate).HasColumnName("enrollment_end_date");
+            entity.Property(e => e.EnrollmentStartDate).HasColumnName("enrollment_start_date");
             entity.Property(e => e.InstanceName)
                 .HasMaxLength(200)
                 .HasColumnName("instance_name");
@@ -329,42 +421,69 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasMaxLength(500)
                 .HasColumnName("schedule_description");
             entity.Property(e => e.StartDate).HasColumnName("start_date");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.Timezone)
+                .HasMaxLength(100)
+                .HasColumnName("timezone");
             entity.Property(e => e.TotalWeeks).HasColumnName("total_weeks");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.ScheduleRulesJson)
+                .HasMaxLength(int.MaxValue)
+                .HasColumnName("schedule_rules_json");
 
             entity.HasOne(d => d.Course).WithMany(p => p.CourseInstances)
                 .HasForeignKey(d => d.CourseId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__course_in__cours__114A936A");
+
+            entity.HasOne(d => d.InstanceStatus).WithMany(p => p.CourseInstances)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_course_instance_status");
+
+            entity.HasOne(d => d.CreatedByEmployee).WithMany()
+                .HasForeignKey(d => d.CreatedByEmployeeId)
+                .HasConstraintName("FK_course_instance_created_by_employee");
         });
 
-        modelBuilder.Entity<CourseInstanceCoordinator>(entity =>
+        modelBuilder.Entity<CourseInstanceStaff>(entity =>
         {
-            entity.HasKey(e => e.CoordinatorId).HasName("PK__course_i__0622227BBF41D529");
+            entity.HasKey(e => e.StaffAssignmentId);
 
-            entity.ToTable("course_instance_coordinator");
+            entity.ToTable("course_instance_staff");
 
-            entity.HasIndex(e => new { e.InstanceId, e.EmployeeId }, "UQ__course_i__E1EF625C28150AF2").IsUnique();
+            entity.HasIndex(e => new { e.InstanceId, e.EmployeeId, e.RoleId }, "UX_course_instance_staff_instance_employee_role_active")
+                .IsUnique()
+                .HasFilter("[deleted_at] IS NULL");
 
-            entity.Property(e => e.CoordinatorId).HasColumnName("coordinator_id");
+            entity.Property(e => e.StaffAssignmentId).HasColumnName("staff_assignment_id");
+            entity.Property(e => e.InstanceId).HasColumnName("instance_id");
+            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.AssignedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("assigned_at");
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.InstanceId).HasColumnName("instance_id");
-            entity.Property(e => e.IsLead)
-                .HasDefaultValue(false)
-                .HasColumnName("is_lead");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
 
-            entity.HasOne(d => d.Employee).WithMany(p => p.CourseInstanceCoordinators)
-                .HasForeignKey(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__course_in__emplo__17F790F9");
-
-            entity.HasOne(d => d.Instance).WithMany(p => p.CourseInstanceCoordinators)
+            entity.HasOne(d => d.Instance).WithMany(p => p.CourseInstanceStaff)
                 .HasForeignKey(d => d.InstanceId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__course_in__insta__17036CC0");
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_course_instance_staff_instance");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.CourseInstanceStaffAssignments)
+                .HasForeignKey(d => d.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_course_instance_staff_employee");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.CourseInstanceStaffs)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_course_instance_staff_role");
         });
 
         modelBuilder.Entity<CourseModule>(entity =>
@@ -379,6 +498,9 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.Description)
                 .HasMaxLength(1000)
                 .HasColumnName("description");
@@ -412,6 +534,13 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.ReleaseTime)
                 .HasDefaultValue(new TimeOnly(0, 0, 0))
                 .HasColumnName("release_time");
+            entity.Property(e => e.ScheduledAt)
+                .HasColumnType("datetime2(0)")
+                .HasColumnName("scheduled_at");
+            entity.Property(e => e.LessonOrder).HasColumnName("lesson_order");
+            entity.Property(e => e.IsPublished)
+                .HasDefaultValue(true)
+                .HasColumnName("is_published");
 
             entity.HasOne(d => d.Instance).WithMany(p => p.CourseSchedulePlans)
                 .HasForeignKey(d => d.InstanceId)
@@ -431,6 +560,7 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.ToTable("employee");
 
             entity.HasIndex(e => e.UserId, "UQ__employee__B9BE370ED2AF6F2C").IsUnique();
+            entity.HasIndex(e => new { e.LastName, e.FirstName }, "IX_employee_last_name_first_name");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.AvatarUrl)
@@ -441,6 +571,9 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(100)
                 .HasColumnName("first_name");
@@ -473,10 +606,6 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.HasIndex(e => e.ExamName, "UQ__exam__D916B1FC").IsUnique();
 
             entity.Property(e => e.ExamId).HasColumnName("exam_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
             entity.Property(e => e.Description)
                 .HasMaxLength(500)
                 .HasColumnName("description");
@@ -495,7 +624,7 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.ToTable("enrollment");
 
             entity.Property(e => e.EnrollmentId).HasColumnName("enrollment_id");
-            entity.Property(e => e.AssignedTeacherId).HasColumnName("assigned_teacher_id");
+            entity.Property(e => e.AssignedTeacherId).HasColumnName("assigned_mentor_id");
             entity.Property(e => e.CompletedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("completed_at");
@@ -514,7 +643,7 @@ public partial class OnlineSchoolDbContext : DbContext
 
             entity.HasOne(d => d.AssignedTeacher).WithMany(p => p.Enrollments)
                 .HasForeignKey(d => d.AssignedTeacherId)
-                .HasConstraintName("FK__enrollmen__assig__25518C17");
+                .HasConstraintName("FK_enrollment_assigned_mentor");
 
             entity.HasOne(d => d.EnrollmentStatus).WithMany(p => p.Enrollments)
                 .HasForeignKey(d => d.EnrollmentStatusId)
@@ -606,16 +735,26 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.PaidAt)
                 .HasColumnType("datetime")
                 .HasColumnName("paid_at");
+            entity.Property(e => e.PaymentId).HasColumnName("payment_id");
             entity.Property(e => e.PaymentStatus)
                 .HasMaxLength(50)
                 .HasDefaultValue("pending")
                 .HasColumnName("payment_status");
+            entity.Property(e => e.PaymentStatusId).HasColumnName("payment_status_id");
             entity.Property(e => e.PlanId).HasColumnName("plan_id");
 
             entity.HasOne(d => d.Plan).WithMany(p => p.InstallmentPayments)
                 .HasForeignKey(d => d.PlanId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__installme__plan___625A9A57");
+
+            entity.HasOne(d => d.Payment).WithMany()
+                .HasForeignKey(d => d.PaymentId)
+                .HasConstraintName("FK_installment_payment_payment_payment_id");
+
+            entity.HasOne(d => d.PaymentStatusNavigation).WithMany()
+                .HasForeignKey(d => d.PaymentStatusId)
+                .HasConstraintName("FK_installment_payment_payment_status_payment_status_id");
         });
 
         modelBuilder.Entity<InstallmentPlan>(entity =>
@@ -661,10 +800,10 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.DurationMinutes).HasColumnName("duration_minutes");
-            entity.Property(e => e.IsFreePreview)
-                .HasDefaultValue(false)
-                .HasColumnName("is_free_preview");
             entity.Property(e => e.LessonOrder).HasColumnName("lesson_order");
             entity.Property(e => e.LessonTypeId).HasColumnName("lesson_type_id");
             entity.Property(e => e.ModuleId).HasColumnName("module_id");
@@ -741,6 +880,11 @@ public partial class OnlineSchoolDbContext : DbContext
 
             entity.ToTable("notification");
 
+            entity.HasIndex(e => e.UserId, "IX_notification_user_id");
+            entity.HasIndex(e => e.IsRead, "IX_notification_is_read");
+            entity.HasIndex(e => e.CreatedAt, "IX_notification_created_at");
+
+            entity.Property(e => e.CampaignId).HasColumnName("campaign_id");
             entity.Property(e => e.NotificationId).HasColumnName("notification_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -755,6 +899,9 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.NotificationType)
                 .HasMaxLength(50)
                 .HasColumnName("notification_type");
+            entity.Property(e => e.ReadAt)
+                .HasColumnType("datetime")
+                .HasColumnName("read_at");
             entity.Property(e => e.RelatedEntityId).HasColumnName("related_entity_id");
             entity.Property(e => e.RelatedEntityType)
                 .HasMaxLength(50)
@@ -768,6 +915,10 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__notificat__user___02C769E9");
+
+            entity.HasOne(d => d.Campaign).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.CampaignId)
+                .HasConstraintName("FK_notification_mailing_campaign_campaign_id");
         });
 
         modelBuilder.Entity<OrderItem>(entity =>
@@ -927,6 +1078,9 @@ public partial class OnlineSchoolDbContext : DbContext
 
             entity.HasIndex(e => e.Code, "UQ__promo_co__357D4CF9FA2698A5").IsUnique();
 
+            entity.Property(e => e.AppliesToCourseId).HasColumnName("applies_to_course_id");
+            entity.Property(e => e.AppliesToInstanceId).HasColumnName("applies_to_instance_id");
+            entity.Property(e => e.CreatedByEmployeeId).HasColumnName("created_by_employee_id");
             entity.Property(e => e.PromoCodeId).HasColumnName("promo_code_id");
             entity.Property(e => e.Code)
                 .HasMaxLength(50)
@@ -938,6 +1092,9 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.CurrentUses)
                 .HasDefaultValue(0)
                 .HasColumnName("current_uses");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.TypeId)
                 .HasColumnName("type_id");
             entity.Property(e => e.DiscountValue)
@@ -946,13 +1103,34 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");
+            entity.Property(e => e.MaxDiscountAmount)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("max_discount_amount");
             entity.Property(e => e.MaxUses).HasColumnName("max_uses");
+            entity.Property(e => e.MinOrderAmount)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("min_order_amount");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
             entity.Property(e => e.ValidFrom).HasColumnName("valid_from");
             entity.Property(e => e.ValidUntil).HasColumnName("valid_until");
 
             entity.HasOne(d => d.DiscountType).WithMany(p => p.PromoCodes)
                 .HasForeignKey(d => d.TypeId)
                 .HasConstraintName("FK_promo_code_discount_type");
+
+            entity.HasOne(d => d.AppliesToCourse).WithMany()
+                .HasForeignKey(d => d.AppliesToCourseId)
+                .HasConstraintName("FK_promo_code_course_applies_to_course_id");
+
+            entity.HasOne(d => d.AppliesToInstance).WithMany()
+                .HasForeignKey(d => d.AppliesToInstanceId)
+                .HasConstraintName("FK_promo_code_course_instance_applies_to_instance_id");
+
+            entity.HasOne(d => d.CreatedByEmployee).WithMany()
+                .HasForeignKey(d => d.CreatedByEmployeeId)
+                .HasConstraintName("FK_promo_code_employee_created_by_employee_id");
         });
 
         modelBuilder.Entity<Review>(entity =>
@@ -1030,6 +1208,7 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.ToTable("student");
 
             entity.HasIndex(e => e.UserId, "UQ__student__B9BE370E83B5DF70").IsUnique();
+            entity.HasIndex(e => new { e.LastName, e.FirstName }, "IX_student_last_name_first_name");
 
             entity.Property(e => e.StudentId).HasColumnName("student_id");
             entity.Property(e => e.AvatarUrl)
@@ -1041,6 +1220,9 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(100)
                 .HasColumnName("first_name");
@@ -1063,53 +1245,6 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasConstraintName("FK__student__user_id__6B24EA82");
         });
 
-        modelBuilder.Entity<StudentLessonAccess>(entity =>
-        {
-            entity.HasKey(e => e.AccessId).HasName("PK__student___10FA1E20A2B27802");
-
-            entity.ToTable("student_lesson_access");
-
-            entity.HasIndex(e => new { e.EnrollmentId, e.LessonId }, "UQ__student___9B66B500EF6E9354").IsUnique();
-
-            entity.Property(e => e.AccessId).HasColumnName("access_id");
-            entity.Property(e => e.ActualOpenDatetime)
-                .HasColumnType("datetime")
-                .HasColumnName("actual_open_datetime");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
-            entity.Property(e => e.EnrollmentId).HasColumnName("enrollment_id");
-            entity.Property(e => e.IsAvailable)
-                .HasDefaultValue(false)
-                .HasColumnName("is_available");
-            entity.Property(e => e.LessonId).HasColumnName("lesson_id");
-            entity.Property(e => e.OpenedByEmployeeId).HasColumnName("opened_by_employee_id");
-            entity.Property(e => e.PlanId).HasColumnName("plan_id");
-            entity.Property(e => e.PlannedAccessDate).HasColumnName("planned_access_date");
-            entity.Property(e => e.PlannedAccessTime)
-                .HasDefaultValue(new TimeOnly(0, 0, 0))
-                .HasColumnName("planned_access_time");
-
-            entity.HasOne(d => d.Enrollment).WithMany(p => p.StudentLessonAccesses)
-                .HasForeignKey(d => d.EnrollmentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__student_l__enrol__2CF2ADDF");
-
-            entity.HasOne(d => d.Lesson).WithMany(p => p.StudentLessonAccesses)
-                .HasForeignKey(d => d.LessonId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__student_l__lesso__2DE6D218");
-
-            entity.HasOne(d => d.OpenedByEmployee).WithMany(p => p.StudentLessonAccesses)
-                .HasForeignKey(d => d.OpenedByEmployeeId)
-                .HasConstraintName("FK__student_l__opene__2FCF1A8A");
-
-            entity.HasOne(d => d.Plan).WithMany(p => p.StudentLessonAccesses)
-                .HasForeignKey(d => d.PlanId)
-                .HasConstraintName("FK__student_l__plan___2EDAF651");
-        });
-
         modelBuilder.Entity<StudentProgress>(entity =>
         {
             entity.HasKey(e => e.ProgressId).HasName("PK__student___49B3D8C13285DD7D");
@@ -1119,7 +1254,6 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.HasIndex(e => new { e.EnrollmentId, e.LessonId }, "UQ__student___9B66B5004ABE33F9").IsUnique();
 
             entity.Property(e => e.ProgressId).HasColumnName("progress_id");
-            entity.Property(e => e.AccessId).HasColumnName("access_id");
             entity.Property(e => e.CompletedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("completed_at");
@@ -1138,11 +1272,6 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.WatchTimeSeconds)
                 .HasDefaultValue(0)
                 .HasColumnName("watch_time_seconds");
-
-            entity.HasOne(d => d.Access).WithMany(p => p.StudentProgresses)
-                .HasForeignKey(d => d.AccessId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__student_p__acces__3864608B");
 
             entity.HasOne(d => d.Enrollment).WithMany(p => p.StudentProgresses)
                 .HasForeignKey(d => d.EnrollmentId)
@@ -1163,12 +1292,6 @@ public partial class OnlineSchoolDbContext : DbContext
 
             entity.Property(e => e.SubmissionId).HasColumnName("submission_id");
             entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
-            entity.Property(e => e.AttachedFileName)
-                .HasMaxLength(255)
-                .HasColumnName("attached_file_name");
-            entity.Property(e => e.AttachedFileUrl)
-                .HasMaxLength(500)
-                .HasColumnName("attached_file_url");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -1177,9 +1300,8 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("graded_at");
             entity.Property(e => e.GradedByEmployeeId).HasColumnName("graded_by_employee_id");
-            entity.Property(e => e.ProgressId).HasColumnName("progress_id");
+            entity.Property(e => e.EnrollmentId).HasColumnName("enrollment_id");
             entity.Property(e => e.Score).HasColumnName("score");
-            entity.Property(e => e.StudentAnswerText).HasColumnName("student_answer_text");
             entity.Property(e => e.SubmissionStatusId)
                 .HasDefaultValue(1)
                 .HasColumnName("submission_status_id");
@@ -1198,40 +1320,16 @@ public partial class OnlineSchoolDbContext : DbContext
                 .HasForeignKey(d => d.GradedByEmployeeId)
                 .HasConstraintName("FK__submissio__grade__40058253");
 
-            entity.HasOne(d => d.Progress).WithMany(p => p.Submissions)
-                .HasForeignKey(d => d.ProgressId)
+            entity.HasOne(d => d.Enrollment).WithMany(p => p.Submissions)
+                .HasForeignKey(d => d.EnrollmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__submissio__progr__3E1D39E1");
+                .HasConstraintName("FK_submission_enrollment");
 
             entity.HasOne(d => d.SubmissionStatus).WithMany(p => p.Submissions)
                 .HasForeignKey(d => d.SubmissionStatusId)
-                .HasConstraintName("FK__submissio__submi__40F9A68C");
-        });
-
-        modelBuilder.Entity<SubmissionReview>(entity =>
-        {
-            entity.HasKey(e => e.ReviewId).HasName("PK__submissi__60883D90B01CED93");
-
-            entity.ToTable("submission_review");
-
-            entity.Property(e => e.ReviewId).HasColumnName("review_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
-            entity.Property(e => e.IsCorrect).HasColumnName("is_correct");
-            entity.Property(e => e.PointsAwarded).HasColumnName("points_awarded");
-            entity.Property(e => e.QuestionNumber).HasColumnName("question_number");
-            entity.Property(e => e.StudentVariantId).HasColumnName("student_variant_id");
-            entity.Property(e => e.SubmissionId).HasColumnName("submission_id");
-            entity.Property(e => e.TeacherComment)
-                .HasMaxLength(1000)
-                .HasColumnName("teacher_comment");
-
-            entity.HasOne(d => d.Submission).WithMany(p => p.SubmissionReviews)
-                .HasForeignKey(d => d.SubmissionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__submissio__submi__44CA3770");
+                .IsRequired()
+                .HasConstraintName("FK__submissio__submi__40F9A68C");
         });
 
         modelBuilder.Entity<SubmissionStatus>(entity =>
@@ -1260,10 +1358,6 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.HasIndex(e => e.SubjectName, "UQ__subject__5004F679").IsUnique();
 
             entity.Property(e => e.SubjectId).HasColumnName("subject_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
             entity.Property(e => e.Description)
                 .HasMaxLength(500)
                 .HasColumnName("description");
@@ -1329,30 +1423,62 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.ToTable("users");
 
             entity.HasIndex(e => e.Email, "UQ__users__AB6E61649B7A09A4").IsUnique();
+            entity.HasIndex(e => e.Login, "UQ_users_login_not_null")
+                .IsUnique()
+                .HasFilter("[login] IS NOT NULL");
+            entity.HasIndex(e => e.RoleId, "IX_users_role_id");
+            entity.HasIndex(e => e.IsActive, "IX_users_is_active");
 
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.CreatedByEmployeeId).HasColumnName("created_by_employee_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("deleted_at");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
+            entity.Property(e => e.FailedLoginAttempts)
+                .HasDefaultValue(0)
+                .HasColumnName("failed_login_attempts");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .HasColumnName("is_active");
             entity.Property(e => e.IsEmailConfirmed)
                 .HasDefaultValue(false)
                 .HasColumnName("is_email_confirmed");
+            entity.Property(e => e.LastLoginAt)
+                .HasColumnType("datetime")
+                .HasColumnName("last_login_at");
+            entity.Property(e => e.LockedUntil)
+                .HasColumnType("datetime")
+                .HasColumnName("locked_until");
+            entity.Property(e => e.Login)
+                .HasMaxLength(100)
+                .HasColumnName("login");
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(255)
                 .HasColumnName("password_hash");
+            entity.Property(e => e.PasswordChangedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("password_changed_at");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__users__role_id__66603565");
+
+            entity.HasOne(d => d.CreatedByEmployee).WithMany(p => p.CreatedUsers)
+                .HasForeignKey(d => d.CreatedByEmployeeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_users_created_by_employee");
         });
 
         modelBuilder.Entity<UserRole>(entity =>
@@ -1370,6 +1496,180 @@ public partial class OnlineSchoolDbContext : DbContext
             entity.Property(e => e.RoleName)
                 .HasMaxLength(50)
                 .HasColumnName("role_name");
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.AuditLogId).HasName("PK_audit_log");
+            entity.ToTable("audit_log");
+            entity.Property(e => e.AuditLogId).HasColumnName("audit_log_id");
+            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Action).HasMaxLength(100).HasColumnName("action");
+            entity.Property(e => e.EntityType).HasMaxLength(100).HasColumnName("entity_type");
+            entity.Property(e => e.EntityId).HasColumnName("entity_id");
+            entity.Property(e => e.OldValues).HasColumnName("old_values");
+            entity.Property(e => e.NewValues).HasColumnName("new_values");
+            entity.Property(e => e.IpAddress).HasMaxLength(50).HasColumnName("ip_address");
+            entity.Property(e => e.UserAgent).HasMaxLength(500).HasColumnName("user_agent");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.AuditLogs)
+                .HasForeignKey(d => d.EmployeeId)
+                .HasConstraintName("FK_audit_log_employee_employee_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.AuditLogs)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_audit_log_users_user_id");
+        });
+
+        modelBuilder.Entity<StudentNote>(entity =>
+        {
+            entity.HasKey(e => e.NoteId).HasName("PK_student_note");
+            entity.ToTable("student_note");
+            entity.Property(e => e.NoteId).HasColumnName("note_id");
+            entity.Property(e => e.StudentId).HasColumnName("student_id");
+            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
+            entity.Property(e => e.NoteType).HasMaxLength(50).HasColumnName("note_type");
+            entity.Property(e => e.NoteText).HasColumnName("note_text");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+
+            entity.HasOne(d => d.Student).WithMany(p => p.StudentNotes)
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_student_note_student");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.StudentNotes)
+                .HasForeignKey(d => d.EmployeeId)
+                .HasConstraintName("FK_student_note_employee");
+        });
+
+        modelBuilder.Entity<MailingCampaign>(entity =>
+        {
+            entity.HasKey(e => e.CampaignId).HasName("PK_mailing_campaign");
+            entity.ToTable("mailing_campaign");
+            entity.Property(e => e.CampaignId).HasColumnName("campaign_id");
+            entity.Property(e => e.Title).HasMaxLength(200).HasColumnName("title");
+            entity.Property(e => e.Message).HasColumnName("message");
+            entity.Property(e => e.Channel).HasMaxLength(50).HasDefaultValue("internal").HasColumnName("channel");
+            entity.Property(e => e.Status).HasMaxLength(50).HasDefaultValue("draft").HasColumnName("status");
+            entity.Property(e => e.TargetType).HasMaxLength(50).HasColumnName("target_type");
+            entity.Property(e => e.CreatedByEmployeeId).HasColumnName("created_by_employee_id");
+            entity.Property(e => e.ScheduledAt).HasColumnType("datetime").HasColumnName("scheduled_at");
+            entity.Property(e => e.SentAt).HasColumnType("datetime").HasColumnName("sent_at");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
+
+            entity.HasOne(d => d.CreatedByEmployee).WithMany(p => p.MailingCampaignsCreated)
+                .HasForeignKey(d => d.CreatedByEmployeeId)
+                .HasConstraintName("FK_mailing_campaign_employee_created_by");
+        });
+
+        modelBuilder.Entity<MailingRecipient>(entity =>
+        {
+            entity.HasKey(e => e.RecipientId).HasName("PK_mailing_recipient");
+            entity.ToTable("mailing_recipient");
+            entity.HasIndex(e => new { e.CampaignId, e.UserId }, "UQ_mailing_recipient_campaign_user").IsUnique();
+            entity.Property(e => e.RecipientId).HasColumnName("recipient_id");
+            entity.Property(e => e.CampaignId).HasColumnName("campaign_id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Status).HasMaxLength(50).HasDefaultValue("pending").HasColumnName("status");
+            entity.Property(e => e.SentAt).HasColumnType("datetime").HasColumnName("sent_at");
+            entity.Property(e => e.ReadAt).HasColumnType("datetime").HasColumnName("read_at");
+            entity.Property(e => e.ErrorMessage).HasMaxLength(1000).HasColumnName("error_message");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+
+            entity.HasOne(d => d.Campaign).WithMany(p => p.MailingRecipients)
+                .HasForeignKey(d => d.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_mailing_recipient_mailing_campaign");
+
+            entity.HasOne(d => d.User).WithMany(p => p.MailingRecipients)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_mailing_recipient_users");
+        });
+
+        modelBuilder.Entity<SiteSetting>(entity =>
+        {
+            entity.HasKey(e => e.SettingId).HasName("PK_site_setting");
+            entity.ToTable("site_setting");
+            entity.Property(e => e.SettingId).HasColumnName("setting_id");
+            entity.Property(e => e.SiteName).HasMaxLength(200).HasColumnName("site_name");
+            entity.Property(e => e.MainPageTitle).HasMaxLength(300).HasColumnName("main_page_title");
+            entity.Property(e => e.MainPageDescription).HasColumnName("main_page_description");
+            entity.Property(e => e.ContactPhone).HasMaxLength(50).HasColumnName("contact_phone");
+            entity.Property(e => e.ContactEmail).HasMaxLength(255).HasColumnName("contact_email");
+            entity.Property(e => e.VkUrl).HasMaxLength(500).HasColumnName("vk_url");
+            entity.Property(e => e.TelegramUrl).HasMaxLength(500).HasColumnName("telegram_url");
+            entity.Property(e => e.YoutubeUrl).HasMaxLength(500).HasColumnName("youtube_url");
+            entity.Property(e => e.SeoTitle).HasMaxLength(300).HasColumnName("seo_title");
+            entity.Property(e => e.SeoDescription).HasMaxLength(1000).HasColumnName("seo_description");
+            entity.Property(e => e.IsMaintenanceMode).HasDefaultValue(false).HasColumnName("is_maintenance_mode");
+            entity.Property(e => e.UpdatedByEmployeeId).HasColumnName("updated_by_employee_id");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.UpdatedByEmployee).WithMany(p => p.SiteSettingsUpdated)
+                .HasForeignKey(d => d.UpdatedByEmployeeId)
+                .HasConstraintName("FK_site_setting_employee_updated_by");
+        });
+
+        modelBuilder.Entity<SiteBanner>(entity =>
+        {
+            entity.HasKey(e => e.BannerId).HasName("PK_site_banner");
+            entity.ToTable("site_banner");
+            entity.Property(e => e.BannerId).HasColumnName("banner_id");
+            entity.Property(e => e.Title).HasMaxLength(200).HasColumnName("title");
+            entity.Property(e => e.Subtitle).HasMaxLength(500).HasColumnName("subtitle");
+            entity.Property(e => e.ImageUrl).HasMaxLength(500).HasColumnName("image_url");
+            entity.Property(e => e.ButtonText).HasMaxLength(100).HasColumnName("button_text");
+            entity.Property(e => e.ButtonUrl).HasMaxLength(500).HasColumnName("button_url");
+            entity.Property(e => e.BannerOrder).HasDefaultValue(0).HasColumnName("banner_order");
+            entity.Property(e => e.IsActive).HasDefaultValue(true).HasColumnName("is_active");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
+        });
+
+        modelBuilder.Entity<FileStorage>(entity =>
+        {
+            entity.HasKey(e => e.FileId).HasName("PK_file_storage");
+            entity.ToTable("file_storage");
+            entity.Property(e => e.FileId).HasColumnName("file_id");
+            entity.Property(e => e.OriginalFileName).HasMaxLength(255).HasColumnName("original_file_name");
+            entity.Property(e => e.StoredFileName).HasMaxLength(255).HasColumnName("stored_file_name");
+            entity.Property(e => e.FileUrl).HasMaxLength(500).HasColumnName("file_url");
+            entity.Property(e => e.FileType).HasMaxLength(100).HasColumnName("file_type");
+            entity.Property(e => e.MimeType).HasMaxLength(100).HasColumnName("mime_type");
+            entity.Property(e => e.FileSizeBytes).HasColumnName("file_size_bytes");
+            entity.Property(e => e.UploadedByUserId).HasColumnName("uploaded_by_user_id");
+            entity.Property(e => e.RelatedEntityType).HasMaxLength(100).HasColumnName("related_entity_type");
+            entity.Property(e => e.RelatedEntityId).HasColumnName("related_entity_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+
+            entity.HasOne(d => d.UploadedByUser).WithMany(p => p.FileStorages)
+                .HasForeignKey(d => d.UploadedByUserId)
+                .HasConstraintName("FK_file_storage_users_uploaded_by_user_id");
         });
 
         OnModelCreatingPartial(modelBuilder);

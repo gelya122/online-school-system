@@ -17,6 +17,8 @@ public partial class CourseModule
 
     public DateTime? CreatedAt { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public virtual Course Course { get; set; } = null!;
 
     public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();

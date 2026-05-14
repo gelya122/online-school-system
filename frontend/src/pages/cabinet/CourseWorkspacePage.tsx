@@ -10,14 +10,6 @@ function dash(v: unknown): string {
   return String(v);
 }
 
-function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '-';
-  const d = iso.slice(0, 10);
-  if (d.length !== 10) return dash(iso);
-  const [y, m, day] = d.split('-');
-  return `${day}.${m}.${y}`;
-}
-
 const CourseWorkspacePage = () => {
   const { enrollmentId } = useParams<{ enrollmentId: string }>();
   const eid = Number(enrollmentId);
@@ -76,58 +68,40 @@ const CourseWorkspacePage = () => {
       {loading && <p>Загрузка...</p>}
       {!loading && data && (
         <>
-          <h1 className="cabinet-page-title">{dash(data.course.title)}</h1>
-          <p className="cabinet-page-lead">Поток: {dash(data.instance.instanceName)}</p>
+          <h1 className="cabinet-page-title">{dash(data.instance.instanceName)}</h1>
 
           <div className="cabinet-panel">
             <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '14px' }}>
-              Данные курса и потока
+              О курсе
             </h2>
             <dl className="cabinet-dl">
-              <dt>Краткое описание</dt>
-              <dd>{dash(data.course.shortDescription)}</dd>
               <dt>Полное описание</dt>
               <dd>{dash(data.course.description)}</dd>
-              <dt>Часов (по каталогу)</dt>
+              <dt>Кол-во часов</dt>
               <dd>{dash(data.course.totalHours)}</dd>
-              <dt>Что получите</dt>
-              <dd>{dash(data.course.whatYouGet)}</dd>
-              <dt>Дата начала потока</dt>
-              <dd>{formatDate(data.instance.startDate)}</dd>
-              <dt>Дата окончания потока</dt>
-              <dd>{formatDate(data.instance.endDate)}</dd>
-              <dt>Недель</dt>
-              <dd>{dash(data.instance.totalWeeks)}</dd>
-              <dt>Уроков в неделю</dt>
-              <dd>{dash(data.instance.lessonsPerWeek)}</dd>
-              <dt>Расписание (текст)</dt>
+              <dt>Расписание</dt>
               <dd>{dash(data.instance.scheduleDescription)}</dd>
-              <dt>Дата записи</dt>
-              <dd>{data.enrolledAt ? formatDate(data.enrolledAt) : '-'}</dd>
-              <dt>Статус записи</dt>
-              <dd>{dash(data.enrollmentStatusName ?? (data.enrollmentStatusId != null ? String(data.enrollmentStatusId) : null))}</dd>
             </dl>
           </div>
 
           <div className="cabinet-panel">
             <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '14px' }}>
-              Модули и уроки
+              Уроки
             </h2>
             {data.modules.length === 0 && <p>В базе нет модулей для этого курса.</p>}
             {data.modules.map((mod) => (
               <details key={mod.moduleId} className="cabinet-module">
                 <summary>
-                  {dash(mod.title)} <span style={{ fontWeight: 400, color: '#64748b' }}>(порядок {mod.moduleOrder})</span>
+                  <span>{dash(mod.title)}</span>
+                  <span className="cabinet-module-chevron" aria-hidden>
+                    {'>'}
+                  </span>
                 </summary>
-                {mod.description && (
-                  <p style={{ margin: '8px 16px', fontSize: '0.88rem', color: '#64748b' }}>{dash(mod.description)}</p>
-                )}
                 <ul className="cabinet-lesson-list">
                   {mod.lessons.map((les) => (
                     <li key={les.lessonId}>
                       <Link className="cabinet-lesson-link" to={`/learn/courses/${eid}/lessons/${les.lessonId}`}>
                         {dash(les.title)}
-                        {les.durationMinutes != null ? ` · ${les.durationMinutes} мин` : ''}
                       </Link>
                     </li>
                   ))}

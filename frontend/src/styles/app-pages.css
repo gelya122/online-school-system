@@ -1,0 +1,39 @@
+/**
+ * Единый фон и базовые паттерны для страниц приложения (как на главной).
+ */
+.cart-page,
+.checkout-page,
+.courses-page,
+.course-detail-page,
+.login-page {
+  position: relative;
+  background-color: var(--surface-page);
+  background-image: var(--page-app-glow), var(--page-app-gradient);
+  background-attachment: scroll;
+}
+
+.cart-page::before,
+.checkout-page::before,
+.courses-page::before,
+.course-detail-page::before,
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background: radial-gradient(circle at 15% 20%, rgba(79, 70, 229, 0.06), transparent 45%);
+}
+
+.cart-inner,
+.checkout-inner,
+.login-page .login-container {
+  position: relative;
+  z-index: 1;
+}
+
+.courses-page > *,
+.course-detail-page > * {
+  position: relative;
+  z-index: 1;
+}

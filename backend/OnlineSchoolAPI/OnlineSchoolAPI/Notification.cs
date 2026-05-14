@@ -18,6 +18,10 @@ public partial class Notification
 
     public bool? IsRead { get; set; }
 
+    public DateTime? ReadAt { get; set; }
+
+    public int? CampaignId { get; set; }
+
     public string? RelatedEntityType { get; set; }
 
     public int? RelatedEntityId { get; set; }
@@ -25,4 +29,6 @@ public partial class Notification
     public DateTime? CreatedAt { get; set; }
 
     public virtual User User { get; set; } = null!;
+
+    public virtual MailingCampaign? Campaign { get; set; }
 }

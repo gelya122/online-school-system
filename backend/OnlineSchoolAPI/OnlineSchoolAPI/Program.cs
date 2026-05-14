@@ -1,6 +1,9 @@
+using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OnlineSchoolAPI;
 using OnlineSchoolAPI.Services;
@@ -10,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OnlineSchoolDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("OnlineSchoolConnection")));
 builder.Services.AddScoped<IOrderReceiptEmailService, OrderReceiptEmailService>();
+builder.Services.AddSingleton<JwtTokenService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AuditLogWriter>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -21,6 +27,27 @@ builder.Services.AddSwaggerGen(c =>
     });
     // Иначе при multipart + IFormFile генерация swagger.json может падать с 500.
     c.MapType<IFormFile>(() => new OpenApiSchema { Type = "string", Format = "binary" });
+
+    // JWT Bearer в Swagger (для ручной проверки защищённых эндпоинтов).
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Введите: Bearer {token}"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 // Add services to the container.
@@ -44,6 +71,31 @@ builder.Services.AddCors(options =>
     });
 });
 
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    // Для dev/локального запуска: чтобы проект стартовал без ручной правки appsettings.
+    // В проде ключ должен быть задан через секреты/переменные окружения.
+    jwtKey = "DEV_ONLY_CHANGE_ME__OnlineSchoolAPI_JWT_Key_2026";
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "OnlineSchoolAPI",
+            ValidAudience = builder.Configuration["Jwt:Audience"] ?? "OnlineSchoolClients",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
+
 var app = builder.Build();
 
 //���������� CORS ����� MapControllers
@@ -64,11 +116,15 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// Без валидного ASP.NET dev certificate (dotnet dev-certs https) Kestrel не поднимет https://localhost:*.
+// В Development не форсируем HTTPS-редирект, чтобы Swagger и клиенты на http://localhost:* работали стабильно.
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

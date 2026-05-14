@@ -1,0 +1,115 @@
+<UserControl x:Class="online_school_admin.Views.NotificationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   FontSize="22"
+                   FontWeight="SemiBold"
+                   Foreground="#111827"
+                   Text="Уведомления" />
+
+        <TabControl>
+            <TabItem Header="Уведомления">
+                <DockPanel Margin="0,10,0,0">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Padding="12,6" Content="Обновить" Command="{Binding Notifications.RefreshCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Отметить прочитанным" Command="{Binding Notifications.MarkReadCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Удалить" Command="{Binding Notifications.DeleteCommand}" />
+                    </StackPanel>
+
+                    <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Foreground="#C0392B" Text="{Binding Notifications.Error}" TextWrapping="Wrap" />
+
+                    <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Margin="0,0,0,6" FontWeight="SemiBold" Text="Создать одному пользователю" />
+                            <WrapPanel>
+                                <TextBox Width="120" Padding="8,6" VerticalContentAlignment="Center" ToolTip="UserId"
+                                         Text="{Binding Notifications.UserIdText, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="10,0,0,0" Padding="12,6" Content="Создать" Command="{Binding Notifications.CreateForUserCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Margin="0,0,0,6" FontWeight="SemiBold" Text="Создать студентам потока" />
+                            <WrapPanel>
+                                <TextBox Width="120" Padding="8,6" VerticalContentAlignment="Center" ToolTip="InstanceId"
+                                         Text="{Binding Notifications.InstanceIdText, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="10,0,0,0" Padding="12,6" Content="Создать" Command="{Binding Notifications.CreateForInstanceCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Margin="0,0,0,6" FontWeight="SemiBold" Text="Всем студентам" />
+                        <Button HorizontalAlignment="Left" Padding="12,6" Content="Создать для всех студентов"
+                                Command="{Binding Notifications.CreateForAllStudentsCommand}" />
+                    </StackPanel>
+
+                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBox Width="240" Padding="8,6" VerticalContentAlignment="Center" ToolTip="Заголовок"
+                                 Text="{Binding Notifications.TitleText, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="10,0,0,0" Width="360" Padding="8,6" VerticalContentAlignment="Center" ToolTip="Текст"
+                                 Text="{Binding Notifications.MessageText, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="10,0,0,0" Width="140" Padding="8,6" VerticalContentAlignment="Center" ToolTip="Тип"
+                                 Text="{Binding Notifications.TypeText, UpdateSourceTrigger=PropertyChanged}" />
+                    </WrapPanel>
+
+                    <DataGrid ItemsSource="{Binding Notifications.Rows}"
+                              SelectedItem="{Binding Notifications.Selected}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Получатель" Binding="{Binding Recipient}" Width="200" />
+                            <DataGridTextColumn Header="Заголовок" Binding="{Binding Title}" Width="200" />
+                            <DataGridTextColumn Header="Текст" Binding="{Binding Message}" Width="*" />
+                            <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="120" />
+                            <DataGridCheckBoxColumn Header="Прочитано" Binding="{Binding IsRead}" Width="80" />
+                            <DataGridTextColumn Header="Создано" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="150" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Рассылки">
+                <DockPanel Margin="0,10,0,0">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Padding="12,6" Content="Обновить" Command="{Binding Campaigns.RefreshCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Создать" Command="{Binding Campaigns.AddCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Редактировать" Command="{Binding Campaigns.EditCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Отправить" Command="{Binding Campaigns.SendCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Отменить" Command="{Binding Campaigns.CancelCommand}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Получатели" Command="{Binding Campaigns.RecipientsCommand}" />
+                    </StackPanel>
+
+                    <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Foreground="#C0392B" Text="{Binding Campaigns.Error}" TextWrapping="Wrap" />
+
+                    <DataGrid ItemsSource="{Binding Campaigns.Rows}"
+                              SelectedItem="{Binding Campaigns.Selected}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="220" />
+                            <DataGridTextColumn Header="Канал" Binding="{Binding Channel}" Width="120" />
+                            <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="120" />
+                            <DataGridTextColumn Header="Получатели" Binding="{Binding RecipientsCount}" Width="110" />
+                            <DataGridTextColumn Header="Запланировано" Binding="{Binding ScheduledAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+                            <DataGridTextColumn Header="Отправлено" Binding="{Binding SentAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+                            <DataGridTextColumn Header="Создатель" Binding="{Binding CreatedBy}" Width="180" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>
+

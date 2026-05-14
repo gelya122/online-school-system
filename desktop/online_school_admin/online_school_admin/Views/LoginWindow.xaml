@@ -1,0 +1,91 @@
+<Window x:Class="online_school_admin.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="clr-namespace:online_school_admin.Infrastructure"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Вход — администрирование"
+        Height="460"
+        Width="420"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Style="{StaticResource PageTitleTextBlock}" Text="Вход сотрудника" />
+            <TextBlock Margin="0,6,0,14"
+                       Foreground="{StaticResource Brush.TextMuted}"
+                       Text="Доступ только для сотрудников школы (администрация, методист, тех. администратор, маркетолог, менеджер по продажам, преподаватель, куратор и др.). Ученики входят через сайт."
+                       FontSize="12"
+                       TextWrapping="Wrap" />
+
+            <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Email (логин)" />
+            <TextBox x:Name="EmailBox"
+                     Margin="0,0,0,12"
+                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Пароль" />
+            <PasswordBox x:Name="PasswordBox"
+                         Margin="0,0,0,12"
+                         i:PasswordBoxHelper.BindPassword="True"
+                         i:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock MinHeight="28"
+                       Style="{StaticResource ErrorTextBlock}"
+                       Text="{Binding ErrorMessage}"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+            <Button Margin="0"
+                    Command="{Binding LoginCommand}">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource PrimaryButton}" TargetType="Button">
+                        <Setter Property="Content" Value="Войти" />
+                        <Setter Property="IsEnabled" Value="True" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="Content" Value="Вход…" />
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <ProgressBar Margin="0,8,0,0"
+                         Height="4"
+                         IsIndeterminate="True">
+                <ProgressBar.Style>
+                    <Style TargetType="ProgressBar">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ProgressBar.Style>
+            </ProgressBar>
+            <Button Margin="0,8,0,0"
+                    Content="Регистрация сотрудника"
+                    Command="{Binding OpenRegisterCommand}">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource SecondaryButton}" TargetType="Button">
+                        <Setter Property="Margin" Value="0,8,0,0" />
+                        <Setter Property="IsEnabled" Value="True" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

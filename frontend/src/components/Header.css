@@ -1,139 +1,205 @@
+/* Шапка: липкая, светлая, минимальный SaaS-стиль */
 .header {
   width: 100%;
-  background: white;
-  border-bottom: 1px solid #f1f1f1;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
   position: sticky;
   top: 0;
   z-index: 50;
+  transition: box-shadow var(--duration-normal, 0.2s) ease;
 }
 
 .header-container {
-  max-width: 1200px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 0 20px;
-  height: 80px;
+  padding: 0 clamp(1rem, 4vw, 1.5rem);
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .logo {
-  font-size: 24px;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  letter-spacing: var(--tracking-tight, -0.02em);
+  font-family: var(--font-display, system-ui);
+}
+
+.logo a {
+  color: var(--text-primary, #0f172a);
+  text-decoration: none;
+  transition: color var(--duration-fast, 0.15s) ease;
+}
+
+.logo a:hover {
+  color: var(--color-primary, #4f46e5);
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: clamp(1rem, 3vw, 2rem);
 }
 
 .nav a {
-  color: #4B5563;
+  color: var(--text-secondary, #475569);
   text-decoration: none;
-  font-size: 16px;
-  transition: color 0.2s;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color var(--duration-fast, 0.15s) ease;
 }
 
 .nav a:hover {
-  color: #111827;
+  color: var(--text-primary, #0f172a);
 }
 
 .nav-link {
-  color: #4B5563;
+  color: var(--text-secondary, #475569);
   text-decoration: none;
-  font-size: 16px;
-  transition: color 0.2s;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  margin: 0 -0.35rem;
+  transition:
+    color var(--duration-fast, 0.15s) ease,
+    background-color var(--duration-fast, 0.15s) ease,
+    box-shadow var(--duration-fast, 0.15s) ease;
 }
 
 .nav-link:hover {
-  color: #111827;
+  color: var(--color-primary, #4f46e5);
+  background: rgba(79, 70, 229, 0.06);
+}
+
+/* Выше .nav a, чтобы текущая страница (Курсы, О школе, кабинет) была сразу видна */
+.header .nav a.nav-link.nav-link--active {
+  color: var(--color-primary, #4f46e5);
+  font-weight: 700;
+  background: rgba(79, 70, 229, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.22);
+}
+
+.header .nav a.nav-link.nav-link--active:hover {
+  color: var(--color-primary, #4f46e5);
+  background: rgba(79, 70, 229, 0.16);
+}
+
+.nav-cart--active {
+  background: var(--accent-soft, rgba(79, 70, 229, 0.12));
+  color: var(--color-primary, #4f46e5);
+  border-color: rgba(79, 70, 229, 0.35);
+}
+
+.btn-login-link--active {
+  border-color: rgba(79, 70, 229, 0.35);
+  color: var(--color-primary, #4f46e5);
+  background: var(--accent-soft, rgba(79, 70, 229, 0.08));
 }
 
 .btn-login-link {
-  padding: 8px 24px;
-  border: 1px solid #E5E7EB;
-  border-radius: 999px;
-  background: white;
-  color: #111827;
-  font-size: 16px;
+  padding: 0.5rem 1.15rem;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--surface-card, #fff);
+  color: var(--text-primary, #0f172a);
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
   text-decoration: none;
+  transition:
+    border-color var(--duration-fast, 0.15s) ease,
+    background-color var(--duration-fast, 0.15s) ease,
+    box-shadow var(--duration-fast, 0.15s) ease;
 }
 
 .btn-login-link:hover {
-  background: #F9FAFB;
+  background: var(--surface-muted, #f1f5f9);
+  border-color: var(--border-strong, #cbd5e1);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(15, 23, 42, 0.04));
 }
 
 .nav-cart {
   width: 42px;
   height: 42px;
-  border-radius: 999px;
-  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--border-subtle, #e2e8f0);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: white;
-  color: #111827;
-  transition: all 0.2s;
+  background: var(--surface-card, #fff);
+  color: var(--text-primary, #0f172a);
+  transition:
+    border-color var(--duration-fast, 0.15s) ease,
+    background-color var(--duration-fast, 0.15s) ease,
+    color var(--duration-fast, 0.15s) ease,
+    transform var(--duration-fast, 0.15s) ease;
   text-decoration: none;
   font-size: 0;
 }
 
+.nav-cart:hover {
+  background: var(--accent-soft, rgba(79, 70, 229, 0.1));
+  color: var(--color-primary, #4f46e5);
+  border-color: rgba(79, 70, 229, 0.28);
+  transform: translateY(-1px);
+}
+
 .nav-cart-badge {
   position: absolute;
-  top: -7px;
-  right: -7px;
+  top: -6px;
+  right: -6px;
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  border-radius: 999px;
-  background: #2563eb;
-  color: #ffffff;
-  font-size: 12px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-primary, #4f46e5);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ffffff;
-}
-
-.nav-cart:hover {
-  background: #F9FAFB;
-  color: #2563EB;
-  border-color: #D1D5DB;
+  border: 2px solid #fff;
 }
 
 .btn-logout {
-  padding: 8px 24px;
-  border: 1px solid #E5E7EB;
-  border-radius: 999px;
-  background: white;
-  color: #111827;
-  font-size: 16px;
+  padding: 0.5rem 1.15rem;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--surface-card, #fff);
+  color: var(--text-primary, #0f172a);
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    border-color var(--duration-fast, 0.15s) ease,
+    color var(--duration-fast, 0.15s) ease,
+    background-color var(--duration-fast, 0.15s) ease;
 }
 
 .btn-logout:hover {
-  background: #F9FAFB;
+  background: #fef2f2;
   color: #dc2626;
-  border-color: #dc2626;
+  border-color: #fecaca;
 }
 
 @media (max-width: 768px) {
   .header-container {
     height: auto;
     flex-direction: column;
-    padding: 15px 20px;
-    gap: 15px;
+    padding: 1rem;
+    gap: 1rem;
   }
 
   .nav {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 0.75rem;
   }
+
 }

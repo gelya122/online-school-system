@@ -10,7 +10,6 @@ public class LessonDto
     public string? VideoUrl { get; set; }
     public int? DurationMinutes { get; set; }
     public int LessonOrder { get; set; }
-    public bool? IsFreePreview { get; set; }
     public DateTime? CreatedAt { get; set; }
 }
 
@@ -23,7 +22,6 @@ public class CreateLessonDto
     public string? VideoUrl { get; set; }
     public int? DurationMinutes { get; set; }
     public int LessonOrder { get; set; }
-    public bool? IsFreePreview { get; set; }
 }
 
 public class UpdateLessonDto
@@ -34,6 +32,5 @@ public class UpdateLessonDto
     public string? VideoUrl { get; set; }
     public int? DurationMinutes { get; set; }
     public int? LessonOrder { get; set; }
-    public bool? IsFreePreview { get; set; }
 }
 

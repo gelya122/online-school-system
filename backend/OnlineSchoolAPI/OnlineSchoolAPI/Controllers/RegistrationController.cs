@@ -175,6 +175,130 @@ public class RegistrationController : ControllerBase
         });
     }
 
+    /// <summary>Вход сотрудника (профиль employee обязателен, роль не «ученик»).</summary>
+    [HttpPost("admin/login")]
+    public async Task<ActionResult<LoginAdminResponseDto>> LoginAdmin(
+        [FromBody] LoginStudentDto dto,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            return BadRequest("Укажите email и пароль.");
+
+        var emailNorm = dto.Email.Trim();
+        var user = await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.Employee)
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == emailNorm.ToLower(), cancellationToken);
+
+        if (user == null || !PasswordHasher.Verify(dto.Password, user.PasswordHash))
+            return Unauthorized("Неверный email или пароль.");
+
+        if (user.IsActive == false)
+            return Unauthorized("Учётная запись отключена.");
+
+        if (user.RoleId == StudentRoleId)
+            return Unauthorized("Вход для учеников выполняется через сайт.");
+
+        if (user.Employee == null)
+            return Unauthorized("Доступ только для сотрудников с профилем в системе.");
+
+        if (user.Employee.IsActive == false)
+            return Unauthorized("Профиль сотрудника отключён.");
+
+        return Ok(new LoginAdminResponseDto
+        {
+            UserId = user.UserId,
+            EmployeeId = user.Employee.EmployeeId,
+            Email = user.Email,
+            FirstName = user.Employee.FirstName,
+            LastName = user.Employee.LastName,
+            AvatarUrl = user.Employee.AvatarUrl,
+            RoleLabel = FormatRoleLabel(user.Role)
+        });
+    }
+
+    /// <summary>Регистрация сотрудника: пользователь + профиль employee (не для роли ученик).</summary>
+    [HttpPost("admin/register")]
+    public async Task<ActionResult<RegisterAdminResponseDto>> RegisterAdmin(
+        [FromBody] RegisterAdminDto dto,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            return BadRequest("Укажите email и пароль.");
+
+        var emailNorm = dto.Email.Trim();
+        if (!EmailValidator.IsValid(emailNorm))
+            return BadRequest("Введите корректный адрес электронной почты.");
+
+        if (string.IsNullOrWhiteSpace(dto.FirstName) || string.IsNullOrWhiteSpace(dto.LastName))
+            return BadRequest("Укажите имя и фамилию.");
+
+        if (string.IsNullOrWhiteSpace(dto.Phone))
+            return BadRequest("Укажите телефон.");
+
+        if (dto.RoleId == StudentRoleId)
+            return BadRequest("Роль «ученик» недоступна для регистрации в админ-приложении.");
+
+        if (dto.Password.Length < 6)
+            return BadRequest("Пароль не короче 6 символов.");
+
+        if (!await _context.UserRoles.AnyAsync(r => r.RoleId == dto.RoleId, cancellationToken))
+            return BadRequest("Указана неизвестная роль.");
+
+        if (await _context.Users.AnyAsync(u => u.Email.ToLower() == emailNorm.ToLower(), cancellationToken))
+            return BadRequest("Пользователь с таким email уже зарегистрирован.");
+
+        await using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var now = DateTime.UtcNow;
+            var user = new User
+            {
+                Email = emailNorm,
+                PasswordHash = PasswordHasher.Hash(dto.Password),
+                RoleId = dto.RoleId,
+                IsEmailConfirmed = true,
+                IsActive = true,
+                CreatedAt = now
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            var employee = new Employee
+            {
+                UserId = user.UserId,
+                FirstName = dto.FirstName.Trim(),
+                LastName = dto.LastName.Trim(),
+                Patronymic = string.IsNullOrWhiteSpace(dto.Patronymic) ? null : dto.Patronymic.Trim(),
+                Phone = dto.Phone.Trim(),
+                IsActive = true,
+                CreatedAt = now
+            };
+
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await tx.CommitAsync(cancellationToken);
+
+            var roleRow = await _context.UserRoles.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.RoleId == dto.RoleId, cancellationToken);
+
+            return Ok(new RegisterAdminResponseDto
+            {
+                UserId = user.UserId,
+                EmployeeId = employee.EmployeeId,
+                Email = user.Email,
+                RoleLabel = FormatRoleLabel(roleRow)
+            });
+        }
+        catch
+        {
+            await tx.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
     private static string? FormatRoleLabel(UserRole? role)
     {
         if (role == null) return null;

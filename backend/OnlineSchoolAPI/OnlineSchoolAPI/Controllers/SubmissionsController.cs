@@ -21,14 +21,19 @@ public class SubmissionsController : ControllerBase
     public async Task<ActionResult<IEnumerable<SubmissionDto>>> GetSubmissions()
     {
         var submissions = await _context.Submissions
+            .AsNoTracking()
             .Select(s => new SubmissionDto
             {
                 SubmissionId = s.SubmissionId,
-                ProgressId = s.ProgressId,
+                EnrollmentId = s.EnrollmentId,
                 AssignmentId = s.AssignmentId,
-                StudentAnswerText = s.StudentAnswerText,
-                AttachedFileUrl = s.AttachedFileUrl,
-                AttachedFileName = s.AttachedFileName,
+                StudentAnswerText = _context.TestStudentAnswers
+                    .Where(a => a.SubmissionId == s.SubmissionId)
+                    .OrderBy(a => a.QuestionId)
+                    .Select(a => a.ResponseText)
+                    .FirstOrDefault(),
+                AttachedFileUrl = null,
+                AttachedFileName = null,
                 SubmittedAt = s.SubmittedAt,
                 SubmissionStatusId = s.SubmissionStatusId,
                 Score = s.Score,
@@ -44,25 +49,32 @@ public class SubmissionsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<SubmissionDto>> GetSubmission(int id)
     {
-        var submission = await _context.Submissions.FindAsync(id);
-        if (submission == null) return NotFound();
+        var row = await _context.Submissions.AsNoTracking()
+            .Where(s => s.SubmissionId == id)
+            .Select(s => new SubmissionDto
+            {
+                SubmissionId = s.SubmissionId,
+                EnrollmentId = s.EnrollmentId,
+                AssignmentId = s.AssignmentId,
+                StudentAnswerText = _context.TestStudentAnswers
+                    .Where(a => a.SubmissionId == s.SubmissionId)
+                    .OrderBy(a => a.QuestionId)
+                    .Select(a => a.ResponseText)
+                    .FirstOrDefault(),
+                AttachedFileUrl = null,
+                AttachedFileName = null,
+                SubmittedAt = s.SubmittedAt,
+                SubmissionStatusId = s.SubmissionStatusId,
+                Score = s.Score,
+                TeacherComment = s.TeacherComment,
+                GradedAt = s.GradedAt,
+                GradedByEmployeeId = s.GradedByEmployeeId,
+                CreatedAt = s.CreatedAt
+            })
+            .FirstOrDefaultAsync();
 
-        return Ok(new SubmissionDto
-        {
-            SubmissionId = submission.SubmissionId,
-            ProgressId = submission.ProgressId,
-            AssignmentId = submission.AssignmentId,
-            StudentAnswerText = submission.StudentAnswerText,
-            AttachedFileUrl = submission.AttachedFileUrl,
-            AttachedFileName = submission.AttachedFileName,
-            SubmittedAt = submission.SubmittedAt,
-            SubmissionStatusId = submission.SubmissionStatusId,
-            Score = submission.Score,
-            TeacherComment = submission.TeacherComment,
-            GradedAt = submission.GradedAt,
-            GradedByEmployeeId = submission.GradedByEmployeeId,
-            CreatedAt = submission.CreatedAt
-        });
+        if (row == null) return NotFound();
+        return Ok(row);
     }
 
     [HttpPost]
@@ -70,12 +82,9 @@ public class SubmissionsController : ControllerBase
     {
         var submission = new Submission
         {
-            ProgressId = dto.ProgressId,
+            EnrollmentId = dto.EnrollmentId,
             AssignmentId = dto.AssignmentId,
-            StudentAnswerText = dto.StudentAnswerText,
-            AttachedFileUrl = dto.AttachedFileUrl,
-            AttachedFileName = dto.AttachedFileName,
-            SubmissionStatusId = dto.SubmissionStatusId
+            SubmissionStatusId = dto.SubmissionStatusId ?? 1
         };
 
         _context.Submissions.Add(submission);
@@ -84,11 +93,11 @@ public class SubmissionsController : ControllerBase
         return CreatedAtAction(nameof(GetSubmission), new { id = submission.SubmissionId }, new SubmissionDto
         {
             SubmissionId = submission.SubmissionId,
-            ProgressId = submission.ProgressId,
+            EnrollmentId = submission.EnrollmentId,
             AssignmentId = submission.AssignmentId,
-            StudentAnswerText = submission.StudentAnswerText,
-            AttachedFileUrl = submission.AttachedFileUrl,
-            AttachedFileName = submission.AttachedFileName,
+            StudentAnswerText = dto.StudentAnswerText,
+            AttachedFileUrl = null,
+            AttachedFileName = null,
             SubmittedAt = submission.SubmittedAt,
             SubmissionStatusId = submission.SubmissionStatusId,
             Score = submission.Score,
@@ -105,10 +114,7 @@ public class SubmissionsController : ControllerBase
         var submission = await _context.Submissions.FindAsync(id);
         if (submission == null) return NotFound();
 
-        if (dto.StudentAnswerText != null) submission.StudentAnswerText = dto.StudentAnswerText;
-        if (dto.AttachedFileUrl != null) submission.AttachedFileUrl = dto.AttachedFileUrl;
-        if (dto.AttachedFileName != null) submission.AttachedFileName = dto.AttachedFileName;
-        if (dto.SubmissionStatusId.HasValue) submission.SubmissionStatusId = dto.SubmissionStatusId;
+        if (dto.SubmissionStatusId.HasValue) submission.SubmissionStatusId = dto.SubmissionStatusId.Value;
         if (dto.Score.HasValue) submission.Score = dto.Score;
         if (dto.TeacherComment != null) submission.TeacherComment = dto.TeacherComment;
         if (dto.GradedByEmployeeId.HasValue) submission.GradedByEmployeeId = dto.GradedByEmployeeId;
@@ -128,4 +134,3 @@ public class SubmissionsController : ControllerBase
         return NoContent();
     }
 }
-

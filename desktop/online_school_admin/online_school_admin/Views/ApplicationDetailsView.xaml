@@ -1,0 +1,129 @@
+<UserControl x:Class="online_school_admin.Views.ApplicationDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Заявка" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,0,24">
+                <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Foreground="#374151" Text="Данные из базы" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Имя" />
+                        <TextBlock FontSize="15" Text="{Binding Details.FirstName}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Фамилия" />
+                        <TextBlock FontSize="15" Text="{Binding Details.LastName, TargetNullValue=—}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Телефон" />
+                        <TextBlock FontSize="15" Text="{Binding Details.Phone}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Электронная почта" />
+                        <TextBlock FontSize="15" Text="{Binding Details.Email, TargetNullValue=—}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Класс (номер)" />
+                        <TextBlock FontSize="15" Text="{Binding Details.ClassNumber, TargetNullValue=—}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Выбранные предметы" />
+                        <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Subjects}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SubjectName}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Статус заявки" />
+                        <TextBlock FontSize="15" FontWeight="SemiBold" Text="{Binding Details.StatusName}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Дата создания записи" />
+                        <TextBlock FontSize="15" Text="{Binding Details.CreatedAt, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                        <TextBlock Margin="0,10,0,0" Foreground="#6B7280" Text="Дата контакта (заполняется при смене статуса на «Проконсультирован», «Отказ» или «Клиент»)" />
+                        <TextBlock FontSize="15" Text="{Binding Details.ContactedAt, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Margin="0,16,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Foreground="#374151" Text="Комментарий" />
+                        <TextBlock Margin="0,6,0,8" Foreground="#6B7280" TextWrapping="Wrap"
+                                   Text="Текст будет сохранён в журнал заявки (поле комментария в БД)." />
+                        <TextBox MinHeight="72" TextWrapping="Wrap" AcceptsReturn="True"
+                                 Padding="8,6"
+                                 Text="{Binding NewCommentText, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="0,10,0,0" HorizontalAlignment="Left" Padding="12,6" Content="Сохранить комментарий" Command="{Binding AddCommentCommand}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Margin="0,16,0,0" Padding="16" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Foreground="#374151" Text="Журнал комментариев" />
+                        <DataGrid Margin="0,10,0,0" ItemsSource="{Binding Comments}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  RowHeaderWidth="0"
+                                  MaxHeight="280">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="150" />
+                                <DataGridTextColumn Header="Сотрудник" Binding="{Binding EmployeeName}" Width="160" />
+                                <DataGridTextColumn Header="Текст" Binding="{Binding CommentText}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <Border Margin="0,16,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Foreground="#374151" Text="Действия менеджера" />
+                        <WrapPanel Margin="0,10,0,0">
+                            <Button Margin="0,0,8,8" Padding="12,6" Content="Взять в работу" Command="{Binding TakeInWorkCommand}" />
+                            <Button Margin="0,0,8,8" Padding="12,6" Content="Назначить менеджера" Command="{Binding AssignManagerCommand}"
+                                    Visibility="{Binding ShowAdminActions, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <Button Margin="0,0,8,8" Padding="12,6" Content="Изменить статус" Command="{Binding ChangeStatusDialogCommand}" />
+                            <Button Margin="0,0,8,8" Padding="12,6" Content="Отметить контакт" Command="{Binding MarkContactCommand}" />
+                            <Button Margin="0,0,8,8" Padding="12,6" Content="Удалить заявку" Command="{Binding DeleteCommand}"
+                                    Visibility="{Binding ShowAdminActions, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </WrapPanel>
+                        <TextBlock Margin="0,8,0,4" FontWeight="SemiBold" Text="Быстрая смена статуса" />
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Width="240"
+                                      ItemsSource="{Binding StatusOptions}"
+                                      SelectedItem="{Binding QuickStatus}"
+                                      DisplayMemberPath="StatusName" />
+                            <Button Margin="10,0,0,0" Padding="12,6" Content="Применить статус" Command="{Binding ApplyStatusCommand}" />
+                        </StackPanel>
+                        <TextBlock Margin="0,16,0,4" FontWeight="SemiBold" Text="История смен статуса" />
+                        <DataGrid ItemsSource="{Binding StatusHistory}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  RowHeaderWidth="0"
+                                  MaxHeight="200">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="150" />
+                                <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" Width="200" />
+                                <DataGridTextColumn Header="Сотрудник" Binding="{Binding EmployeeName}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <Border Margin="0,16,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Foreground="#374151" Text="Конвертация и заказы" />
+                        <TextBlock Margin="0,6,0,10" Foreground="#6B7280" TextWrapping="Wrap"
+                                   Text="Создание учётной записи ученика, заказ и запись на поток." />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Padding="12,6" Content="Создать студента" Command="{Binding ConvertToStudentCommand}" />
+                            <Button Margin="8,0,0,0" Padding="12,6" Content="Создать заказ" Command="{Binding CreateOrderCommand}" />
+                            <Button Margin="8,0,0,0" Padding="12,6" Content="К записи на поток" Command="{Binding EnrollToInstanceCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

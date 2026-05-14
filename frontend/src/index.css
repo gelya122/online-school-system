@@ -1,13 +1,24 @@
+@import './styles/design-tokens.css';
+@import './styles/app-pages.css';
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Запрет выделения текста для заголовков, ссылок в хедере и заявках */
-h1, h2, h3, h4, h5, h6,
-.header a, .header .nav-link, .header .btn-login-link,
-.hero-card h3, .hero-card .form-group input,
+/* Запрет выделения у навигации и заголовков; поля ввода — с выделением */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.header a,
+.header .nav-link,
+.header .btn-login-link,
+.hero-card h2,
+.hero-card h3,
 .hero-card button {
   user-select: none;
   -webkit-user-select: none;
@@ -15,23 +26,30 @@ h1, h2, h3, h4, h5, h6,
   -ms-user-select: none;
 }
 
-/* Разрешаем выделение в полях ввода и текстовых областях */
-input, textarea, select, .faq-answer, .testimonial-text {
+input,
+textarea,
+select,
+.hero-card .form-group input,
+.faq-answer,
+.testimonial-text {
   user-select: text;
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
 }
 
+html {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans, system-ui);
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--surface-page);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -40,18 +58,20 @@ input, textarea, select, .faq-answer, .testimonial-text {
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: var(--color-primary, #4f46e5);
+  text-decoration: none;
 }
 
 a:hover {
-  color: #535bf2;
+  color: var(--color-primary-hover, #4338ca);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--surface-page);
 }
 
 #root {
@@ -66,28 +86,34 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--surface-muted);
+  color: var(--text-primary);
   cursor: pointer;
-  transition: border-color 0.25s, background-color 0.25s;
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    background-color var(--duration-normal) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
 }
 
-button:hover {
-  border-color: #646cff;
+button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background-color: var(--surface-card);
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -95,16 +121,25 @@ button:disabled {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .main-content {
   flex: 1;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .not-found {
   text-align: center;
   padding: 4rem 2rem;
   font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-display, system-ui);
+  font-weight: 700;
+  color: var(--text-secondary, #475569);
+  background: var(--page-app-gradient, var(--surface-page));
+  flex: 1;
 }

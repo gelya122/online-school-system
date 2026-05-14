@@ -13,21 +13,15 @@ public partial class Assignment
 
     public string? Description { get; set; }
 
-    public int AssignmentTypeId { get; set; }
-
     public int MaxScore { get; set; }
 
     public int? DueDaysAfterLesson { get; set; }
 
-    public string? CorrectAnswer { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 
-    public virtual AssignmentType AssignmentType { get; set; } = null!;
-
-    public virtual ICollection<AssignmentVariant> AssignmentVariants { get; set; } = new List<AssignmentVariant>();
-
     public virtual Lesson Lesson { get; set; } = null!;
+
+    public virtual ICollection<TestQuestion> TestQuestions { get; set; } = new List<TestQuestion>();
 
     public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

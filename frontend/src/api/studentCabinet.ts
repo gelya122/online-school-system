@@ -71,6 +71,7 @@ export type StudentCabinetAssignment = {
   assignmentId: number;
   title: string;
   description?: string | null;
+  /** 0 — тип задания задаётся на уровне вопроса, не на строке ДЗ. */
   assignmentTypeId: number;
   assignmentTypeName?: string | null;
   maxScore: number;
@@ -79,6 +80,7 @@ export type StudentCabinetAssignment = {
   createdAt?: string | null;
 };
 
+/** Сводка по «доступу» к уроку: из расписания потока + прогресса (таблица student_lesson_access в БД не используется). accessId при наличии плана = plan_id, иначе 0. */
 export type StudentCabinetLessonAccess = {
   accessId: number;
   plannedAccessDate: string;
@@ -111,6 +113,7 @@ export type StudentCabinetQuestion = {
   questionText: string;
   questionType?: string | null;
   maxPoints: number;
+  correctAnswer?: string | null;
   studentAnswer?: string | null;
   pointsAwarded?: number | null;
 };
@@ -151,6 +154,7 @@ export type StudentCabinetHomeworkRow = {
   assignmentId: number;
   assignmentTitle: string;
   assignmentDescription?: string | null;
+  /** 0 — тип задания задаётся на уровне вопроса, не на строке ДЗ. */
   assignmentTypeId: number;
   assignmentTypeName?: string | null;
   maxScore: number;
@@ -174,6 +178,38 @@ export type StudentCabinetProgressRow = {
   completedAt?: string | null;
   watchTimeSeconds?: number | null;
   lastAccessed?: string | null;
+};
+
+export type StudentCabinetProgressWeekChartPoint = {
+  weekNumber: number;
+  label: string;
+  studentPercent: number;
+  groupAveragePercent: number;
+};
+
+export type StudentCabinetProgressCohort = {
+  groupSize: number;
+  groupAvgLessonPercent: number;
+  groupAvgAssignmentPercent: number;
+  groupAvgStudyHours: number;
+};
+
+export type StudentCabinetProgressDashboard = {
+  enrollmentId: number;
+  courseTitle: string;
+  instanceName: string;
+  instanceId: number;
+  totalLessons: number;
+  completedLessons: number;
+  lessonProgressPercent: number;
+  finalScore?: number | null;
+  totalStudySeconds: number;
+  averageAssignmentPercent?: number | null;
+  submittedAssignmentsCount: number;
+  successfulAssignmentsPercent: number;
+  weeklyLessonProgress: StudentCabinetProgressWeekChartPoint[];
+  weeklyPerformance: StudentCabinetProgressWeekChartPoint[];
+  cohort: StudentCabinetProgressCohort;
 };
 
 function withCoverUrl(course: StudentCabinetCourseSummary): StudentCabinetCourseSummary {
@@ -253,6 +289,13 @@ export async function getCabinetHomework(studentId: number): Promise<StudentCabi
 
 export async function getCabinetProgress(studentId: number): Promise<StudentCabinetProgressRow[]> {
   const res = await axiosInstance.get<StudentCabinetProgressRow[]>(`/students/${studentId}/cabinet/progress`);
+  return res.data ?? [];
+}
+
+export async function getCabinetProgressDashboard(studentId: number): Promise<StudentCabinetProgressDashboard[]> {
+  const res = await axiosInstance.get<StudentCabinetProgressDashboard[]>(
+    `/students/${studentId}/cabinet/progress/dashboard`,
+  );
   return res.data ?? [];
 }
 

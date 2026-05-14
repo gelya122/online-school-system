@@ -68,7 +68,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="footer-col">
+          <div className="footer-col" id="contacts">
             <h4>Контакты</h4>
             <ul className="contact-info">
               <li>{contactAddress}</li>
@@ -83,6 +83,15 @@ const Footer = () => {
                 </li>
               )}
             </ul>
+            {/* Соцсети: замените href на реальные страницы школы */}
+            <div className="footer-social" aria-label="Социальные сети">
+              <a className="footer-social-link" href="https://vk.com" target="_blank" rel="noopener noreferrer" aria-label="ВКонтакте">
+                <span className="footer-social-icon" aria-hidden>VK</span>
+              </a>
+              <a className="footer-social-link" href="https://t.me" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+                <span className="footer-social-icon" aria-hidden>TG</span>
+              </a>
+            </div>
           </div>
         </div>
 

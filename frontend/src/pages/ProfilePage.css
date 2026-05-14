@@ -2,8 +2,9 @@
 .profile-page-root {
   min-height: calc(100vh - 80px);
   width: 100%;
-  background: #f3f4f6;
-  color: #111827;
+  background-color: var(--surface-page, #f8fafc);
+  background-image: var(--page-app-glow, none), var(--page-app-gradient, none);
+  color: var(--text-primary, #0f172a);
   padding: 32px 20px 48px;
   /* Иначе поля наследуют тёмную схему страницы и Chrome рисует автозаполнение «как в dark mode». */
   color-scheme: light;
@@ -41,8 +42,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #dbeafe 0%, #eff6ff 100%);
-  color: #2563eb;
+  background: linear-gradient(145deg, #e0e7ff 0%, #f5f3ff 100%);
+  color: var(--color-primary, #4f46e5);
   font-size: 2.75rem;
   font-weight: 700;
 }
@@ -71,7 +72,7 @@
   padding: 0;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #2563eb;
+  background: var(--color-primary, #4f46e5);
   color: #fff;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
@@ -79,7 +80,7 @@
 }
 
 .profile-avatar-change-btn:hover {
-  background: #1d4ed8;
+  background: var(--color-primary-hover, #4338ca);
   transform: scale(1.03);
 }
 
@@ -155,7 +156,7 @@
   border-radius: 9px;
   border: 1px solid #3b82f6;
   background: #fff;
-  color: #2563eb;
+  color: var(--color-primary, #4f46e5);
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
@@ -163,14 +164,14 @@
 
 .profile-pencil:hover {
   background: #f8fafc;
-  border-color: #2563eb;
-  color: #1d4ed8;
+  border-color: var(--color-primary, #4f46e5);
+  color: var(--color-primary-hover, #4338ca);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 
 .profile-pencil:active {
   background: #f1f5f9;
-  border-color: #1d4ed8;
+  border-color: var(--color-primary-hover, #4338ca);
   color: #1e40af;
 }
 
@@ -371,13 +372,13 @@
   font-size: 16px;
   font-weight: 600;
   color: #fff;
-  background: #2563eb;
+  background: var(--color-primary, #4f46e5);
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .profile-btn-save:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: var(--color-primary-hover, #4338ca);
 }
 
 .profile-btn-save:disabled {

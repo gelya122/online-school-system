@@ -1,0 +1,53 @@
+<UserControl x:Class="online_school_admin.Views.SiteBannerEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="{Binding TitleLine}" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Сохранить" Command="{Binding SaveCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Отмена" Command="{Binding CancelCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,12" Foreground="#C0392B" Text="{Binding Error}" TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Title" />
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding BannerTitle}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Subtitle" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding Subtitle}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Image url" />
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding ImageUrl}" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Button text" />
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding ButtonText}" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Button url" />
+                <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding ButtonUrl}" />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Order" />
+                <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding OrderText}" />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center" Text="Is active" />
+                <CheckBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,0" IsChecked="{Binding IsActive}" />
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
+

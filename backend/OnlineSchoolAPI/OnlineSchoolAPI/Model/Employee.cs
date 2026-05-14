@@ -27,15 +27,27 @@ public partial class Employee
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual ICollection<CourseInstanceCoordinator> CourseInstanceCoordinators { get; set; } = new List<CourseInstanceCoordinator>();
+    public DateTime? DeletedAt { get; set; }
+
+    public virtual ICollection<User> CreatedUsers { get; set; } = new List<User>();
+
+    public virtual ICollection<CourseInstanceStaff> CourseInstanceStaffAssignments { get; set; } = new List<CourseInstanceStaff>();
 
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-
-    public virtual ICollection<StudentLessonAccess> StudentLessonAccesses { get; set; } = new List<StudentLessonAccess>();
 
     public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 
     public virtual ICollection<TrialApplication> TrialApplications { get; set; } = new List<TrialApplication>();
+
+    public virtual ICollection<StudentNote> StudentNotes { get; set; } = new List<StudentNote>();
+
+    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+
+    public virtual ICollection<TestStudentAnswer> TestStudentAnswersReviewed { get; set; } = new List<TestStudentAnswer>();
+
+    public virtual ICollection<MailingCampaign> MailingCampaignsCreated { get; set; } = new List<MailingCampaign>();
+
+    public virtual ICollection<SiteSetting> SiteSettingsUpdated { get; set; } = new List<SiteSetting>();
 
     public virtual User User { get; set; } = null!;
 }

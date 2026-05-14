@@ -1,0 +1,80 @@
+<UserControl x:Class="online_school_admin.Views.ApplicationEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Редактор заявки" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Сохранить" Command="{Binding SaveCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Отмена" Command="{Binding CancelCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Имя" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Margin="0,10,0,0" Text="Фамилия" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Margin="0,10,0,0" Text="Телефон" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Margin="0,10,0,0" Text="Email" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Margin="0,10,0,0" Text="Класс" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding ClassNumber, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Статус" Foreground="#6B7280"/>
+                            <ComboBox ItemsSource="{Binding StatusOptions}"
+                                      SelectedItem="{Binding SelectedStatus}"
+                                      DisplayMemberPath="StatusName"
+                                      Height="28"/>
+
+                            <TextBlock Margin="0,10,0,0" Text="Менеджер" Foreground="#6B7280"/>
+                            <ComboBox ItemsSource="{Binding ManagerOptions}"
+                                      SelectedItem="{Binding SelectedManager}"
+                                      DisplayMemberPath="Title"
+                                      Height="28"/>
+
+                            <TextBlock Margin="0,10,0,0" Text="Комментарий менеджера (без служебного журнала #log)" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding ManagerComment, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+
+                            <TextBlock Margin="0,10,0,0" Text="Комментарий в журнал заявки" Foreground="#6B7280"/>
+                            <TextBox Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="70" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TextBlock Margin="0,16,0,8" FontSize="16" FontWeight="SemiBold" Text="Предметы (выберите)" />
+                <ItemsControl ItemsSource="{Binding SubjectOptions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding SubjectName}"
+                                      IsChecked="{Binding IsSelected}"
+                                      Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
+

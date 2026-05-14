@@ -9,6 +9,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OnlineSchoolAPI", "OnlineSc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolAPI", "backend\OnlineSchoolAPI\OnlineSchoolAPI\OnlineSchoolAPI.csproj", "{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "desktop", "desktop", "{D3C8F1E0-5A4B-4C9D-BE12-000000000001}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "admin", "admin", "{D3C8F1E0-5A4B-4C9D-BE12-000000000002}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "online_school_admin", "desktop\online_school_admin\online_school_admin\online_school_admin.csproj", "{3E41E3D8-18CB-4F41-B32A-C5D45CDE4022}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,9 +28,15 @@ Global
 		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E41E3D8-18CB-4F41-B32A-C5D45CDE4022}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E41E3D8-18CB-4F41-B32A-C5D45CDE4022}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E41E3D8-18CB-4F41-B32A-C5D45CDE4022}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E41E3D8-18CB-4F41-B32A-C5D45CDE4022}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{197BD54B-BF87-41A0-841E-7B7C589141BD} = {54CA312B-1A5D-4C33-A946-157A21E07CCF}
 		{68CC6A9A-4C18-4CAB-9176-CCF63F8BFC8B} = {197BD54B-BF87-41A0-841E-7B7C589141BD}
+		{3E41E3D8-18CB-4F41-B32A-C5D45CDE4022} = {D3C8F1E0-5A4B-4C9D-BE12-000000000002}
+		{D3C8F1E0-5A4B-4C9D-BE12-000000000002} = {D3C8F1E0-5A4B-4C9D-BE12-000000000001}
 	EndGlobalSection
 EndGlobal

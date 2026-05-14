@@ -43,16 +43,36 @@ export interface AuthResponse {
   user: User;
 }
 
+/** Модуль программы (из GET /Courses/:id). */
+export interface CourseModuleOutline {
+  id: number;
+  title: string;
+  description?: string;
+  order: number;
+  lessonCount: number;
+}
+
 // Типы для курсов
 export interface Course {
   id: number;
   title: string;
+  /** Краткое описание (карточка каталога, подзаголовок). */
   description?: string;
+  /** Полное описание из БД для страницы курса. */
+  fullDescription?: string;
   price?: number;
   categoryId?: number;
   subjectId?: number;
   examId?: number;
   imageUrl?: string;
+  totalHours?: number;
+  /** Текст из БД: список результатов (строки через перенос или «;»). */
+  whatYouGet?: string;
+  modules?: CourseModuleOutline[];
+  /** Средняя оценка по опубликованным отзывам (GET /Courses/:id). */
+  reviewAverage?: number;
+  /** Число отзывов с оценкой. */
+  reviewCount?: number;
 }
 
 export interface CourseCategory {

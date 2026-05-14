@@ -124,14 +124,6 @@ const HomeworkCabinetPage = () => {
         <h1 className="cabinet-page-title" style={{ marginBottom: 0 }}>
           Домашние работы
         </h1>
-        {selectedEnrollmentId != null && (
-          <span
-            className="hw-help"
-            title="Список строится из ваших записей на курс, уроков, заданий и дат из базы (плановый доступ к уроку, расчётный срок сдачи при наличии полей в БД). Статусы фильтра — из справочника submission_status."
-          >
-            ?
-          </span>
-        )}
       </div>
 
       {selectedEnrollmentId != null && selectedEnrollment ? (
@@ -164,11 +156,14 @@ const HomeworkCabinetPage = () => {
                   className="cabinet-card"
                   onClick={() => setSelectedEnrollmentId(e.enrollmentId)}
                 >
-                  {e.course.coverImgUrl ? (
-                    <img className="cabinet-card-cover" src={e.course.coverImgUrl} alt="" />
-                  ) : (
-                    <div className="cabinet-card-cover" aria-hidden />
-                  )}
+                  <div className="cabinet-card-visual">
+                    <span className="cabinet-card-badge">Курс</span>
+                    {e.course.coverImgUrl ? (
+                      <img className="cabinet-card-cover" src={e.course.coverImgUrl} alt="" />
+                    ) : (
+                      <div className="cabinet-card-cover cabinet-card-cover--empty" aria-hidden />
+                    )}
+                  </div>
                   <div className="cabinet-card-body">
                     <h2 className="cabinet-card-title">{dash(e.course.title)}</h2>
                     <div className="cabinet-card-meta">
@@ -206,18 +201,15 @@ const HomeworkCabinetPage = () => {
                 </div>
               </div>
 
-              <div className="hw-cards-legend">
-                <span>Тема</span>
-                <span>Статус</span>
-                <span>Дедлайн</span>
-              </div>
-
               {displayRows.length === 0 ? (
                 <div className="hw-empty-filters">Нет заданий с выбранным статусом.</div>
               ) : (
                 <div className="hw-cards">
                   {displayRows.map((r) => {
-                    const typeLabel = dash(r.assignmentTypeName ?? (r.assignmentTypeId != null ? `Тип ${r.assignmentTypeId}` : null));
+                    const typeLabel = dash(
+                      r.assignmentTypeName ??
+                        (r.assignmentTypeId != null && r.assignmentTypeId > 0 ? `Тип ${r.assignmentTypeId}` : null),
+                    );
                     const statusText = r.submissionStatusName?.trim() ? r.submissionStatusName : '—';
                     const lid =
                       typeof r.lessonId === 'number' && Number.isFinite(r.lessonId) && r.lessonId > 0
@@ -244,7 +236,7 @@ const HomeworkCabinetPage = () => {
                             {statusText}
                           </div>
                           <div className="hw-dates">
-                            <span className="hw-dates-line">Доступно {formatDateRu(r.plannedLessonAccessDate)}</span>
+                            <span className="hw-dates-line">Доступно с {formatDateRu(r.plannedLessonAccessDate)}</span>
                             <span className="hw-dates-line">Дедлайн: {formatDeadlineShort(r.calculatedDueDate)}</span>
                           </div>
                           {assignmentLink ? (

@@ -1,0 +1,62 @@
+<UserControl x:Class="online_school_admin.Views.StudentProgressView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Прогресс студентов" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Открыть" Command="{Binding OpenCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBox Width="260"
+                     Padding="8,6"
+                     VerticalContentAlignment="Center"
+                     ToolTipService.ToolTip="Поиск: ФИО, email, телефон"
+                     Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" />
+
+            <ComboBox Width="240" Margin="10,0,0,0"
+                      DisplayMemberPath="Title"
+                      ItemsSource="{Binding CourseOptions}"
+                      SelectedItem="{Binding SelectedCourse}"
+                      ToolTipService.ToolTip="Курс" />
+
+            <ComboBox Width="240" Margin="10,0,0,0"
+                      DisplayMemberPath="Title"
+                      ItemsSource="{Binding InstanceOptions}"
+                      SelectedItem="{Binding SelectedInstance}"
+                      ToolTipService.ToolTip="Поток (по выбранному курсу)" />
+
+            <Button Margin="10,0,0,0" Padding="12,6" Content="Применить" Command="{Binding RefreshCommand}" />
+        </WrapPanel>
+
+        <DataGrid ItemsSource="{Binding Rows}"
+                  SelectedItem="{Binding Selected}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  RowHeaderWidth="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Студент" Binding="{Binding StudentName}" Width="200" />
+                <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="200" />
+                <DataGridTextColumn Header="Поток" Binding="{Binding InstanceName}" Width="200" />
+                <DataGridTextColumn Header="Пройдено" Binding="{Binding CompletedLessons}" Width="80" />
+                <DataGridTextColumn Header="Всего" Binding="{Binding TotalLessons}" Width="80" />
+                <DataGridTextColumn Header="%" Binding="{Binding Percent}" Width="60" />
+                <DataGridTextColumn Header="ДЗ всего" Binding="{Binding TotalHomeworkCount}" Width="80" />
+                <DataGridTextColumn Header="Сдано ДЗ" Binding="{Binding SubmittedHomeworkCount}" Width="90" />
+                <DataGridTextColumn Header="Средний" Binding="{Binding AverageScore}" Width="80" />
+                <DataGridTextColumn Header="Сумма баллов" Binding="{Binding TotalHomeworkScore}" Width="100" />
+                <DataGridTextColumn Header="Макс. ДЗ" Binding="{Binding TotalHomeworkMaxPoints}" Width="90" />
+                <DataGridTextColumn Header="Активность" Binding="{Binding LastActivityAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>
+

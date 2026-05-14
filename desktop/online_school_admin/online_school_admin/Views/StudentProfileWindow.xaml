@@ -1,0 +1,108 @@
+﻿<Window x:Class="online_school_admin.Views.StudentProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Профиль ученика"
+        Height="640"
+        Width="980"
+        MinHeight="560"
+        MinWidth="880"
+        WindowStartupLocation="CenterOwner"
+        Background="#FAFAFA">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Padding="16"
+                Background="White"
+                BorderBrush="#E5E7EB"
+                BorderThickness="1"
+                CornerRadius="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="{Binding FullName}" />
+                    <TextBlock Margin="0,6,0,0" Foreground="#4B5563" Text="{Binding ClassName}" />
+                    <TextBlock Margin="0,2,0,0" Foreground="#4B5563" Text="{Binding Email}" />
+                    <TextBlock Margin="0,2,0,0" Foreground="#4B5563" Text="{Binding Phone}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <TextBlock Text="Дата регистрации" Foreground="#6B7280" FontSize="12" />
+                    <TextBlock Margin="0,2,0,0" FontSize="14" FontWeight="SemiBold" Text="{Binding RegisteredAt, StringFormat=dd.MM.yyyy, TargetNullValue=—}" />
+                    <TextBlock Margin="0,10,0,0" Text="Активность" Foreground="#6B7280" FontSize="12" />
+                    <TextBlock Margin="0,2,0,0" FontSize="14" FontWeight="SemiBold" Text="{Binding ActivityStatus}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TabControl Grid.Row="1" Margin="0,16,0,0" Background="White">
+            <TabItem Header="Курсы и прогресс">
+                <DataGrid Margin="8"
+                          ItemsSource="{Binding Courses}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="*" />
+                        <DataGridTextColumn Header="Прогресс" Binding="{Binding ProgressPercent, StringFormat={}{0}%}" Width="140" />
+                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="170" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="История платежей">
+                <DataGrid Margin="8"
+                          ItemsSource="{Binding PaymentHistory}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy, TargetNullValue=—}" Width="140" />
+                        <DataGridTextColumn Header="Сумма" Binding="{Binding Amount, StringFormat={}{0:N0} ₽}" Width="160" />
+                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*" />
+                        <DataGridTextColumn Header="Метод" Binding="{Binding Method}" Width="200" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Сданные ДЗ">
+                <DataGrid Margin="8"
+                          ItemsSource="{Binding HomeworkSubmissions}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="*" />
+                        <DataGridTextColumn Header="Задание" Binding="{Binding HomeworkTitle}" Width="280" />
+                        <DataGridTextColumn Header="Дата сдачи" Binding="{Binding SubmittedAt, StringFormat=dd.MM.yyyy, TargetNullValue=—}" Width="140" />
+                        <DataGridTextColumn Header="Оценка" Binding="{Binding Grade}" Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Статистика активности">
+                <DataGrid Margin="8"
+                          ItemsSource="{Binding ActivityStats}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Метрика" Binding="{Binding Metric}" Width="*" />
+                        <DataGridTextColumn Header="Значение" Binding="{Binding Value}" Width="260" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

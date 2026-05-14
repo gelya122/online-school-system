@@ -24,6 +24,8 @@ public class CreateTrialApplicationDto
     public string? Email { get; set; }
     public int? ClassNumber { get; set; }
     public string? SelectedSubjects { get; set; }
+    /// <summary>Игнорируется при сохранении: в БД нет course_id (оставлено для совместимости сайта).</summary>
+    public int? CourseId { get; set; }
     public int? ApplicationStatusId { get; set; }
 }
 
@@ -34,4 +36,3 @@ public class UpdateTrialApplicationDto
     public string? ManagerComment { get; set; }
     public DateTime? ContactedAt { get; set; }
 }
-

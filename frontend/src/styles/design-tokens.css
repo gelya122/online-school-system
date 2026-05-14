@@ -1,0 +1,77 @@
+/**
+ * Дизайн-токены: EdTech / SaaS (primary indigo + accent violet).
+ */
+:root {
+  /* Поверхности */
+  --surface-page: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-muted: #f1f5f9;
+  --surface-elevated: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+
+  /* Текст */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #f8fafc;
+
+  /* Бренд: primary #4F46E5, accent #A78BFA */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-accent: #a78bfa;
+  --color-accent-muted: #c4b5fd;
+
+  /* Совместимость с существующими var(--accent) */
+  --accent: var(--color-primary);
+  --accent-hover: var(--color-primary-hover);
+  --accent-soft: rgba(79, 70, 229, 0.1);
+  --accent-soft-strong: rgba(167, 139, 250, 0.18);
+  --accent-ring: rgba(79, 70, 229, 0.35);
+  --accent-glow: rgba(167, 139, 250, 0.45);
+
+  /* Градиенты */
+  --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #6366f1 48%, #7c3aed 100%);
+  --gradient-primary-soft: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(167, 139, 250, 0.15) 100%);
+  --gradient-hero: linear-gradient(165deg, #f5f3ff 0%, #eef2ff 35%, #faf5ff 70%, var(--surface-page) 100%);
+  --gradient-mesh-1: radial-gradient(ellipse 80% 60% at 85% 15%, rgba(167, 139, 250, 0.35), transparent 55%);
+  --gradient-mesh-2: radial-gradient(ellipse 70% 50% at 10% 80%, rgba(79, 70, 229, 0.2), transparent 50%);
+  --gradient-card-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 243, 255, 0.9) 100%);
+
+  /* Границы */
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-accent: rgba(79, 70, 229, 0.22);
+
+  /* Тени + глубина */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 12px 40px rgba(49, 46, 129, 0.1);
+  --shadow-lg: 0 24px 64px rgba(49, 46, 129, 0.14);
+  --shadow-xl: 0 32px 80px rgba(30, 27, 75, 0.16);
+  --shadow-glow-primary: 0 8px 28px rgba(79, 70, 229, 0.38);
+  --shadow-glow-soft: 0 20px 60px rgba(167, 139, 250, 0.22);
+
+  /* Форма */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Типографика */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
+  --tracking-tight: -0.03em;
+
+  /* Движение */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 0.18s;
+  --duration-normal: 0.26s;
+  --duration-slow: 0.34s;
+
+  /* Фон «внутренних» страниц (корзина, оформление, вход, каталог) */
+  --page-app-gradient: linear-gradient(180deg, #f8fafc 0%, #f5f3ff 38%, #eef2ff 100%);
+  --page-app-glow: radial-gradient(ellipse 75% 50% at 100% -10%, rgba(167, 139, 250, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 0% 100%, rgba(79, 70, 229, 0.08), transparent 50%);
+}

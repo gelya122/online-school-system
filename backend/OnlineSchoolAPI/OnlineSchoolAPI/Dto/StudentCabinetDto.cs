@@ -88,6 +88,7 @@ public class StudentCabinetAssignmentDto
 
 public class StudentCabinetLessonAccessDto
 {
+    /// <summary>Для совместимости с клиентами: при наличии строки в <c>course_schedule_plan</c> сюда подставляется <c>plan_id</c>, иначе 0.</summary>
     public int AccessId { get; set; }
     public DateOnly PlannedAccessDate { get; set; }
     public string? PlannedAccessTime { get; set; }
@@ -127,6 +128,7 @@ public class StudentCabinetQuestionDto
     public string QuestionText { get; set; } = null!;
     public string? QuestionType { get; set; }
     public decimal MaxPoints { get; set; }
+    public string? CorrectAnswer { get; set; }
     public string? StudentAnswer { get; set; }
     public decimal? PointsAwarded { get; set; }
 }
@@ -155,7 +157,6 @@ public class StudentCabinetLessonDetailDto
     public string? VideoUrl { get; set; }
     public int? DurationMinutes { get; set; }
     public int LessonOrder { get; set; }
-    public bool? IsFreePreview { get; set; }
     public DateTime? CreatedAt { get; set; }
     public StudentCabinetLessonAccessDto? Access { get; set; }
     public StudentCabinetLessonProgressDto? Progress { get; set; }
@@ -198,4 +199,39 @@ public class StudentCabinetProgressRowDto
     public DateTime? CompletedAt { get; set; }
     public int? WatchTimeSeconds { get; set; }
     public DateTime? LastAccessed { get; set; }
+}
+
+public class StudentCabinetProgressWeekChartPointDto
+{
+    public int WeekNumber { get; set; }
+    public string Label { get; set; } = null!;
+    public decimal StudentPercent { get; set; }
+    public decimal GroupAveragePercent { get; set; }
+}
+
+public class StudentCabinetProgressCohortDto
+{
+    public int GroupSize { get; set; }
+    public decimal GroupAvgLessonPercent { get; set; }
+    public decimal GroupAvgAssignmentPercent { get; set; }
+    public decimal GroupAvgStudyHours { get; set; }
+}
+
+public class StudentCabinetProgressDashboardDto
+{
+    public int EnrollmentId { get; set; }
+    public string CourseTitle { get; set; } = null!;
+    public string InstanceName { get; set; } = null!;
+    public int InstanceId { get; set; }
+    public int TotalLessons { get; set; }
+    public int CompletedLessons { get; set; }
+    public decimal LessonProgressPercent { get; set; }
+    public decimal? FinalScore { get; set; }
+    public int TotalStudySeconds { get; set; }
+    public decimal? AverageAssignmentPercent { get; set; }
+    public int SubmittedAssignmentsCount { get; set; }
+    public decimal SuccessfulAssignmentsPercent { get; set; }
+    public List<StudentCabinetProgressWeekChartPointDto> WeeklyLessonProgress { get; set; } = new();
+    public List<StudentCabinetProgressWeekChartPointDto> WeeklyPerformance { get; set; } = new();
+    public StudentCabinetProgressCohortDto Cohort { get; set; } = new();
 }

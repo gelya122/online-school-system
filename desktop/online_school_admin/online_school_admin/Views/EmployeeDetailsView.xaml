@@ -1,0 +1,102 @@
+<UserControl x:Class="online_school_admin.Views.EmployeeDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:online_school_admin.Infrastructure">
+    <UserControl.Resources>
+        <i:AssignmentKindToRuConverter x:Key="KindRu" />
+    </UserControl.Resources>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Карточка сотрудника" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding HeaderFullName}" />
+                        <TextBlock Margin="0,8,0,0"
+                                   Foreground="#6B7280"
+                                   FontSize="12"
+                                   Text="{Binding HeaderIds}" />
+                        <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding Details.Email}" />
+                        <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding Details.Phone}" />
+                        <TextBlock Margin="0,6,0,0"
+                                   Foreground="#6B7280"
+                                   Text="{Binding Details.RoleName, StringFormat=Роль: {0}}" />
+                        <TextBlock Margin="0,6,0,0"
+                                   Foreground="#6B7280"
+                                   Text="{Binding DobLine}"
+                                   Visibility="{Binding DobLine, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                        <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding ExperienceLine}" />
+                        <TextBlock Margin="0,6,0,0"
+                                   Foreground="#6B7280"
+                                   Text="{Binding AvatarLine}"
+                                   Visibility="{Binding AvatarLine, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                        <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding ActiveLine}" />
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Margin="0,16,0,8" FontSize="16" FontWeight="SemiBold" Text="Назначенные потоки (преподаватель / координатор)" />
+                <DataGrid ItemsSource="{Binding Details.AssignedInstances}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0"
+                          Height="220">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Участие" Width="130">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="Kind" Converter="{StaticResource KindRu}" />
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Поток" Binding="{Binding InstanceName}" Width="240" />
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="*" />
+                        <DataGridCheckBoxColumn Header="Главный" Binding="{Binding IsLeadOrMain}" Width="80" />
+                        <DataGridTextColumn Header="Назначен" Binding="{Binding AssignedAt, StringFormat=dd.MM.yyyy}" Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Margin="0,16,0,8" FontSize="16" FontWeight="SemiBold" Text="Проверенные ДЗ" />
+                <DataGrid ItemsSource="{Binding Details.HomeworkChecked}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0"
+                          Height="220">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Студент" Binding="{Binding StudentName}" Width="220" />
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="200" />
+                        <DataGridTextColumn Header="Поток" Binding="{Binding InstanceName}" Width="200" />
+                        <DataGridTextColumn Header="ДЗ" Binding="{Binding HomeworkTitle}" Width="*" />
+                        <DataGridTextColumn Header="Проверено" Binding="{Binding CheckedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Margin="0,16,0,8" FontSize="16" FontWeight="SemiBold" Text="История действий (audit_log)" />
+                <DataGrid ItemsSource="{Binding Details.AuditLog}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0"
+                          Height="240">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+                        <DataGridTextColumn Header="Действие" Binding="{Binding Action}" Width="160" />
+                        <DataGridTextColumn Header="Сущность" Binding="{Binding EntityType}" Width="140" />
+                        <DataGridTextColumn Header="ID" Binding="{Binding EntityId}" Width="60" />
+                        <DataGridTextColumn Header="Изменения" Binding="{Binding NewValues}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
+

@@ -67,6 +67,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("paid_at");
 
+                    b.Property<int?>("PromoCodeId")
+                        .HasColumnType("int")
+                        .HasColumnName("promo_code_id");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("int")
                         .HasColumnName("student_id");
@@ -81,6 +85,8 @@ namespace OnlineSchoolAPI.Migrations
                     b.HasIndex("MethodId");
 
                     b.HasIndex("OrderStatusId");
+
+                    b.HasIndex("PromoCodeId");
 
                     b.HasIndex("StudentId");
 
@@ -240,6 +246,73 @@ namespace OnlineSchoolAPI.Migrations
                     b.ToTable("assignment_variant", (string)null);
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.AuditLog", b =>
+                {
+                    b.Property<int>("AuditLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("audit_log_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuditLogId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("action");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("employee_id");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("entity_type");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("ip_address");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("new_values");
+
+                    b.Property<string>("OldValues")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("old_values");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("user_agent");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("AuditLogId")
+                        .HasName("PK_audit_log");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("audit_log", (string)null);
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.Course", b =>
                 {
                     b.Property<int>("CourseId")
@@ -263,6 +336,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
@@ -366,9 +443,25 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<int?>("CreatedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by_employee_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
+
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date")
                         .HasColumnName("end_date");
+
+                    b.Property<DateOnly?>("EnrollmentEndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("enrollment_end_date");
+
+                    b.Property<DateOnly?>("EnrollmentStartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("enrollment_start_date");
 
                     b.Property<string>("InstanceName")
                         .IsRequired()
@@ -395,18 +488,39 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("nvarchar(500)")
                         .HasColumnName("schedule_description");
 
+                    b.Property<string>("ScheduleRulesJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("schedule_rules_json");
+
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date")
                         .HasColumnName("start_date");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("status_id");
+
+                    b.Property<string>("Timezone")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("timezone");
 
                     b.Property<int?>("TotalWeeks")
                         .HasColumnType("int")
                         .HasColumnName("total_weeks");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
                     b.HasKey("InstanceId")
                         .HasName("PK__course_i__7DBD82E77478442E");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("CreatedByEmployeeId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("course_instance", (string)null);
                 });
@@ -451,6 +565,77 @@ namespace OnlineSchoolAPI.Migrations
                     b.ToTable("course_instance_coordinator", (string)null);
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.CourseInstanceStatus", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("status_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("title");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("course_instance_status", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.CourseInstanceTeacher", b =>
+                {
+                    b.Property<int>("InstanceTeacherId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("instance_teacher_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InstanceTeacherId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("employee_id");
+
+                    b.Property<int>("InstanceId")
+                        .HasColumnType("int")
+                        .HasColumnName("instance_id");
+
+                    b.Property<bool>("IsMainTeacher")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_main_teacher");
+
+                    b.HasKey("InstanceTeacherId")
+                        .HasName("PK_course_instance_teacher");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex(new[] { "InstanceId", "EmployeeId" }, "UQ_course_instance_teacher_instance_employee")
+                        .IsUnique();
+
+                    b.ToTable("course_instance_teacher", (string)null);
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.CourseModule", b =>
                 {
                     b.Property<int>("ModuleId")
@@ -469,6 +654,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -593,6 +782,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("date")
                         .HasColumnName("date_of_birth");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -631,6 +824,8 @@ namespace OnlineSchoolAPI.Migrations
 
                     b.HasKey("EmployeeId")
                         .HasName("PK__employee__C52E0BA85D738F50");
+
+                    b.HasIndex(new[] { "LastName", "FirstName" }, "IX_employee_last_name_first_name");
 
                     b.HasIndex(new[] { "UserId" }, "UQ__employee__B9BE370ED2AF6F2C")
                         .IsUnique();
@@ -731,12 +926,6 @@ namespace OnlineSchoolAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExamId"));
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
-
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)")
@@ -836,6 +1025,412 @@ namespace OnlineSchoolAPI.Migrations
                     b.ToTable("faq_item", (string)null);
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.FileStorage", b =>
+                {
+                    b.Property<int>("FileId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("file_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FileId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<long?>("FileSizeBytes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size_bytes");
+
+                    b.Property<string>("FileType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("file_type");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("file_url");
+
+                    b.Property<string>("MimeType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("mime_type");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("original_file_name");
+
+                    b.Property<int?>("RelatedEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("related_entity_id");
+
+                    b.Property<string>("RelatedEntityType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("related_entity_type");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("stored_file_name");
+
+                    b.Property<int?>("UploadedByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("uploaded_by_user_id");
+
+                    b.HasKey("FileId")
+                        .HasName("PK_file_storage");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.ToTable("file_storage", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.Homework", b =>
+                {
+                    b.Property<int>("HomeworkId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("homework_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HomeworkId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<int?>("DueDaysAfterLesson")
+                        .HasColumnType("int")
+                        .HasColumnName("due_days_after_lesson");
+
+                    b.Property<int>("HomeworkOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("homework_order");
+
+                    b.Property<bool>("IsRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_required");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int")
+                        .HasColumnName("lesson_id");
+
+                    b.Property<int>("MaxScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("max_score");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("HomeworkId")
+                        .HasName("PK_homework");
+
+                    b.HasIndex(new[] { "LessonId" }, "IX_homework_lesson_id");
+
+                    b.ToTable("homework", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkSubmission", b =>
+                {
+                    b.Property<int>("SubmissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("submission_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubmissionId"));
+
+                    b.Property<DateTime?>("CheckedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("checked_at");
+
+                    b.Property<int?>("CheckedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("checked_by_employee_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("enrollment_id");
+
+                    b.Property<int>("HomeworkId")
+                        .HasColumnType("int")
+                        .HasColumnName("homework_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("draft")
+                        .HasColumnName("status");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int")
+                        .HasColumnName("student_id");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("submitted_at");
+
+                    b.Property<string>("TeacherComment")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("teacher_comment");
+
+                    b.Property<int?>("TotalScore")
+                        .HasColumnType("int")
+                        .HasColumnName("total_score");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("SubmissionId")
+                        .HasName("PK_homework_submission");
+
+                    b.HasIndex("CheckedByEmployeeId");
+
+                    b.HasIndex(new[] { "EnrollmentId" }, "IX_homework_submission_enrollment_id");
+
+                    b.HasIndex(new[] { "HomeworkId" }, "IX_homework_submission_homework_id");
+
+                    b.HasIndex(new[] { "Status" }, "IX_homework_submission_status");
+
+                    b.HasIndex(new[] { "StudentId" }, "IX_homework_submission_student_id");
+
+                    b.HasIndex(new[] { "HomeworkId", "StudentId", "EnrollmentId" }, "UQ_homework_submission_unique")
+                        .IsUnique();
+
+                    b.ToTable("homework_submission", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTask", b =>
+                {
+                    b.Property<int>("TaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("task_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
+
+                    b.Property<bool>("AutoCheckEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("auto_check_enabled");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Explanation")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("explanation");
+
+                    b.Property<int>("HomeworkId")
+                        .HasColumnType("int")
+                        .HasColumnName("homework_id");
+
+                    b.Property<int>("MaxScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("max_score");
+
+                    b.Property<int>("TaskOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("task_order");
+
+                    b.Property<string>("TaskText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("task_text");
+
+                    b.Property<string>("TaskType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("task_type");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("TaskId")
+                        .HasName("PK_homework_task");
+
+                    b.HasIndex(new[] { "HomeworkId" }, "IX_homework_task_homework_id");
+
+                    b.ToTable("homework_task", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTaskAnswer", b =>
+                {
+                    b.Property<int>("AnswerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("answer_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerId"));
+
+                    b.Property<int?>("AnswerOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("answer_order");
+
+                    b.Property<string>("AnswerText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("answer_text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<bool>("IsCorrect")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_correct");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int")
+                        .HasColumnName("task_id");
+
+                    b.HasKey("AnswerId")
+                        .HasName("PK_homework_task_answer");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("homework_task_answer", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTaskSubmission", b =>
+                {
+                    b.Property<int>("TaskSubmissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("task_submission_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskSubmissionId"));
+
+                    b.Property<string>("AnswerText")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("answer_text");
+
+                    b.Property<string>("AttachedFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("attached_file_name");
+
+                    b.Property<string>("AttachedFileUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("attached_file_url");
+
+                    b.Property<string>("AutoCheckResult")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("auto_check_result");
+
+                    b.Property<DateTime?>("CheckedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("checked_at");
+
+                    b.Property<int?>("CheckedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("checked_by_employee_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<bool?>("IsCorrect")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_correct");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("int")
+                        .HasColumnName("score");
+
+                    b.Property<int>("SubmissionId")
+                        .HasColumnType("int")
+                        .HasColumnName("submission_id");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int")
+                        .HasColumnName("task_id");
+
+                    b.Property<string>("TeacherComment")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("teacher_comment");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("TaskSubmissionId")
+                        .HasName("PK_homework_task_submission");
+
+                    b.HasIndex("CheckedByEmployeeId");
+
+                    b.HasIndex(new[] { "SubmissionId" }, "IX_homework_task_submission_submission_id");
+
+                    b.HasIndex(new[] { "TaskId" }, "IX_homework_task_submission_task_id");
+
+                    b.ToTable("homework_task_submission", (string)null);
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.InstallmentPayment", b =>
                 {
                     b.Property<int>("InstallmentPaymentId")
@@ -867,6 +1462,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("paid_at");
 
+                    b.Property<int?>("PaymentId")
+                        .HasColumnType("int")
+                        .HasColumnName("payment_id");
+
                     b.Property<string>("PaymentStatus")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
@@ -874,12 +1473,20 @@ namespace OnlineSchoolAPI.Migrations
                         .HasDefaultValue("pending")
                         .HasColumnName("payment_status");
 
+                    b.Property<int?>("PaymentStatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("payment_status_id");
+
                     b.Property<int>("PlanId")
                         .HasColumnType("int")
                         .HasColumnName("plan_id");
 
                     b.HasKey("InstallmentPaymentId")
                         .HasName("PK__installm__29799A54E5B2195E");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("PaymentStatusId");
 
                     b.HasIndex("PlanId");
 
@@ -954,6 +1561,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
 
                     b.Property<int?>("DurationMinutes")
                         .HasColumnType("int")
@@ -1079,6 +1690,133 @@ namespace OnlineSchoolAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("lesson_type", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.MailingCampaign", b =>
+                {
+                    b.Property<int>("CampaignId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("campaign_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CampaignId"));
+
+                    b.Property<string>("Channel")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("internal")
+                        .HasColumnName("channel");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int?>("CreatedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by_employee_id");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("message");
+
+                    b.Property<DateTime?>("ScheduledAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("scheduled_at");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("sent_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("draft")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("target_type");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("CampaignId")
+                        .HasName("PK_mailing_campaign");
+
+                    b.HasIndex("CreatedByEmployeeId");
+
+                    b.ToTable("mailing_campaign", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.MailingRecipient", b =>
+                {
+                    b.Property<int>("RecipientId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("recipient_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipientId"));
+
+                    b.Property<int>("CampaignId")
+                        .HasColumnType("int")
+                        .HasColumnName("campaign_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("error_message");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("read_at");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("sent_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("pending")
+                        .HasColumnName("status");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("RecipientId")
+                        .HasName("PK_mailing_recipient");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex(new[] { "CampaignId", "UserId" }, "UQ_mailing_recipient_campaign_user")
+                        .IsUnique();
+
+                    b.ToTable("mailing_recipient", (string)null);
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.OrderItem", b =>
@@ -1287,6 +2025,14 @@ namespace OnlineSchoolAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PromoCodeId"));
 
+                    b.Property<int?>("AppliesToCourseId")
+                        .HasColumnType("int")
+                        .HasColumnName("applies_to_course_id");
+
+                    b.Property<int?>("AppliesToInstanceId")
+                        .HasColumnType("int")
+                        .HasColumnName("applies_to_instance_id");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1299,11 +2045,19 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<int?>("CreatedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by_employee_id");
+
                     b.Property<int?>("CurrentUses")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0)
                         .HasColumnName("current_uses");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
 
                     b.Property<decimal>("DiscountValue")
                         .HasColumnType("decimal(10, 2)")
@@ -1315,13 +2069,25 @@ namespace OnlineSchoolAPI.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
+                    b.Property<decimal?>("MaxDiscountAmount")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("max_discount_amount");
+
                     b.Property<int?>("MaxUses")
                         .HasColumnType("int")
                         .HasColumnName("max_uses");
 
+                    b.Property<decimal?>("MinOrderAmount")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("min_order_amount");
+
                     b.Property<int?>("TypeId")
                         .HasColumnType("int")
                         .HasColumnName("type_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.Property<DateOnly>("ValidFrom")
                         .HasColumnType("date")
@@ -1333,6 +2099,12 @@ namespace OnlineSchoolAPI.Migrations
 
                     b.HasKey("PromoCodeId")
                         .HasName("PK__promo_co__C52CD3126ED9598B");
+
+                    b.HasIndex("AppliesToCourseId");
+
+                    b.HasIndex("AppliesToInstanceId");
+
+                    b.HasIndex("CreatedByEmployeeId");
 
                     b.HasIndex("TypeId");
 
@@ -1454,6 +2226,151 @@ namespace OnlineSchoolAPI.Migrations
                     b.ToTable("school_setting", (string)null);
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.SiteBanner", b =>
+                {
+                    b.Property<int>("BannerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("banner_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BannerId"));
+
+                    b.Property<int>("BannerOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("banner_order");
+
+                    b.Property<string>("ButtonText")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("button_text");
+
+                    b.Property<string>("ButtonUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("button_url");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Subtitle")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("subtitle");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("BannerId")
+                        .HasName("PK_site_banner");
+
+                    b.ToTable("site_banner", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.SiteSetting", b =>
+                {
+                    b.Property<int>("SettingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("setting_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SettingId"));
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("contact_email");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("contact_phone");
+
+                    b.Property<bool>("IsMaintenanceMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_maintenance_mode");
+
+                    b.Property<string>("MainPageDescription")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("main_page_description");
+
+                    b.Property<string>("MainPageTitle")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
+                        .HasColumnName("main_page_title");
+
+                    b.Property<string>("SeoDescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("seo_description");
+
+                    b.Property<string>("SeoTitle")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)")
+                        .HasColumnName("seo_title");
+
+                    b.Property<string>("SiteName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("site_name");
+
+                    b.Property<string>("TelegramUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("telegram_url");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int?>("UpdatedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("updated_by_employee_id");
+
+                    b.Property<string>("VkUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("vk_url");
+
+                    b.Property<string>("YoutubeUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("youtube_url");
+
+                    b.HasKey("SettingId")
+                        .HasName("PK_site_setting");
+
+                    b.HasIndex("UpdatedByEmployeeId");
+
+                    b.ToTable("site_setting", (string)null);
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.Student", b =>
                 {
                     b.Property<int>("StudentId")
@@ -1481,6 +2398,10 @@ namespace OnlineSchoolAPI.Migrations
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date")
                         .HasColumnName("date_of_birth");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -1515,6 +2436,8 @@ namespace OnlineSchoolAPI.Migrations
 
                     b.HasKey("StudentId")
                         .HasName("PK__student__2A33069A81FCD669");
+
+                    b.HasIndex(new[] { "LastName", "FirstName" }, "IX_student_last_name_first_name");
 
                     b.HasIndex(new[] { "UserId" }, "UQ__student__B9BE370E83B5DF70")
                         .IsUnique();
@@ -1588,6 +2511,49 @@ namespace OnlineSchoolAPI.Migrations
                     b.ToTable("student_lesson_access", (string)null);
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.StudentNote", b =>
+                {
+                    b.Property<int>("NoteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("note_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NoteId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("employee_id");
+
+                    b.Property<string>("NoteText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("note_text");
+
+                    b.Property<string>("NoteType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("note_type");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int")
+                        .HasColumnName("student_id");
+
+                    b.HasKey("NoteId")
+                        .HasName("PK_student_note");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("student_note", (string)null);
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.StudentProgress", b =>
                 {
                     b.Property<int>("ProgressId")
@@ -1656,12 +2622,6 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnName("subject_id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectId"));
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -1855,7 +2815,6 @@ namespace OnlineSchoolAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationId"));
 
                     b.Property<int?>("ApplicationStatusId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1)
                         .HasColumnName("application_status_id");
@@ -1935,11 +2894,25 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<int?>("CreatedByEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by_employee_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleted_at");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("email");
+
+                    b.Property<int>("FailedLoginAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("failed_login_attempts");
 
                     b.Property<bool?>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -1953,6 +2926,23 @@ namespace OnlineSchoolAPI.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_email_confirmed");
 
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("last_login_at");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("datetime")
+                        .HasColumnName("locked_until");
+
+                    b.Property<string>("Login")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("login");
+
+                    b.Property<DateTime?>("PasswordChangedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("password_changed_at");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -1963,13 +2953,25 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("int")
                         .HasColumnName("role_id");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
                     b.HasKey("UserId")
                         .HasName("PK__users__B9BE370FE725EF09");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("CreatedByEmployeeId");
+
+                    b.HasIndex(new[] { "IsActive" }, "IX_users_is_active");
+
+                    b.HasIndex(new[] { "RoleId" }, "IX_users_role_id");
 
                     b.HasIndex(new[] { "Email" }, "UQ__users__AB6E61649B7A09A4")
                         .IsUnique();
+
+                    b.HasIndex(new[] { "Login" }, "UQ_users_login_not_null")
+                        .IsUnique()
+                        .HasFilter("[login] IS NOT NULL");
 
                     b.ToTable("users", (string)null);
                 });
@@ -2012,6 +3014,10 @@ namespace OnlineSchoolAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
 
+                    b.Property<int?>("CampaignId")
+                        .HasColumnType("int")
+                        .HasColumnName("campaign_id");
+
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -2035,6 +3041,10 @@ namespace OnlineSchoolAPI.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("notification_type");
 
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("read_at");
+
                     b.Property<int?>("RelatedEntityId")
                         .HasColumnType("int")
                         .HasColumnName("related_entity_id");
@@ -2057,7 +3067,13 @@ namespace OnlineSchoolAPI.Migrations
                     b.HasKey("NotificationId")
                         .HasName("PK__notifica__E059842F14F888C5");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex(new[] { "CreatedAt" }, "IX_notification_created_at");
+
+                    b.HasIndex(new[] { "IsRead" }, "IX_notification_is_read");
+
+                    b.HasIndex(new[] { "UserId" }, "IX_notification_user_id");
 
                     b.ToTable("notification", (string)null);
                 });
@@ -2074,6 +3090,11 @@ namespace OnlineSchoolAPI.Migrations
                         .HasForeignKey("OrderStatusId")
                         .HasConstraintName("FK__app_order__order__4C6B5938");
 
+                    b.HasOne("OnlineSchoolAPI.Models.PromoCode", "PromoCode")
+                        .WithMany()
+                        .HasForeignKey("PromoCodeId")
+                        .HasConstraintName("FK_app_order_promo_code_promo_code_id");
+
                     b.HasOne("OnlineSchoolAPI.Models.Student", "Student")
                         .WithMany("AppOrders")
                         .HasForeignKey("StudentId")
@@ -2083,6 +3104,8 @@ namespace OnlineSchoolAPI.Migrations
                     b.Navigation("Method");
 
                     b.Navigation("OrderStatus");
+
+                    b.Navigation("PromoCode");
 
                     b.Navigation("Student");
                 });
@@ -2115,6 +3138,23 @@ namespace OnlineSchoolAPI.Migrations
                         .HasConstraintName("FK__assignmen__assig__0C85DE4D");
 
                     b.Navigation("Assignment");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.AuditLog", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "Employee")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("EmployeeId")
+                        .HasConstraintName("FK_audit_log_employee_employee_id");
+
+                    b.HasOne("OnlineSchoolAPI.Models.User", "User")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_audit_log_users_user_id");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.Course", b =>
@@ -2153,7 +3193,23 @@ namespace OnlineSchoolAPI.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__course_in__cours__114A936A");
 
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "CreatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("CreatedByEmployeeId")
+                        .HasConstraintName("FK_course_instance_created_by_employee");
+
+                    b.HasOne("OnlineSchoolAPI.Models.CourseInstanceStatus", "InstanceStatus")
+                        .WithMany("CourseInstances")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_course_instance_status");
+
                     b.Navigation("Course");
+
+                    b.Navigation("CreatedByEmployee");
+
+                    b.Navigation("InstanceStatus");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.CourseInstanceCoordinator", b =>
@@ -2169,6 +3225,26 @@ namespace OnlineSchoolAPI.Migrations
                         .HasForeignKey("InstanceId")
                         .IsRequired()
                         .HasConstraintName("FK__course_in__insta__17036CC0");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Instance");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.CourseInstanceTeacher", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "Employee")
+                        .WithMany("CourseInstanceTeachers")
+                        .HasForeignKey("EmployeeId")
+                        .IsRequired()
+                        .HasConstraintName("FK_course_instance_teacher_employee");
+
+                    b.HasOne("OnlineSchoolAPI.Models.CourseInstance", "Instance")
+                        .WithMany("CourseInstanceTeachers")
+                        .HasForeignKey("InstanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_course_instance_teacher_course_instance");
 
                     b.Navigation("Employee");
 
@@ -2260,13 +3336,134 @@ namespace OnlineSchoolAPI.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.FileStorage", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.User", "UploadedByUser")
+                        .WithMany("FileStorages")
+                        .HasForeignKey("UploadedByUserId")
+                        .HasConstraintName("FK_file_storage_users_uploaded_by_user_id");
+
+                    b.Navigation("UploadedByUser");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.Homework", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Lesson", "Lesson")
+                        .WithMany("Homeworks")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_lesson");
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkSubmission", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "CheckedByEmployee")
+                        .WithMany("HomeworkSubmissionsChecked")
+                        .HasForeignKey("CheckedByEmployeeId")
+                        .HasConstraintName("FK_homework_submission_employee_checked_by");
+
+                    b.HasOne("OnlineSchoolAPI.Models.Enrollment", "Enrollment")
+                        .WithMany()
+                        .HasForeignKey("EnrollmentId")
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_submission_enrollment");
+
+                    b.HasOne("OnlineSchoolAPI.Models.Homework", "Homework")
+                        .WithMany("HomeworkSubmissions")
+                        .HasForeignKey("HomeworkId")
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_submission_homework");
+
+                    b.HasOne("OnlineSchoolAPI.Models.Student", "Student")
+                        .WithMany("HomeworkSubmissions")
+                        .HasForeignKey("StudentId")
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_submission_student");
+
+                    b.Navigation("CheckedByEmployee");
+
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("Homework");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTask", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Homework", "Homework")
+                        .WithMany("HomeworkTasks")
+                        .HasForeignKey("HomeworkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_task_homework");
+
+                    b.Navigation("Homework");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTaskAnswer", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.HomeworkTask", "Task")
+                        .WithMany("HomeworkTaskAnswers")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_task_answer_homework_task");
+
+                    b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTaskSubmission", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "CheckedByEmployee")
+                        .WithMany("HomeworkTaskSubmissionsChecked")
+                        .HasForeignKey("CheckedByEmployeeId")
+                        .HasConstraintName("FK_homework_task_submission_employee_checked_by");
+
+                    b.HasOne("OnlineSchoolAPI.Models.HomeworkSubmission", "Submission")
+                        .WithMany("HomeworkTaskSubmissions")
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_task_submission_homework_submission");
+
+                    b.HasOne("OnlineSchoolAPI.Models.HomeworkTask", "Task")
+                        .WithMany("HomeworkTaskSubmissions")
+                        .HasForeignKey("TaskId")
+                        .IsRequired()
+                        .HasConstraintName("FK_homework_task_submission_homework_task");
+
+                    b.Navigation("CheckedByEmployee");
+
+                    b.Navigation("Submission");
+
+                    b.Navigation("Task");
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.InstallmentPayment", b =>
                 {
+                    b.HasOne("OnlineSchoolAPI.Models.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId")
+                        .HasConstraintName("FK_installment_payment_payment_payment_id");
+
+                    b.HasOne("OnlineSchoolAPI.Models.PaymentStatus", "PaymentStatusNavigation")
+                        .WithMany()
+                        .HasForeignKey("PaymentStatusId")
+                        .HasConstraintName("FK_installment_payment_payment_status_payment_status_id");
+
                     b.HasOne("OnlineSchoolAPI.Models.InstallmentPlan", "Plan")
                         .WithMany("InstallmentPayments")
                         .HasForeignKey("PlanId")
                         .IsRequired()
                         .HasConstraintName("FK__installme__plan___625A9A57");
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("PaymentStatusNavigation");
 
                     b.Navigation("Plan");
                 });
@@ -2310,6 +3507,36 @@ namespace OnlineSchoolAPI.Migrations
                         .HasConstraintName("FK__lesson_ma__lesso__03F0984C");
 
                     b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.MailingCampaign", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "CreatedByEmployee")
+                        .WithMany("MailingCampaignsCreated")
+                        .HasForeignKey("CreatedByEmployeeId")
+                        .HasConstraintName("FK_mailing_campaign_employee_created_by");
+
+                    b.Navigation("CreatedByEmployee");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.MailingRecipient", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.MailingCampaign", "Campaign")
+                        .WithMany("MailingRecipients")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_mailing_recipient_mailing_campaign");
+
+                    b.HasOne("OnlineSchoolAPI.Models.User", "User")
+                        .WithMany("MailingRecipients")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_mailing_recipient_users");
+
+                    b.Navigation("Campaign");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.OrderItem", b =>
@@ -2365,10 +3592,31 @@ namespace OnlineSchoolAPI.Migrations
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.PromoCode", b =>
                 {
+                    b.HasOne("OnlineSchoolAPI.Models.Course", "AppliesToCourse")
+                        .WithMany()
+                        .HasForeignKey("AppliesToCourseId")
+                        .HasConstraintName("FK_promo_code_course_applies_to_course_id");
+
+                    b.HasOne("OnlineSchoolAPI.Models.CourseInstance", "AppliesToInstance")
+                        .WithMany()
+                        .HasForeignKey("AppliesToInstanceId")
+                        .HasConstraintName("FK_promo_code_course_instance_applies_to_instance_id");
+
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "CreatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("CreatedByEmployeeId")
+                        .HasConstraintName("FK_promo_code_employee_created_by_employee_id");
+
                     b.HasOne("OnlineSchoolAPI.Models.DiscountType", "DiscountType")
                         .WithMany("PromoCodes")
                         .HasForeignKey("TypeId")
                         .HasConstraintName("FK_promo_code_discount_type");
+
+                    b.Navigation("AppliesToCourse");
+
+                    b.Navigation("AppliesToInstance");
+
+                    b.Navigation("CreatedByEmployee");
 
                     b.Navigation("DiscountType");
                 });
@@ -2390,6 +3638,16 @@ namespace OnlineSchoolAPI.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.SiteSetting", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "UpdatedByEmployee")
+                        .WithMany("SiteSettingsUpdated")
+                        .HasForeignKey("UpdatedByEmployeeId")
+                        .HasConstraintName("FK_site_setting_employee_updated_by");
+
+                    b.Navigation("UpdatedByEmployee");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.Student", b =>
@@ -2435,6 +3693,25 @@ namespace OnlineSchoolAPI.Migrations
                     b.Navigation("OpenedByEmployee");
 
                     b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.StudentNote", b =>
+                {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "Employee")
+                        .WithMany("StudentNotes")
+                        .HasForeignKey("EmployeeId")
+                        .HasConstraintName("FK_student_note_employee");
+
+                    b.HasOne("OnlineSchoolAPI.Models.Student", "Student")
+                        .WithMany("StudentNotes")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_student_note_student");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.StudentProgress", b =>
@@ -2527,22 +3804,36 @@ namespace OnlineSchoolAPI.Migrations
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.User", b =>
                 {
+                    b.HasOne("OnlineSchoolAPI.Models.Employee", "CreatedByEmployee")
+                        .WithMany("CreatedUsers")
+                        .HasForeignKey("CreatedByEmployeeId")
+                        .HasConstraintName("FK_users_created_by_employee");
+
                     b.HasOne("OnlineSchoolAPI.Models.UserRole", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .IsRequired()
                         .HasConstraintName("FK__users__role_id__66603565");
 
+                    b.Navigation("CreatedByEmployee");
+
                     b.Navigation("Role");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Notification", b =>
                 {
+                    b.HasOne("OnlineSchoolAPI.Models.MailingCampaign", "Campaign")
+                        .WithMany("Notifications")
+                        .HasForeignKey("CampaignId")
+                        .HasConstraintName("FK_notification_mailing_campaign_campaign_id");
+
                     b.HasOne("OnlineSchoolAPI.Models.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK__notificat__user___02C769E9");
+
+                    b.Navigation("Campaign");
 
                     b.Navigation("User");
                 });
@@ -2593,11 +3884,18 @@ namespace OnlineSchoolAPI.Migrations
                 {
                     b.Navigation("CourseInstanceCoordinators");
 
+                    b.Navigation("CourseInstanceTeachers");
+
                     b.Navigation("CourseSchedulePlans");
 
                     b.Navigation("Enrollments");
 
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.CourseInstanceStatus", b =>
+                {
+                    b.Navigation("CourseInstances");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.CourseModule", b =>
@@ -2617,11 +3915,27 @@ namespace OnlineSchoolAPI.Migrations
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.Employee", b =>
                 {
+                    b.Navigation("AuditLogs");
+
                     b.Navigation("CourseInstanceCoordinators");
+
+                    b.Navigation("CourseInstanceTeachers");
+
+                    b.Navigation("CreatedUsers");
 
                     b.Navigation("Enrollments");
 
+                    b.Navigation("HomeworkSubmissionsChecked");
+
+                    b.Navigation("HomeworkTaskSubmissionsChecked");
+
+                    b.Navigation("MailingCampaignsCreated");
+
+                    b.Navigation("SiteSettingsUpdated");
+
                     b.Navigation("StudentLessonAccesses");
+
+                    b.Navigation("StudentNotes");
 
                     b.Navigation("Submissions");
 
@@ -2650,6 +3964,25 @@ namespace OnlineSchoolAPI.Migrations
                     b.Navigation("FaqItems");
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.Homework", b =>
+                {
+                    b.Navigation("HomeworkSubmissions");
+
+                    b.Navigation("HomeworkTasks");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkSubmission", b =>
+                {
+                    b.Navigation("HomeworkTaskSubmissions");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.HomeworkTask", b =>
+                {
+                    b.Navigation("HomeworkTaskAnswers");
+
+                    b.Navigation("HomeworkTaskSubmissions");
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.InstallmentPlan", b =>
                 {
                     b.Navigation("InstallmentPayments");
@@ -2661,6 +3994,8 @@ namespace OnlineSchoolAPI.Migrations
 
                     b.Navigation("CourseSchedulePlans");
 
+                    b.Navigation("Homeworks");
+
                     b.Navigation("LessonMaterials");
 
                     b.Navigation("StudentLessonAccesses");
@@ -2671,6 +4006,13 @@ namespace OnlineSchoolAPI.Migrations
             modelBuilder.Entity("OnlineSchoolAPI.Models.LessonType", b =>
                 {
                     b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("OnlineSchoolAPI.Models.MailingCampaign", b =>
+                {
+                    b.Navigation("MailingRecipients");
+
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.OrderStatus", b =>
@@ -2696,7 +4038,11 @@ namespace OnlineSchoolAPI.Migrations
 
                     b.Navigation("Enrollments");
 
+                    b.Navigation("HomeworkSubmissions");
+
                     b.Navigation("Reviews");
+
+                    b.Navigation("StudentNotes");
                 });
 
             modelBuilder.Entity("OnlineSchoolAPI.Models.StudentLessonAccess", b =>
@@ -2724,9 +4070,19 @@ namespace OnlineSchoolAPI.Migrations
                     b.Navigation("Submissions");
                 });
 
+            modelBuilder.Entity("OnlineSchoolAPI.Models.TrialApplication", b =>
+                {
+                });
+
             modelBuilder.Entity("OnlineSchoolAPI.Models.User", b =>
                 {
+                    b.Navigation("AuditLogs");
+
                     b.Navigation("Employee");
+
+                    b.Navigation("FileStorages");
+
+                    b.Navigation("MailingRecipients");
 
                     b.Navigation("Notifications");
 

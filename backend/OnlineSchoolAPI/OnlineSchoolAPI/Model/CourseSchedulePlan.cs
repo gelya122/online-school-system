@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace OnlineSchoolAPI.Models;
@@ -17,9 +17,13 @@ public partial class CourseSchedulePlan
 
     public DateTime? CreatedAt { get; set; }
 
+    public DateTime? ScheduledAt { get; set; }
+
+    public int? LessonOrder { get; set; }
+
+    public bool IsPublished { get; set; } = true;
+
     public virtual CourseInstance Instance { get; set; } = null!;
 
     public virtual Lesson Lesson { get; set; } = null!;
-
-    public virtual ICollection<StudentLessonAccess> StudentLessonAccesses { get; set; } = new List<StudentLessonAccess>();
 }

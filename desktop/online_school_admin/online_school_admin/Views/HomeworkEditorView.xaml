@@ -1,0 +1,174 @@
+<UserControl x:Class="online_school_admin.Views.HomeworkEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.Resources>
+            <!-- x:Shared="False": отдельный экземпляр на строку; иначе ContextMenu внутри Style ломает загрузку XAML (InvalidCastException). -->
+            <ContextMenu x:Key="HomeworkTaskRowContextMenu"
+                         x:Shared="False"
+                         Opened="HomeworkTaskRowContextMenu_Opened">
+                <MenuItem Header="Удалить задание" Click="DeleteTaskMenu_Click" />
+            </ContextMenu>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.RowSpan="2"
+                Panel.ZIndex="1"
+                Background="#E6FFFFFF"
+                Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar Width="200" Height="6" IsIndeterminate="True" />
+                <TextBlock Margin="0,10,0,0" HorizontalAlignment="Center" Foreground="#6B7280" Text="Загрузка…" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Padding="10,4" Content="Обновить" Command="{Binding RefreshCommand}" />
+            <TextBlock Margin="12,4,0,0"
+                       Foreground="#C0392B"
+                       Text="{Binding Error}"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" IsEnabled="{Binding ReadOnly, Converter={StaticResource InverseBoolConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ДЗ (assignment) -->
+            <DockPanel Grid.Column="0">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Домашние задания" VerticalAlignment="Center"/>
+                    <Button Margin="8,0,0,0" Padding="10,4" Content="Добавить ДЗ" Command="{Binding AddHomeworkCommand}" />
+                </StackPanel>
+
+                <ListBox ItemsSource="{Binding Homeworks}"
+                         SelectedItem="{Binding SelectedHomework}"
+                         DisplayMemberPath="Title"
+                         Height="200" />
+
+                <Border Margin="0,10,0,0" Padding="12" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Text="Параметры ДЗ" Margin="0,0,0,8"/>
+                        <TextBlock Text="Название" Foreground="#6B7280"/>
+                        <TextBox Text="{Binding HomeworkTitle, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Margin="0,10,0,0" Text="Описание" Foreground="#6B7280"/>
+                        <TextBox Text="{Binding HomeworkDescription, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="72" TextWrapping="Wrap"/>
+
+                        <TextBlock Margin="0,10,0,0" Text="Максимальный балл за ДЗ" Foreground="#6B7280"/>
+                        <TextBox Text="{Binding HomeworkMaxScore, UpdateSourceTrigger=PropertyChanged}" Width="120" HorizontalAlignment="Left"/>
+
+                        <TextBlock Margin="0,10,0,0" Text="Дней до дедлайна" Foreground="#6B7280"/>
+                        <TextBlock FontSize="11" Foreground="#9CA3AF" TextWrapping="Wrap"
+                                   Text="Считается от даты доступа к уроку (расписание потока или старт курса). Пусто — без дедлайна."/>
+                        <TextBox Text="{Binding HomeworkDueDaysAfterLesson, UpdateSourceTrigger=PropertyChanged}" Width="120" HorizontalAlignment="Left" Margin="0,4,0,0"/>
+
+                        <CheckBox Margin="0,10,0,0" Content="Обязательное для сдачи" IsChecked="{Binding HomeworkIsRequired}" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button Padding="12,6" Content="Сохранить ДЗ" Command="{Binding SaveHomeworkCommand}" />
+                            <Button Margin="8,0,0,0" Padding="12,6" Content="Удалить ДЗ" Command="{Binding DeleteHomeworkCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+
+            <!-- Задания -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Задания в ДЗ" VerticalAlignment="Center"/>
+                    <Button Margin="8,0,0,0" Padding="10,4" Content="Добавить задание" Command="{Binding AddTaskCommand}" />
+                    <Button Margin="8,0,0,0" Padding="10,4" Content="Вверх" Command="{Binding MoveTaskUpCommand}" />
+                    <Button Margin="6,0,0,0" Padding="10,4" Content="Вниз" Command="{Binding MoveTaskDownCommand}" />
+                </StackPanel>
+
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Tasks}"
+                          SelectedItem="{Binding SelectedTask}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Порядок" Binding="{Binding TaskOrder}" Width="70"/>
+                        <DataGridTextColumn Header="Тип" Binding="{Binding TaskType}" Width="130"/>
+                        <DataGridTextColumn Header="Текст задания" Binding="{Binding TaskText}" Width="*"/>
+                        <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxScore}" Width="90"/>
+                    </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="ContextMenu" Value="{StaticResource HomeworkTaskRowContextMenu}" />
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+
+                <Border Grid.Row="2" Margin="0,12,0,0" Padding="12" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Text="Редактирование задания" Margin="0,0,0,8"/>
+                        <TextBlock Foreground="#2563EB"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,8"
+                                   Visibility="{Binding IsDetailedAnswerTask, Converter={StaticResource BoolToVisibilityConverter}}">
+                            Развёрнутый ответ проверяется преподавателем. Укажите максимальный балл за это задание больше 0.
+                        </TextBlock>
+
+                        <TextBlock Text="Текст задания" Foreground="#6B7280"/>
+                        <TextBox Text="{Binding TaskText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="88" TextWrapping="Wrap"/>
+
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="Тип задания" Foreground="#6B7280"/>
+                                <ComboBox ItemsSource="{Binding TaskTypeItems}"
+                                          DisplayMemberPath="Title"
+                                          SelectedValuePath="Slug"
+                                          SelectedValue="{Binding TaskType, UpdateSourceTrigger=PropertyChanged}"
+                                          MinHeight="28"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                <TextBlock Text="Макс. балл" Foreground="#6B7280"/>
+                                <TextBox Text="{Binding TaskMaxScore, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Порядок" Foreground="#6B7280"/>
+                                <TextBox Text="{Binding TaskOrder, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Margin="0,10,0,0" Text="Пояснение после проверки" Foreground="#6B7280"/>
+                        <TextBlock FontSize="11" Foreground="#9CA3AF" Text="Показывается ученику после проверки (поле explanation)."/>
+                        <TextBox Text="{Binding TaskExplanation, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="56" TextWrapping="Wrap" Margin="0,4,0,0"/>
+
+                        <StackPanel Margin="0,10,0,0" Visibility="{Binding IsShortAnswerTask, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="Правильный ответ" Foreground="#6B7280"/>
+                            <TextBlock FontSize="11" Foreground="#9CA3AF" TextWrapping="Wrap"
+                                       Text="Несколько допустимых формулировок — через символ | (например: да|yes|д)."/>
+                            <TextBox Text="{Binding TaskCorrectAnswer, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True"
+                                     MinHeight="44"
+                                     TextWrapping="Wrap"
+                                     Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

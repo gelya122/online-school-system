@@ -1,11 +1,12 @@
-/* Личный кабинет — в духе главной: фон hero #EFF6FF, белая «шапка»-боковая панель, акцент #2563EB */
+/* Личный кабинет — тот же фон и акценты, что на маркетинговых страницах */
 .student-cabinet {
   display: flex;
   align-items: stretch;
   min-height: calc(100vh - 80px);
   width: 100%;
-  background: #eff6ff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--surface-page, #f8fafc);
+  background-image: var(--page-app-glow, none), var(--page-app-gradient, none);
+  font-family: var(--font-sans, system-ui);
 }
 
 .student-cabinet-sidebar {
@@ -36,13 +37,13 @@
 }
 
 .sc-nav-link:hover {
-  background: rgba(37, 99, 235, 0.06);
-  color: #111827;
+  background: rgba(79, 70, 229, 0.08);
+  color: var(--text-primary, #0f172a);
 }
 
 .sc-nav-link.is-active {
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: rgba(79, 70, 229, 0.12);
+  color: var(--color-primary, #4f46e5);
   font-weight: 600;
 }
 
@@ -56,7 +57,7 @@
 }
 
 .student-cabinet-sidebar a.sc-nav-link.is-active {
-  color: #2563eb;
+  color: var(--color-primary, #4f46e5);
 }
 
 .student-cabinet-body {
@@ -76,11 +77,11 @@
 
 /* Не трогаем ссылки-кнопки (например .hw-open-dz) — иначе синий текст на синем фоне */
 .student-cabinet-body a:not(.hw-open-dz) {
-  color: #2563eb;
+  color: var(--color-primary, #4f46e5);
 }
 
 .student-cabinet-body a:not(.hw-open-dz):hover {
-  color: #1d4ed8;
+  color: var(--color-primary-hover, #4338ca);
 }
 
 @media (max-width: 768px) {

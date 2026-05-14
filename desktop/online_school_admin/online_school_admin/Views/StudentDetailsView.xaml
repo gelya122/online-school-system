@@ -1,0 +1,149 @@
+<UserControl x:Class="online_school_admin.Views.StudentDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Карточка студента" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <TabControl>
+            <TabItem Header="Личные данные">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,8,0,0">
+                    <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding Details.LastName}" />
+                                <TextBlock FontSize="18" FontWeight="SemiBold" Text=" " />
+                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding Details.FirstName}" />
+                            </StackPanel>
+                            <TextBlock Margin="0,8,0,0"
+                                       Foreground="#6B7280"
+                                       FontSize="12"
+                                       Text="{Binding StudentIdsLine}" />
+                            <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding Details.Email}" />
+                            <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding Details.Phone}" />
+                            <TextBlock Margin="0,6,0,0"
+                                       Foreground="#6B7280"
+                                       Text="{Binding DobDisplay}"
+                                       Visibility="{Binding DobDisplay, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                            <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding ClassDisplay}" />
+                            <TextBlock Margin="0,6,0,0"
+                                       Foreground="#6B7280"
+                                       Text="{Binding ParentPhoneDisplay}"
+                                       Visibility="{Binding ParentPhoneDisplay, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                            <TextBlock Margin="0,6,0,0"
+                                       Foreground="#6B7280"
+                                       Text="{Binding ParentEmailDisplay}"
+                                       Visibility="{Binding ParentEmailDisplay, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                            <TextBlock Margin="0,6,0,0"
+                                       Foreground="#6B7280"
+                                       Text="{Binding AvatarDisplay}"
+                                       Visibility="{Binding AvatarDisplay, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+                            <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding RegisteredDisplay}" />
+                            <TextBlock Margin="0,6,0,0" Foreground="#6B7280" Text="{Binding ActiveDisplay}" />
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Потоки / записи">
+                <DataGrid Margin="0,8,0,0"
+                          ItemsSource="{Binding Enrollments}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0"
+                          MinHeight="200">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Поток" Binding="{Binding InstanceName}" Width="220" />
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="*" />
+                        <DataGridTextColumn Header="Старт" Binding="{Binding StartDate, StringFormat=dd.MM.yyyy}" Width="120" />
+                        <DataGridTextColumn Header="Записан" Binding="{Binding EnrolledAt, StringFormat=dd.MM.yyyy}" Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Прогресс">
+                <StackPanel Margin="0,12,0,0">
+                    <TextBlock FontSize="15" FontWeight="SemiBold" Text="{Binding ProgressLessonsLine}" />
+                    <TextBlock Margin="0,8,0,0" Foreground="#6B7280" Text="{Binding ProgressWatchLine}" />
+                    <TextBlock Margin="0,12,0,0"
+                               Foreground="#6B7280"
+                               TextWrapping="Wrap"
+                               Text="Агрегат по всем записям student_progress: завершённые уроки и суммарное время просмотра." />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Домашние задания">
+                <DataGrid Margin="0,8,0,0"
+                          ItemsSource="{Binding Homework}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0"
+                          MinHeight="200">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding SubmissionId}" Width="70" />
+                        <DataGridTextColumn Header="Задание" Binding="{Binding AssignmentTitle}" Width="*" />
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="160" />
+                        <DataGridTextColumn Header="Поток" Binding="{Binding InstanceName}" Width="140" />
+                        <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" Width="120" />
+                        <DataGridTextColumn Header="Балл" Binding="{Binding Score}" Width="60" />
+                        <DataGridTextColumn Header="Сдано" Binding="{Binding SubmittedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="140" />
+                        <DataGridTextColumn Header="Проверено" Binding="{Binding GradedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="140" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Оплаты">
+                <DataGrid Margin="0,8,0,0"
+                          ItemsSource="{Binding Payments}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0"
+                          MinHeight="200">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Платёж" Binding="{Binding PaymentId}" Width="80" />
+                        <DataGridTextColumn Header="Заказ" Binding="{Binding OrderId}" Width="80" />
+                        <DataGridTextColumn Header="Сумма" Binding="{Binding Amount, StringFormat={}{0:N0} ₽}" Width="110" />
+                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="160" />
+                        <DataGridTextColumn Header="Оплачено" Binding="{Binding PaidAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Заметки">
+                <DockPanel Margin="0,8,0,0">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBox Width="520"
+                                 Padding="8,6"
+                                 VerticalContentAlignment="Center"
+                                 Text="{Binding NewNoteText, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="8,0,0,0" Padding="12,6" Content="Добавить" Command="{Binding AddNoteCommand}" />
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding Notes}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              RowHeaderWidth="0"
+                              MinHeight="200">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" />
+                            <DataGridTextColumn Header="Сотрудник" Binding="{Binding EmployeeName}" Width="180" />
+                            <DataGridTextColumn Header="Тип" Binding="{Binding NoteType}" Width="120" />
+                            <DataGridTextColumn Header="Текст" Binding="{Binding NoteText}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

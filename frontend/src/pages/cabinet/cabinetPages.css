@@ -42,43 +42,89 @@
 
 .cabinet-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 26px;
   overflow: hidden;
-  box-shadow: 0 10px 40px -12px rgba(15, 23, 42, 0.12);
-  border: 1px solid #f3f4f6;
+  box-shadow: 0 8px 32px rgba(49, 46, 129, 0.08), 0 2px 8px rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--border-subtle, #e2e8f0);
   cursor: pointer;
   text-align: left;
   padding: 0;
   font-family: inherit;
   font-size: inherit;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   display: flex;
   flex-direction: column;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
 }
 
 .cabinet-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 50px -12px rgba(37, 99, 235, 0.15);
-  border-color: #e5e7eb;
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(79, 70, 229, 0.14), 0 8px 24px rgba(15, 23, 42, 0.06);
+  border-color: rgba(79, 70, 229, 0.2);
+}
+
+.cabinet-card-visual {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 42%, #a78bfa 100%);
+  overflow: hidden;
+}
+
+.cabinet-card-badge {
+  position: absolute;
+  left: 0.85rem;
+  top: 0.85rem;
+  z-index: 2;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-primary, #4f46e5);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
 }
 
 .cabinet-card-cover {
-  height: 148px;
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 45%, #60a5fa 100%);
-  object-fit: cover;
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cabinet-card:hover .cabinet-card-cover:not(.cabinet-card-cover--empty) {
+  transform: scale(1.05);
+}
+
+.cabinet-card-cover--empty {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(79, 70, 229, 0.85) 0%,
+    rgba(99, 102, 241, 0.75) 50%,
+    rgba(167, 139, 250, 0.65) 100%
+  );
 }
 
 .cabinet-card-body {
-  padding: 20px 20px 22px;
+  padding: 1.25rem 1.35rem 1.35rem;
 }
 
 .cabinet-card-title {
+  font-family: var(--font-display, system-ui);
   font-size: 1.0625rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0 0 10px;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
 }
 
 .cabinet-card-meta {
@@ -101,7 +147,8 @@
   text-decoration: underline;
 }
 
-a.cabinet-assignment-cta {
+a.cabinet-assignment-cta,
+button.cabinet-assignment-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -114,9 +161,13 @@ a.cabinet-assignment-cta {
   font-weight: 600;
   text-decoration: none;
   transition: background 0.15s ease;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-a.cabinet-assignment-cta:hover {
+a.cabinet-assignment-cta:hover,
+button.cabinet-assignment-cta:hover {
   background: #1d4ed8;
   text-decoration: none;
 }
@@ -170,6 +221,10 @@ button.cabinet-back.cabinet-back--button {
   font-weight: 600;
   color: #111827;
   list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .cabinet-module summary::-webkit-details-marker {
@@ -178,6 +233,21 @@ button.cabinet-back.cabinet-back--button {
 
 .cabinet-module[open] summary {
   border-bottom: 1px solid #e5e7eb;
+}
+
+.cabinet-module-chevron {
+  color: #64748b;
+  font-size: 22px;
+  min-width: 28px;
+  text-align: center;
+  line-height: 1;
+  font-weight: 500;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.cabinet-module[open] .cabinet-module-chevron {
+  transform: rotate(90deg);
 }
 
 .cabinet-lesson-list {
@@ -318,6 +388,17 @@ button.cabinet-back.cabinet-back--button {
   border-radius: 12px;
   background: #000;
   border: 1px solid #e5e7eb;
+}
+
+.cabinet-video-placeholder {
+  min-height: 220px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  text-align: center;
 }
 
 .cabinet-panel h2.cabinet-page-title {

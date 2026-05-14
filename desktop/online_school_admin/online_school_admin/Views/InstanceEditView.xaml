@@ -1,0 +1,241 @@
+<UserControl x:Class="online_school_admin.Views.InstanceEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:online_school_admin.ViewModels"
+             xmlns:infra="clr-namespace:online_school_admin.Infrastructure">
+    <DockPanel>
+        <DockPanel.Resources>
+            <infra:IsoDateStringToNullableDateConverter x:Key="IsoDatePickerConverter" />
+        </DockPanel.Resources>
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+            <TextBlock Foreground="#6B7280" FontSize="13" Text="{Binding BreadcrumbText}" />
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="{Binding EditorTitle}" />
+                <Button Margin="16,0,0,0" Padding="14,8" Style="{StaticResource PrimaryButton}"
+                        Content="{Binding PrimaryActionText}" Command="{Binding SaveCommand}" />
+                <Button Margin="8,0,0,0" Padding="12,6" Content="Отмена" Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <TabControl SelectedIndex="{Binding EditorTabIndex}">
+            <TabItem Header="Основная информация">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Border Padding="16" Margin="0,8,0,0" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="24"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Курс *" />
+                                <ComboBox ItemsSource="{Binding CourseOptions}"
+                                          DisplayMemberPath="Title"
+                                          SelectedItem="{Binding SelectedCourse}"
+                                          Height="28"/>
+
+                                <Border Margin="0,12,0,0" Padding="12" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6">
+                                    <StackPanel>
+                                        <TextBlock FontWeight="SemiBold" Text="{Binding CourseSummaryTitle}" />
+                                        <TextBlock Margin="0,6,0,0" Foreground="#6B7280" FontSize="12" Text="{Binding CourseSummaryLine}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+
+                                <TextBlock Margin="0,12,0,0" Style="{StaticResource FormCaptionTextBlock}" Text="Название потока *" />
+                                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                                <TextBlock Margin="0,10,0,0" Style="{StaticResource FormCaptionTextBlock}"
+                                           Text="Описание расписания (schedule_description)" />
+                                <TextBlock Margin="0,2,0,0" Foreground="#6B7280" FontSize="11" TextWrapping="Wrap"
+                                           Text="Формируется автоматически по правилам на вкладке «Расписание»." />
+                                <TextBox Text="{Binding Description, Mode=OneWay}" IsReadOnly="True" IsTabStop="False"
+                                         AcceptsReturn="True" MinHeight="48" TextWrapping="Wrap" Background="#F9FAFB"/>
+
+                                <WrapPanel Margin="0,10,0,0">
+                                    <StackPanel Width="180">
+                                        <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Дата начала *" />
+                                        <DatePicker Height="28"
+                                                    SelectedDateFormat="Short"
+                                                    SelectedDate="{Binding StartDateText, Mode=TwoWay, Converter={StaticResource IsoDatePickerConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Width="180" Margin="12,0,0,0">
+                                        <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Дата окончания *" />
+                                        <DatePicker Height="28"
+                                                    SelectedDateFormat="Short"
+                                                    SelectedDate="{Binding EndDateText, Mode=TwoWay, Converter={StaticResource IsoDatePickerConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </WrapPanel>
+
+                                <WrapPanel Margin="0,10,0,0">
+                                    <StackPanel Width="160">
+                                        <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Длительность (недель)" />
+                                        <TextBox Text="{Binding TotalWeeks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" />
+                                    </StackPanel>
+                                    <StackPanel Width="160" Margin="12,0,0,0">
+                                        <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Макс. студентов *" />
+                                        <TextBox Text="{Binding MaxStudents, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </WrapPanel>
+
+                                <WrapPanel Margin="0,10,0,0">
+                                    <StackPanel Width="180">
+                                        <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Открытие набора" />
+                                        <DatePicker Height="28"
+                                                    SelectedDateFormat="Short"
+                                                    SelectedDate="{Binding EnrollmentStartDateText, Mode=TwoWay, Converter={StaticResource IsoDatePickerConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Width="180" Margin="12,0,0,0">
+                                        <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Закрытие набора" />
+                                        <DatePicker Height="28"
+                                                    SelectedDateFormat="Short"
+                                                    SelectedDate="{Binding EnrollmentEndDateText, Mode=TwoWay, Converter={StaticResource IsoDatePickerConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </WrapPanel>
+                                <TextBlock Margin="0,4,0,0" Foreground="#6B7280" FontSize="11" TextWrapping="Wrap"
+                                           Text="Закрытие набора не позже чем на 7-й календарный день после даты начала потока (включительно): можно вести запись в первую неделю после старта." />
+
+                                <TextBlock Margin="0,10,0,0" Style="{StaticResource FormCaptionTextBlock}" Text="Таймзона" />
+                                <ComboBox ItemsSource="{Binding TimezoneOptions}"
+                                          SelectedItem="{Binding Timezone}"
+                                          IsEditable="False"
+                                          Height="28"/>
+
+                                <CheckBox Margin="0,12,0,0" Content="Поток активен (is_active)" IsChecked="{Binding IsActive}" VerticalAlignment="Center" />
+
+                                <TextBlock Margin="0,12,0,0"
+                                           Foreground="#6B7280"
+                                           TextWrapping="Wrap"
+                                           Visibility="{Binding IsCreateMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                                           Text="{Binding StatusReadOnlyLabel}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2"
+                                        Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Style="{StaticResource FormCaptionTextBlock}" Text="Статус потока" />
+                                <ComboBox ItemsSource="{Binding StatusOptions}"
+                                          SelectedItem="{Binding Status}"
+                                          Height="28"/>
+                                <TextBlock Margin="0,12,0,0" Style="{StaticResource FormCaptionTextBlock}" Text="Занятий в неделю (опционально)" />
+                                <TextBox Text="{Binding LessonsPerWeek, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Расписание">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,8,0,0">
+                        <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" FontSize="15" Foreground="#111827" Text="Правила расписания" />
+                                <TextBlock Margin="0,6,0,0" TextWrapping="Wrap" Foreground="#6B7280" FontSize="12"
+                                           Text="Задайте дни и время занятий. По правилам при сохранении строится расписание уроков (course_schedule_plan). Время — в формате HH:mm." />
+
+                                <StackPanel Margin="0,14,0,0" Orientation="Horizontal">
+                                    <Button Padding="12,6" Style="{StaticResource PrimaryButton}" Content="+ Добавить правило" Command="{Binding AddScheduleRuleCommand}" />
+                                    <Button Margin="10,0,0,0" Padding="12,6" Style="{StaticResource PrimaryButton}" Content="Предпросмотр расписания" Command="{Binding PreviewScheduleCommand}" />
+                                </StackPanel>
+
+                                <Grid Margin="0,14,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MinWidth="200" />
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FormCaptionTextBlock}" Text="День недели" />
+                                    <TextBlock Grid.Column="1" Margin="12,0,0,0" Style="{StaticResource FormCaptionTextBlock}" Text="Время (HH:mm)" />
+                                    <TextBlock Grid.Column="2" Margin="12,0,0,0" Width="88" Style="{StaticResource FormCaptionTextBlock}" Text="Действия" />
+                                </Grid>
+
+                                <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding ScheduleRules}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:WeeklyScheduleRuleRow}">
+                                            <Grid Margin="0,4,0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" MinWidth="200" />
+                                                    <ColumnDefinition Width="130" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0" Height="28"
+                                                          ItemsSource="{Binding DataContext.WeekdayOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                          DisplayMemberPath="Name"
+                                                          SelectedValuePath="Value"
+                                                          SelectedValue="{Binding DayOfWeek, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBox Grid.Column="1" Margin="12,0,0,0" Height="28" VerticalContentAlignment="Center"
+                                                         Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" />
+                                                <Button Grid.Column="2" Margin="12,0,0,0" MinWidth="88" Padding="10,4" Content="Удалить"
+                                                        Command="{Binding DataContext.RemoveScheduleRuleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock Margin="0,18,0,4" FontWeight="SemiBold" Text="Текст расписания (schedule_description)" />
+                                <TextBlock TextWrapping="Wrap" Foreground="#374151" FontSize="13" Text="{Binding Description}" />
+
+                                <TextBlock Margin="0,18,0,4" FontWeight="SemiBold" Text="Предпросмотр расписания" />
+                                <TextBlock Margin="0,0,0,8" Foreground="#6B7280" FontSize="12" TextWrapping="Wrap"
+                                           Text="Колонка «Новая дата» — расчёт слотов по правилам (дни недели и время в полях HH:mm) для всех уроков курса по порядку в периоде потока; время показывается так же, как в правилах, без сдвига таймзоны. Колонка «Текущая дата» — из сохранённого плана потока в БД (course_schedule_plan), в локальном времени Windows. Если урока там ещё нет (например, урок добавили в курс после генерации плана), будет «—» и статус «Нет строки в плане». Статусы в последней колонке не из базы — это подсказки предпросмотра. Данные в БД не меняются, пока вы не нажмёте «Сохранить изменения» (при смене правил может потребоваться пересчёт плана)." />
+                                <DataGrid MinHeight="160" MaxHeight="360"
+                                          ItemsSource="{Binding PreviewRows}"
+                                          AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" RowHeaderWidth="0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="№" Binding="{Binding Ordinal}" Width="36"/>
+                                        <DataGridTextColumn Header="Урок" Binding="{Binding LessonTitle}" Width="*" MinWidth="120"/>
+                                        <DataGridTextColumn Header="Текущая дата" Binding="{Binding CurrentDateSummary}" Width="150"/>
+                                        <DataGridTextColumn Header="Новая дата" Binding="{Binding NewDateSummary}" Width="150"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="120"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Сотрудники">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Border Padding="16" Margin="0,8,0,0" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <StackPanel>
+                            <TextBlock FontWeight="SemiBold" Text="Преподаватель *" />
+                            <ComboBox Margin="0,8,0,0" Width="360" Height="28"
+                                      DisplayMemberPath="FullName"
+                                      SelectedValuePath="EmployeeId"
+                                      ItemsSource="{Binding TeacherOptions}"
+                                      SelectedValue="{Binding TeacherEmployeeId}" />
+
+                            <TextBlock Margin="0,20,0,0" FontWeight="SemiBold" Text="Наставники *" />
+                            <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                                <ComboBox Width="320" Height="28"
+                                          DisplayMemberPath="FullName"
+                                          SelectedValuePath="EmployeeId"
+                                          ItemsSource="{Binding MentorOptions}"
+                                          SelectedValue="{Binding MentorToAddId}" />
+                                <Button Margin="10,0,0,0" Padding="12,6" Content="Добавить наставника" Command="{Binding AddMentorCommand}" />
+                            </StackPanel>
+                            <DataGrid Margin="0,12,0,0" MinHeight="160" MaxHeight="280"
+                                      ItemsSource="{Binding SelectedMentors}"
+                                      SelectedItem="{Binding SelectedMentor}"
+                                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" RowHeaderWidth="0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding EmployeeId}" Width="70"/>
+                                    <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button Margin="0,8,0,0" HorizontalAlignment="Left" Padding="12,6" Content="Удалить выбранного наставника" Command="{Binding RemoveMentorCommand}" />
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,107 @@
+<UserControl x:Class="online_school_admin.Views.ProfileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:online_school_admin.Infrastructure">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Личный кабинет" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Сохранить" Command="{Binding SaveCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Загрузить аватар" Command="{Binding UploadAvatarCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Выйти" Command="{Binding LogoutCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,12" Foreground="#C0392B" Text="{Binding Error}" TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Email" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding Email}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Фамилия" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding LastName}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Имя" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding FirstName}" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Отчество" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding Patronymic}" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Телефон" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding Phone}" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Роль" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" IsReadOnly="True" Text="{Binding Role}" />
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Дата рождения (yyyy-MM-dd)" />
+                    <TextBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding BirthDateText}" />
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center" Text="Опыт (лет)" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Margin="0,0,0,0" Padding="8,6" Text="{Binding ExperienceText}" />
+                </Grid>
+
+                <Border Padding="16" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Text="Сменить пароль" />
+                        <WrapPanel Margin="0,10,0,0">
+                            <PasswordBox Width="220" Padding="8,6"
+                                         i:PasswordBoxHelper.BindPassword="True"
+                                         i:PasswordBoxHelper.BoundPassword="{Binding CurrentPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Width="220" Margin="10,0,0,0" Padding="8,6"
+                                         i:PasswordBoxHelper.BindPassword="True"
+                                         i:PasswordBoxHelper.BoundPassword="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Margin="10,0,0,0" Padding="12,6" Content="Сменить" Command="{Binding ChangePasswordCommand}" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Margin="0,16,0,6" FontSize="16" FontWeight="SemiBold" Text="Аватар URL" />
+                <TextBox Padding="8,6" Text="{Binding AvatarUrl}" IsReadOnly="True" />
+
+                <StackPanel Margin="0,18,0,0" Visibility="{Binding IsTeacher, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Преподаватель" />
+                    <TextBlock Margin="0,8,0,6" FontWeight="SemiBold" Text="{Binding HomeworkOnReview, StringFormat=ДЗ на проверке: {0}}" />
+
+                    <TextBlock Margin="0,8,0,6" FontWeight="SemiBold" Text="Назначенные потоки" />
+                    <DataGrid ItemsSource="{Binding AssignedInstances}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Поток" Binding="{Binding Title}" Width="220" />
+                            <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="220" />
+                            <DataGridTextColumn Header="Старт" Binding="{Binding StartDate, StringFormat=dd.MM.yyyy}" Width="120" />
+                            <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="120" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Margin="0,16,0,6" FontWeight="SemiBold" Text="Последние проверенные работы" />
+                    <DataGrid ItemsSource="{Binding RecentChecked}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Студент" Binding="{Binding StudentName}" Width="200" />
+                            <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="200" />
+                            <DataGridTextColumn Header="Поток" Binding="{Binding InstanceTitle}" Width="200" />
+                            <DataGridTextColumn Header="Урок" Binding="{Binding LessonTitle}" Width="200" />
+                            <DataGridTextColumn Header="Балл" Binding="{Binding TotalScore}" Width="80" />
+                            <DataGridTextColumn Header="Проверено" Binding="{Binding CheckedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="150" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
+

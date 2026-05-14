@@ -1,0 +1,108 @@
+<UserControl x:Class="online_school_admin.Views.HomeworkReviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Border Panel.ZIndex="1"
+                Background="#E6FFFFFF"
+                Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar Width="220" Height="6" IsIndeterminate="True" />
+                <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" Foreground="#6B7280" Text="Загрузка…" />
+            </StackPanel>
+        </Border>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Проверка ДЗ" />
+            <TextBlock Margin="16,8,0,0" Foreground="#6B7280" FontSize="13"
+                       Text="Очередь: развёрнутые ответы (detailed_answer), требующие ручной проверки" TextWrapping="Wrap" />
+            <Button Margin="16,0,0,0" Padding="12,6" VerticalAlignment="Top" Content="Обновить" Command="{Binding RefreshCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" VerticalAlignment="Top" Content="Проверить" Command="{Binding ReviewSelectedCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,10">
+            <WrapPanel>
+                <TextBox Width="220"
+                         Padding="8,6"
+                         VerticalContentAlignment="Center"
+                         ToolTipService.ToolTip="Поиск: ФИО студента, email"
+                         Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" />
+
+                <ComboBox Width="200" Margin="10,0,0,0"
+                          DisplayMemberPath="Title"
+                          ItemsSource="{Binding CourseOptions}"
+                          SelectedItem="{Binding SelectedCourse}"
+                          ToolTipService.ToolTip="Курс" />
+
+                <ComboBox Width="200" Margin="10,0,0,0"
+                          DisplayMemberPath="Title"
+                          ItemsSource="{Binding InstanceOptions}"
+                          SelectedItem="{Binding SelectedInstance}"
+                          ToolTipService.ToolTip="Поток" />
+
+                <ComboBox Width="200" Margin="10,0,0,0"
+                          DisplayMemberPath="Title"
+                          ItemsSource="{Binding MentorOptions}"
+                          SelectedItem="{Binding SelectedMentor}"
+                          ToolTipService.ToolTip="Наставник (только для админов)" />
+
+                <ComboBox Width="180" Margin="10,0,0,0"
+                          DisplayMemberPath="Title"
+                          ItemsSource="{Binding ReviewStateOptions}"
+                          SelectedItem="{Binding SelectedReviewState}"
+                          ToolTipService.ToolTip="Показать: непроверенные / проверенные / все" />
+
+                <TextBox Width="120" Margin="10,0,0,0"
+                         Padding="8,6"
+                         VerticalContentAlignment="Center"
+                         ToolTipService.ToolTip="Дата от (UTC), yyyy-MM-dd"
+                         Text="{Binding FromDateText, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBox Width="120" Margin="10,0,0,0"
+                         Padding="8,6"
+                         VerticalContentAlignment="Center"
+                         ToolTipService.ToolTip="Дата до (UTC), yyyy-MM-dd"
+                         Text="{Binding ToDateText, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Button Margin="10,0,0,0" Padding="12,6" VerticalAlignment="Top" Content="Применить" Command="{Binding RefreshCommand}" />
+            </WrapPanel>
+        </ScrollViewer>
+
+        <DataGrid ItemsSource="{Binding Rows}"
+                  SelectedItem="{Binding Selected}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  RowHeaderWidth="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID ответа" Binding="{Binding StudentAnswerId}" Width="90" />
+                <DataGridTextColumn Header="Студент" Binding="{Binding Student}" Width="180" />
+                <DataGridTextColumn Header="Email" Binding="{Binding StudentEmail}" Width="180" />
+                <DataGridTextColumn Header="Курс" Binding="{Binding Course}" Width="160" />
+                <DataGridTextColumn Header="Поток" Binding="{Binding Instance}" Width="160" />
+                <DataGridTextColumn Header="Урок" Binding="{Binding Lesson}" Width="140" />
+                <DataGridTextColumn Header="ДЗ" Binding="{Binding Homework}" Width="140" />
+                <DataGridTextColumn Header="Задание" Binding="{Binding TaskPreview}" Width="260" />
+                <DataGridTextColumn Header="Дата ответа" Binding="{Binding AnsweredAt, StringFormat=dd.MM.yyyy HH:mm}" Width="150" />
+                <DataGridTextColumn Header="Макс. балл" Binding="{Binding MaxPoints}" Width="90" />
+                <DataGridTextColumn Header="Наставник" Binding="{Binding MentorEmployeeName}" Width="160" />
+                <DataGridTextColumn Header="Статус" Binding="{Binding ReviewStatus}" Width="110" />
+                <DataGridTemplateColumn Header="Действие" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Padding="10,5" Content="Проверить"
+                                    Command="{Binding DataContext.ReviewRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+    </Grid>
+</UserControl>

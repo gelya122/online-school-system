@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import './Header.css';
@@ -6,8 +6,11 @@ import './Header.css';
 const Header = () => {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { items } = useCart();
   const cartCount = items.length;
+  const cartHighlight =
+    location.pathname === '/cart' || location.pathname.startsWith('/checkout');
 
   const handleLogout = () => {
     logout();
@@ -25,20 +28,20 @@ const Header = () => {
           <Link to="/" onClick={handleLogoClick}>EduSchool</Link>
         </div>
         <nav className="nav">
-          <Link to="/courses" className="nav-link">
+          <NavLink to="/courses" className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}>
             Курсы
-          </Link>
-          <Link to="/about" className="nav-link">
+          </NavLink>
+          <NavLink to="/about" end className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}>
             О школе
-          </Link>
+          </NavLink>
 
           {isAuthenticated ? (
             <>
-              <Link to="/learn" className="nav-link">
+              <NavLink to="/learn" className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}>
                 Личный кабинет
-              </Link>
+              </NavLink>
 
-              <Link to="/cart" className="nav-cart" aria-label="Корзина">
+              <Link to="/cart" className={`nav-cart${cartHighlight ? ' nav-cart--active' : ''}`} aria-label="Корзина">
                 {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path
@@ -71,11 +74,11 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="btn-login-link">
+              <NavLink to="/login" className={({ isActive }) => `btn-login-link${isActive ? ' btn-login-link--active' : ''}`}>
                 Войти
-              </Link>
+              </NavLink>
 
-              <Link to="/cart" className="nav-cart" aria-label="Корзина">
+              <Link to="/cart" className={`nav-cart${cartHighlight ? ' nav-cart--active' : ''}`} aria-label="Корзина">
                 {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path

@@ -1,0 +1,22 @@
+<Window x:Class="online_school_admin.Views.ApplicationContactMarkWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Отметить контакт"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        SizeToContent="Height"
+        Width="440">
+    <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Foreground="#6B7280"
+                   Text="Будет установлено contacted_at = сейчас (UTC на сервере). При необходимости добавьте комментарий в журнал заявки." />
+
+        <TextBlock Margin="0,12,0,0" Text="Комментарий" Foreground="#6B7280" />
+        <TextBox x:Name="CommentBox" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64" Margin="0,4,0,12"
+                 Text="Связались с клиентом" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Отмена" IsCancel="True" Width="100" Margin="0,0,8,0" Padding="10,6" Click="Cancel_Click" />
+            <Button Content="Сохранить" IsDefault="True" Width="110" Padding="10,6" Click="Ok_Click" />
+        </StackPanel>
+    </StackPanel>
+</Window>

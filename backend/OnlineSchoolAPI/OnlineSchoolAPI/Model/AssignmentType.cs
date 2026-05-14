@@ -10,6 +10,4 @@ public partial class AssignmentType
     public string TypeName { get; set; } = null!;
 
     public string? Description { get; set; }
-
-    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 }

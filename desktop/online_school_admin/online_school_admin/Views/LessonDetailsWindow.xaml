@@ -1,0 +1,40 @@
+<Window x:Class="online_school_admin.Views.LessonDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:online_school_admin.Views"
+        Title="Урок"
+        Width="1200"
+        Height="820"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="16">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22"
+                       FontWeight="SemiBold"
+                       Foreground="#111827"
+                       Text="{Binding LessonTitle}" />
+            <TextBlock Margin="12,8,0,0"
+                       Foreground="#6B7280"
+                       Text="{Binding LessonId, StringFormat=ID: {0}}"/>
+        </StackPanel>
+
+        <TabControl>
+            <TabItem Header="Обзор">
+                <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Margin="0,12,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="640">
+                        <StackPanel>
+                            <TextBlock FontWeight="SemiBold" Foreground="#111827" Text="Домашнее задание по уроку" Margin="0,0,0,10" />
+                            <TextBlock Foreground="#374151"
+                                       FontSize="14"
+                                       TextWrapping="Wrap"
+                                       Text="{Binding Homework.HomeworkOverviewText}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </TabItem>
+            <TabItem Header="Домашнее задание">
+                <views:HomeworkEditorView Margin="0,12,0,0" DataContext="{Binding Homework}" />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
+

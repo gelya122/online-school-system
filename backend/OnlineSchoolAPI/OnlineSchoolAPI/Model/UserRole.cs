@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace OnlineSchoolAPI.Models;
@@ -12,4 +12,6 @@ public partial class UserRole
     public string? Description { get; set; }
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+    public virtual ICollection<CourseInstanceStaff> CourseInstanceStaffs { get; set; } = new List<CourseInstanceStaff>();
 }

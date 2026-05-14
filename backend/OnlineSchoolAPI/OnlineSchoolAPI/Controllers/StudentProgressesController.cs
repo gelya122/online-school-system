@@ -26,7 +26,6 @@ public class StudentProgressesController : ControllerBase
                 ProgressId = p.ProgressId,
                 EnrollmentId = p.EnrollmentId,
                 LessonId = p.LessonId,
-                AccessId = p.AccessId,
                 IsCompleted = p.IsCompleted,
                 CompletedAt = p.CompletedAt,
                 WatchTimeSeconds = p.WatchTimeSeconds,
@@ -48,7 +47,6 @@ public class StudentProgressesController : ControllerBase
             ProgressId = progress.ProgressId,
             EnrollmentId = progress.EnrollmentId,
             LessonId = progress.LessonId,
-            AccessId = progress.AccessId,
             IsCompleted = progress.IsCompleted,
             CompletedAt = progress.CompletedAt,
             WatchTimeSeconds = progress.WatchTimeSeconds,
@@ -64,7 +62,6 @@ public class StudentProgressesController : ControllerBase
         {
             EnrollmentId = dto.EnrollmentId,
             LessonId = dto.LessonId,
-            AccessId = dto.AccessId,
             IsCompleted = dto.IsCompleted,
             WatchTimeSeconds = dto.WatchTimeSeconds
         };
@@ -77,7 +74,6 @@ public class StudentProgressesController : ControllerBase
             ProgressId = progress.ProgressId,
             EnrollmentId = progress.EnrollmentId,
             LessonId = progress.LessonId,
-            AccessId = progress.AccessId,
             IsCompleted = progress.IsCompleted,
             CompletedAt = progress.CompletedAt,
             WatchTimeSeconds = progress.WatchTimeSeconds,

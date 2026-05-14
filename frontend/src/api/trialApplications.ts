@@ -2,11 +2,12 @@ import axiosInstance from './axiosInstance';
 
 type CreateTrialApplicationPayload = {
   FirstName: string;
-  LastName: string;
+  LastName?: string;
   Phone: string;
   Email?: string;
-  ClassNumber: number;
-  SelectedSubjects: string;
+  ClassNumber?: number;
+  SelectedSubjects?: string;
+  CourseId?: number;
   ApplicationStatusId?: number;
 };
 

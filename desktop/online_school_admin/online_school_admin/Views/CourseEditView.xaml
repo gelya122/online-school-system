@@ -1,0 +1,88 @@
+<UserControl x:Class="online_school_admin.Views.CourseEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="Редактирование курса" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsCreate}" Value="True">
+                                <Setter Property="Text" Value="Добавление курса" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <TextBlock Margin="0,0,0,12" Foreground="#C0392B" Text="{Binding Error}" TextWrapping="Wrap" />
+
+            <TextBlock Text="Категория *" />
+            <ComboBox Margin="0,4,0,0"
+                      Padding="8,6"
+                      DisplayMemberPath="CategoryName"
+                      ItemsSource="{Binding Categories}"
+                      SelectedItem="{Binding SelectedCategory}" />
+
+            <TextBlock Margin="0,12,0,0" Text="Название *" />
+            <TextBox Padding="8,6" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Margin="0,12,0,0" Text="Короткое описание" />
+            <TextBox Padding="8,6" Text="{Binding ShortDescription, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Margin="0,12,0,0" Text="Полное описание" />
+            <TextBox Padding="8,6"
+                     AcceptsReturn="True"
+                     MinHeight="120"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Margin="0,12,0,0" Text="Cover image url" />
+            <TextBox Padding="8,6" Text="{Binding CoverImgUrl, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                <Button Padding="12,6" Content="Загрузить с устройства…" Command="{Binding PickCoverCommand}" />
+                <TextBlock Margin="12,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="#6B7280"
+                           Text="{Binding CoverFileName}" />
+            </StackPanel>
+
+            <UniformGrid Columns="2" Margin="0,12,0,0">
+                <StackPanel Margin="0,0,12,0">
+                    <TextBlock Text="Цена" />
+                    <TextBox Padding="8,6" Text="{Binding Price, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Скидочная цена" />
+                    <TextBox Padding="8,6" Text="{Binding DiscountPrice, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </UniformGrid>
+
+            <UniformGrid Columns="2" Margin="0,12,0,0">
+                <StackPanel Margin="0,0,12,0">
+                    <TextBlock Text="Длительность (часы)" />
+                    <TextBox Padding="8,6" Text="{Binding TotalHours, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StackPanel>
+                    <CheckBox Margin="0,18,0,0" Content="Активен" IsChecked="{Binding IsActive}" />
+                </StackPanel>
+            </UniformGrid>
+
+            <TextBlock Margin="0,12,0,0" Text="Result text" />
+            <TextBox Padding="8,6"
+                     AcceptsReturn="True"
+                     MinHeight="80"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     Text="{Binding WhatYouGet, UpdateSourceTrigger=PropertyChanged}" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button Margin="0,0,8,0" Padding="12,6" Content="Отмена" Command="{Binding CancelCommand}" />
+                <Button Padding="12,6" Content="Сохранить" Command="{Binding SaveCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+

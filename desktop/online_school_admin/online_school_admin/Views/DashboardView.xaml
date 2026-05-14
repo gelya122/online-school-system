@@ -1,0 +1,113 @@
+<UserControl x:Class="online_school_admin.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <DockPanel Style="{StaticResource ListPageDockPanel}">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,16">
+                <TextBlock Style="{StaticResource PageTitleTextBlock}" Text="Главная" />
+                <Button Style="{StaticResource SecondaryButton}"
+                        Margin="16,0,0,0"
+                        Content="Обновить"
+                        Command="{Binding RefreshCommand}" />
+            </StackPanel>
+
+            <TextBlock DockPanel.Dock="Top"
+                       Style="{StaticResource ErrorTextBlock}"
+                       Text="{Binding Error}"
+                       Visibility="{Binding Error, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <UniformGrid Columns="3" Margin="0,0,0,16">
+                        <Border Margin="0,0,12,12" Padding="14" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource Brush.TextMuted}" Text="Активные студенты" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="SemiBold" Text="{Binding ActiveStudents}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="0,0,12,12" Padding="14" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource Brush.TextMuted}" Text="Новые заявки" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="SemiBold" Text="{Binding NewApplications}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="0,0,0,12" Padding="14" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource Brush.TextMuted}" Text="ДЗ на проверке" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="SemiBold" Text="{Binding HomeworkPendingReview}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,12,0" Padding="14" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource Brush.TextMuted}" Text="Активные потоки" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="SemiBold" Text="{Binding ActiveInstances}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="0,0,12,0" Padding="14" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource Brush.TextMuted}" Text="Оплаты за месяц" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="SemiBold" Text="{Binding PaymentsThisMonth, StringFormat={}{0:N0} ₽}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Padding="14" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Foreground="{StaticResource Brush.TextMuted}" Text="Просроченные платежи" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="SemiBold" Text="{Binding OverduePayments}" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <TextBlock Margin="0,8,0,8" FontSize="16" FontWeight="SemiBold" Text="Последние заявки" />
+                    <DataGrid ItemsSource="{Binding RecentApplications}"
+                              Height="240"
+                              RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="220" SortMemberPath="FullName" />
+                            <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="140" />
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200" />
+                            <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="140" SortMemberPath="Status" />
+                            <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" SortMemberPath="CreatedAt" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Margin="0,16,0,8" FontSize="16" FontWeight="SemiBold" Text="ДЗ на проверке" />
+                    <DataGrid ItemsSource="{Binding HomeworkReviewQueue}"
+                              Height="240"
+                              RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Студент" Binding="{Binding Student}" Width="200" SortMemberPath="Student" />
+                            <DataGridTextColumn Header="Курс" Binding="{Binding Course}" Width="200" SortMemberPath="Course" />
+                            <DataGridTextColumn Header="Урок" Binding="{Binding Lesson}" Width="*" />
+                            <DataGridTextColumn Header="Дата сдачи" Binding="{Binding SubmittedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160" SortMemberPath="SubmittedAt" />
+                            <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="140" SortMemberPath="Status" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Margin="0,16,0,8" FontSize="16" FontWeight="SemiBold" Text="Ближайшие старты потоков" />
+                    <DataGrid ItemsSource="{Binding UpcomingInstances}"
+                              Height="240"
+                              RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Поток" Binding="{Binding Instance}" Width="240" SortMemberPath="Instance" />
+                            <DataGridTextColumn Header="Курс" Binding="{Binding Course}" Width="*" SortMemberPath="Course" />
+                            <DataGridTextColumn Header="Дата начала" Binding="{Binding StartDate, StringFormat=dd.MM.yyyy}" Width="140" SortMemberPath="StartDate" />
+                            <DataGridTextColumn Header="Студентов" Binding="{Binding StudentsCount}" Width="110" SortMemberPath="StudentsCount" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+
+        <Border Background="#E6FFFFFF"
+                Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar Width="240" Height="6" IsIndeterminate="True" Foreground="{StaticResource Brush.Primary}" />
+                <TextBlock Margin="0,12,0,0"
+                           HorizontalAlignment="Center"
+                           Foreground="{StaticResource Brush.TextMuted}"
+                           Text="Загрузка сводки…" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

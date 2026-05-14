@@ -1,0 +1,321 @@
+<Window x:Class="online_school_admin.Views.CourseEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:online_school_admin.ViewModels"
+        Title="Редактор шаблона курса"
+        Height="720"
+        Width="1100"
+        MinHeight="600"
+        MinWidth="960"
+        WindowStartupLocation="CenterOwner"
+        Background="#FAFAFA">
+    <DockPanel Margin="12">
+        <Border DockPanel.Dock="Top"
+                Margin="0,0,0,12"
+                Padding="12"
+                Background="White"
+                BorderBrush="#E5E7EB"
+                BorderThickness="1"
+                CornerRadius="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="Шаблон курса (Course)" />
+                    <TextBlock Margin="0,4,0,0"
+                               Foreground="#6B7280"
+                               TextWrapping="Wrap"
+                               Text="Структура уроков и ДЗ относится к шаблону. Цены/даты запуска настраиваются в потоках (CourseInstance)." />
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Padding="12,6"
+                        VerticalAlignment="Top"
+                        Content="Закрыть"
+                        Click="Close_OnClick" />
+            </Grid>
+        </Border>
+
+        <TabControl Background="White">
+            <TabItem Header="1. Основное">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="Название" />
+                        <TextBox Margin="0,4,0,12" Padding="8,6" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Категория (предмет + ОГЭ/ЕГЭ задаются категорией)" />
+                        <ComboBox Margin="0,4,0,12"
+                                  Padding="8,6"
+                                  DisplayMemberPath="CategoryName"
+                                  SelectedValuePath="CategoryId"
+                                  SelectedValue="{Binding SelectedCategoryId}"
+                                  ItemsSource="{Binding Categories}" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Цена, ₽" />
+                                <TextBox Margin="0,4,0,12" Padding="8,6" Text="{Binding Price, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Цена со скидкой" />
+                                <TextBox Margin="0,4,0,12" Padding="8,6" Text="{Binding DiscountPrice, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Длительность, часов (TotalHours)" />
+                        <TextBox Margin="0,4,0,12" Padding="8,6" Text="{Binding TotalHours, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Краткое описание" />
+                        <TextBox Margin="0,4,0,12"
+                                 MinHeight="48"
+                                 Padding="8,6"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Text="{Binding ShortDescription, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Полное описание" />
+                        <TextBox Margin="0,4,0,12"
+                                 MinHeight="96"
+                                 Padding="8,6"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Text="{Binding FullDescription, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Преимущества курса (каждый пункт с новой строки)" />
+                        <TextBox Margin="0,4,0,12"
+                                 MinHeight="72"
+                                 Padding="8,6"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Text="{Binding BenefitsText, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Результаты обучения (каждый пункт с новой строки)" />
+                        <TextBox Margin="0,4,0,12"
+                                 MinHeight="72"
+                                 Padding="8,6"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Text="{Binding OutcomesText, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <CheckBox Margin="0,0,0,12"
+                                  Content="Шаблон активен (виден на сайте)"
+                                  IsChecked="{Binding IsActive}" />
+
+                        <TextBlock Text="Обложка (URL после загрузки)" Foreground="#6B7280" />
+                        <TextBox Margin="0,4,0,8"
+                                 IsReadOnly="True"
+                                 Padding="8,6"
+                                 Text="{Binding CoverImgUrl}" />
+
+                        <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                            <Button Margin="0,0,8,0"
+                                    Padding="12,6"
+                                    Content="Загрузить изображение…"
+                                    Command="{Binding UploadCoverAsyncCommand}" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Foreground="#6B7280"
+                                       Text="{Binding CoverPreviewUrl, TargetNullValue=(нет превью)}"
+                                       TextWrapping="Wrap"
+                                       Width="400" />
+                        </StackPanel>
+
+                        <Button HorizontalAlignment="Left"
+                                Padding="16,8"
+                                Content="Сохранить основное"
+                                Command="{Binding SaveBasicAsyncCommand}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="2. Структура">
+                <DockPanel Margin="12">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Margin="0,0,8,0" Padding="10,6" Content="+ Блок" Command="{Binding AddModuleAsyncCommand}" />
+                        <Button Margin="0,0,8,0" Padding="10,6" Content="+ Урок" Command="{Binding AddLessonAsyncCommand}" />
+                        <Button Margin="0,0,8,0" Padding="10,6" Content="+ ДЗ" Command="{Binding AddHomeworkCommand}" />
+                        <Button Padding="10,6" Content="Удалить выбранное" Command="{Binding DeleteStructureNodeAsyncCommand}" />
+                    </StackPanel>
+                    <TreeView x:Name="StructureTree"
+                              ItemsSource="{Binding StructureRoots}"
+                              SelectedItemChanged="StructureTree_OnSelectedItemChanged">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate DataType="{x:Type vm:CourseStructureNode}"
+                                                      ItemsSource="{Binding Children}">
+                                <TextBlock Text="{Binding Label}" />
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="3. Уроки и материалы">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap"
+                                   Foreground="#6B7280"
+                                   Text="Выберите «Урок» в дереве на вкладке «Структура», затем отредактируйте поля и сохраните." />
+
+                        <TextBlock Margin="0,12,0,4" Text="Название урока" />
+                        <TextBox Padding="8,6" Text="{Binding LessonTitleEdit, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Margin="0,12,0,4" Text="Тип урока" />
+                        <ComboBox Padding="8,6"
+                                  DisplayMemberPath="TypeName"
+                                  SelectedValuePath="TypeId"
+                                  SelectedValue="{Binding LessonTypeId}"
+                                  ItemsSource="{Binding LessonTypes}" />
+
+                        <TextBlock Margin="0,12,0,4" Text="Описание / конспект (HTML можно вставить как текст)" />
+                        <TextBox MinHeight="120"
+                                 Padding="8,6"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Text="{Binding LessonContent, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Margin="0,12,0,4" Text="URL видео (после загрузки подставляется автоматически)" />
+                        <TextBox Margin="0,0,0,8" Padding="8,6" Text="{Binding LessonVideoUrl, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                Padding="12,6"
+                                Content="Загрузить видеофайл…"
+                                Command="{Binding UploadLessonVideoAsyncCommand}" />
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Длительность видео, мин" />
+                                <TextBox Padding="8,6" Text="{Binding LessonDurationMinutes, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Порядковый номер в модуле" />
+                                <TextBox Padding="8,6" Text="{Binding LessonOrder, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <CheckBox Margin="0,0,0,12" Content="Бесплатный превью-урок" IsChecked="{Binding LessonFreePreview}" />
+
+                        <Button HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                Padding="12,6"
+                                Content="Сохранить урок"
+                                Command="{Binding SaveLessonAsyncCommand}" />
+
+                        <TextBlock FontWeight="SemiBold" Text="Материалы к уроку" />
+                        <Button HorizontalAlignment="Left"
+                                Margin="0,8,0,8"
+                                Padding="12,6"
+                                Content="Загрузить файл…"
+                                Command="{Binding UploadLessonMaterialAsyncCommand}" />
+
+                        <DataGrid ItemsSource="{Binding LessonMaterials}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column"
+                                  MaxHeight="220">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Файл" Binding="{Binding FileName}" Width="*" />
+                                <DataGridTextColumn Header="Размер, КБ" Binding="{Binding FileSizeKb}" Width="100" />
+                                <DataGridTemplateColumn Header="" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Удалить"
+                                                    Padding="6,2"
+                                                    Command="{Binding DataContext.DeleteMaterialAsyncCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="4. Домашние задания">
+                <DockPanel Margin="12">
+                    <TextBlock DockPanel.Dock="Top"
+                               Margin="0,0,0,8"
+                               Foreground="#6B7280"
+                               TextWrapping="Wrap"
+                               Text="Список всех ДЗ шаблона. Правьте поля и нажимайте «Сохранить» в строке." />
+                    <DataGrid ItemsSource="{Binding AssignmentsFlat}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Урок"
+                                                Binding="{Binding LessonTitle}"
+                                                Width="180"
+                                                IsReadOnly="True" />
+                            <DataGridTextColumn Header="Название" Binding="{Binding Dto.Title, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                            <DataGridTextColumn Header="Макс. балл" Binding="{Binding Dto.MaxScore, UpdateSourceTrigger=PropertyChanged}" Width="90" />
+                            <DataGridTextColumn Header="Срок (дн. после урока)"
+                                                Binding="{Binding Dto.DueDaysAfterLesson, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="140" />
+                            <DataGridTemplateColumn Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="ОК"
+                                                Padding="6,2"
+                                                Command="{Binding DataContext.SaveAssignmentRowAsyncCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="5. Отзывы и статистика">
+                <DockPanel Margin="12">
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock FontWeight="SemiBold" Text="Статистика шаблона" />
+                        <TextBlock Margin="0,4,0,0" Text="{Binding StatsEnrolled, StringFormat=Записалось: {0}}" />
+                        <TextBlock Text="{Binding StatsCompleted, StringFormat=Завершили обучение: {0}}" />
+                        <TextBlock Text="{Binding StatsAvgRating, StringFormat=Средняя оценка (отзывы): {0}}" />
+                        <TextBlock Text="{Binding StatsReviewCount, StringFormat=Число оценок в расчёте: {0}}" />
+                    </StackPanel>
+
+                    <DataGrid ItemsSource="{Binding Reviews}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Студент Id"
+                                                Binding="{Binding StudentId}"
+                                                Width="90"
+                                                IsReadOnly="True" />
+                            <DataGridTextColumn Header="Оценка" Binding="{Binding Rating}" Width="70" />
+                            <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="*" />
+                            <DataGridCheckBoxColumn Header="Опубликован"
+                                                    Binding="{Binding IsPublished, Mode=TwoWay}"
+                                                    Width="100" />
+                            <DataGridTemplateColumn Width="160">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Перекл. публикацию"
+                                                Padding="6,2"
+                                                Command="{Binding DataContext.ToggleReviewPublishAsyncCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

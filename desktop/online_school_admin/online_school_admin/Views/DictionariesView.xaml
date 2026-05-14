@@ -1,0 +1,70 @@
+<UserControl x:Class="online_school_admin.Views.DictionariesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,12" FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Справочники" />
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Padding="12,6" Content="Обновить список справочников" Command="{Binding RefreshRegistryCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Обновить таблицу" Command="{Binding RefreshRowsCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Foreground="#C0392B" Text="{Binding Error}" TextWrapping="Wrap" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0">
+                <TextBlock DockPanel.Dock="Top" FontWeight="SemiBold" Margin="0,0,0,8" Text="Справочник" />
+                <ListBox ItemsSource="{Binding Registry}"
+                         SelectedItem="{Binding SelectedRegistry}"
+                         DisplayMemberPath="Title" />
+            </DockPanel>
+
+            <DockPanel Grid.Column="2">
+                <Border DockPanel.Dock="Bottom" Padding="0,12,0,0" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" Text="Редактирование" />
+                        <WrapPanel Margin="0,8,0,0">
+                            <TextBox Width="220" Padding="8,6" ToolTip="Название" Text="{Binding NameText, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Margin="8,0,0,0" Width="280" Padding="8,6" ToolTip="Описание" Text="{Binding DescriptionText, UpdateSourceTrigger=PropertyChanged}" />
+                        </WrapPanel>
+                        <StackPanel Margin="0,8,0,0" Orientation="Horizontal" Visibility="{Binding ShowIsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <CheckBox Content="Активен" IsChecked="{Binding IsActive}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Margin="0,8,0,0" Visibility="{Binding ShowCourseCategoryFields, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <WrapPanel>
+                                <TextBox Width="100" Padding="8,6" ToolTip="SubjectId" Text="{Binding SubjectIdText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Margin="8,0,0,0" Width="100" Padding="8,6" ToolTip="ExamId" Text="{Binding ExamIdText, UpdateSourceTrigger=PropertyChanged}" />
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+                            <Button Padding="12,6" Content="Новая запись" Command="{Binding NewCommand}" />
+                            <Button Margin="8,0,0,0" Padding="12,6" Content="Сохранить" Command="{Binding SaveCommand}" />
+                            <Button Margin="8,0,0,0" Padding="12,6" Content="Удалить" Command="{Binding DeleteCommand}" />
+                            <Button Margin="8,0,0,0" Padding="12,6" Content="Деактивировать" Command="{Binding DeactivateCommand}"
+                                    Visibility="{Binding ShowDeactivate, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <DataGrid ItemsSource="{Binding Rows}"
+                          SelectedItem="{Binding SelectedRow}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          RowHeaderWidth="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="60" />
+                        <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="200" />
+                        <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="*" />
+                        <DataGridTextColumn Header="Активен" Binding="{Binding IsActive}" Width="70" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

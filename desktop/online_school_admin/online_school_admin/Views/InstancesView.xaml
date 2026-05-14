@@ -1,0 +1,121 @@
+<UserControl x:Class="online_school_admin.Views.InstancesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <DockPanel Style="{StaticResource ListPageDockPanel}">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,16">
+                <TextBlock Style="{StaticResource PageTitleTextBlock}" Text="Потоки" />
+                <Button Style="{StaticResource SecondaryButton}" Margin="16,0,0,0" Content="Обновить" Command="{Binding RefreshCommand}" />
+                <Button Style="{StaticResource PrimaryButton}" Content="Создать поток" Command="{Binding AddCommand}" />
+                <Button Content="Открыть" Command="{Binding OpenCommand}" />
+                <Button Content="Редактировать" Command="{Binding EditCommand}" />
+                <Button Content="Опубликовать набор" Command="{Binding PublishCommand}"
+                        ToolTip="Статус enrollment_open (набор открыт)" />
+                <Button Content="Снять с публикации" Command="{Binding UnpublishCommand}"
+                        ToolTip="Вернуть статус planned" />
+                <Button Content="Архивировать" Command="{Binding ArchiveCommand}" />
+                <Button Content="Деактивировать" Command="{Binding DeactivateCommand}"
+                        ToolTip="Только is_active=false (поток остаётся в системе, не архивируется)" />
+                <Button Content="Активировать" Command="{Binding ActivateCommand}"
+                        ToolTip="Включить is_active (статус потока не меняется)" />
+                <Button Content="Экспорт CSV" Command="{Binding ExportCsvCommand}" />
+                <Button Content="Сбросить" Command="{Binding ResetCommand}" />
+            </StackPanel>
+
+            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                <TextBox Width="260"
+                         Margin="0,0,10,8"
+                         ToolTipService.ToolTip="Поиск по названию потока"
+                         Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" />
+
+                <ComboBox Width="220"
+                          Margin="0,0,10,8"
+                          DisplayMemberPath="Title"
+                          ItemsSource="{Binding CourseOptions}"
+                          SelectedItem="{Binding SelectedCourse}"
+                          ToolTipService.ToolTip="Фильтр по курсу" />
+
+                <ComboBox Width="160"
+                          Margin="0,0,10,8"
+                          DisplayMemberPath="Label"
+                          ItemsSource="{Binding StatusFilters}"
+                          SelectedItem="{Binding SelectedStatusFilter}"
+                          ToolTipService.ToolTip="Статус потока" />
+
+                <ComboBox Width="140"
+                          Margin="0,0,10,8"
+                          DisplayMemberPath="Title"
+                          ItemsSource="{Binding ActiveOptions}"
+                          SelectedItem="{Binding SelectedActive}"
+                          ToolTipService.ToolTip="Активность потока (is_active)" />
+
+                <Button Style="{StaticResource PrimaryButton}"
+                        Margin="0,0,10,8"
+                        Content="Обновить"
+                        Command="{Binding RefreshCommand}" />
+            </WrapPanel>
+
+            <DockPanel DockPanel.Dock="Bottom" Margin="0,12,0,0" LastChildFill="False">
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="{StaticResource Brush.TextMuted}"
+                           Text="{Binding PageSummary}" />
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Style="{StaticResource SecondaryButton}" Content="|◀" Command="{Binding FirstPageCommand}" />
+                    <Button Style="{StaticResource SecondaryButton}" Content="◀" Command="{Binding PrevPageCommand}" />
+                    <Button Style="{StaticResource SecondaryButton}" Content="▶" Command="{Binding NextPageCommand}" />
+                    <Button Style="{StaticResource SecondaryButton}" Content="▶|" Command="{Binding LastPageCommand}" />
+                </StackPanel>
+            </DockPanel>
+
+            <TextBlock DockPanel.Dock="Top"
+                       Style="{StaticResource ErrorTextBlock}"
+                       Text="{Binding Error}"
+                       Visibility="{Binding Error, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+
+            <Grid>
+                <DataGrid ItemsSource="{Binding Rows}"
+                          SelectedItem="{Binding Selected, Mode=TwoWay}"
+                          RowHeaderWidth="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding InstanceId}" Width="70" SortMemberPath="InstanceId" />
+                        <DataGridTextColumn Header="Название потока" Binding="{Binding Title}" Width="220" SortMemberPath="Title" />
+                        <DataGridTextColumn Header="Курс" Binding="{Binding CourseTitle}" Width="*" SortMemberPath="CourseTitle" />
+                        <DataGridTextColumn Header="Дата начала" Binding="{Binding StartDate, StringFormat=dd.MM.yyyy}" Width="110" SortMemberPath="StartDate" />
+                        <DataGridTextColumn Header="Дата окончания" Binding="{Binding EndDate, StringFormat=dd.MM.yyyy}" Width="120" SortMemberPath="EndDate" />
+                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="110" SortMemberPath="Status" />
+                        <DataGridTextColumn Header="Студентов / макс." Binding="{Binding StudentsSlashMax}" Width="110" SortMemberPath="StudentsCount" />
+                        <DataGridTextColumn Header="Преподаватель" Binding="{Binding TeacherFullName}" Width="160" SortMemberPath="TeacherFullName" />
+                        <DataGridTextColumn Header="Наставников" Binding="{Binding MentorsCount}" Width="90" SortMemberPath="MentorsCount" />
+                        <DataGridCheckBoxColumn Header="Активен" Binding="{Binding IsActive}" Width="70" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Border Background="#E6FFFFFF"
+                        Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ProgressBar Width="220" Height="6" IsIndeterminate="True" Foreground="{StaticResource Brush.Primary}" />
+                        <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextMuted}" Text="Загрузка…" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{StaticResource Brush.SurfaceMuted}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding HasAnyData}" Value="False" />
+                                        <Condition Binding="{Binding IsBusy}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Style="{StaticResource EmptyStateTextBlock}" />
+                </Border>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>

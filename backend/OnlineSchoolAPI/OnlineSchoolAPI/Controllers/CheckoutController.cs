@@ -21,7 +21,7 @@ public class CheckoutController : ControllerBase
 
     /// <summary>
     /// Оформление заказа: цены из БД, промокод на сервере; заказ, оплата, зачисление (enrollment),
-    /// student_lesson_access, student_progress; при рассрочке — installment_plan и installment_payment.
+    /// создание строк <c>student_progress</c> по плану/урокам курса; при рассрочке — installment_plan и installment_payment.
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<CheckoutResponseDto>> Post([FromBody] CheckoutRequestDto dto)
@@ -282,65 +282,36 @@ public class CheckoutController : ControllerBase
             .ThenBy(p => p.LessonId)
             .ToListAsync();
 
-        var accessRows = new List<StudentLessonAccess>();
-
+        var lessonIds = new List<int>();
         if (plans.Count > 0)
-        {
-            foreach (var plan in plans)
-            {
-                var plannedDate = instance.StartDate.AddDays(plan.ReleaseDayOffset);
-                var access = new StudentLessonAccess
-                {
-                    EnrollmentId = enrollment.EnrollmentId,
-                    LessonId = plan.LessonId,
-                    PlanId = plan.PlanId,
-                    PlannedAccessDate = plannedDate,
-                    PlannedAccessTime = plan.ReleaseTime,
-                    IsAvailable = true,
-                    CreatedAt = now
-                };
-                accessRows.Add(access);
-                _context.StudentLessonAccesses.Add(access);
-            }
-        }
+            lessonIds.AddRange(plans.Select(p => p.LessonId));
         else
         {
-            var lessonIds = await _context.Lessons
+            lessonIds = await _context.Lessons
                 .Where(l => l.Module.CourseId == courseId)
                 .OrderBy(l => l.Module.ModuleOrder)
                 .ThenBy(l => l.LessonOrder)
                 .Select(l => l.LessonId)
                 .ToListAsync();
-
-            foreach (var lessonId in lessonIds)
-            {
-                var access = new StudentLessonAccess
-                {
-                    EnrollmentId = enrollment.EnrollmentId,
-                    LessonId = lessonId,
-                    PlanId = null,
-                    PlannedAccessDate = instance.StartDate,
-                    IsAvailable = true,
-                    CreatedAt = now
-                };
-                accessRows.Add(access);
-                _context.StudentLessonAccesses.Add(access);
-            }
         }
 
-        await _context.SaveChangesAsync();
-
-        foreach (var access in accessRows)
+        foreach (var lessonId in lessonIds.Distinct())
         {
+            var exists = await _context.StudentProgresses.AnyAsync(
+                p => p.EnrollmentId == enrollment.EnrollmentId && p.LessonId == lessonId);
+            if (exists)
+                continue;
+
             _context.StudentProgresses.Add(new StudentProgress
             {
                 EnrollmentId = enrollment.EnrollmentId,
-                LessonId = access.LessonId,
-                AccessId = access.AccessId,
+                LessonId = lessonId,
                 IsCompleted = false,
                 CreatedAt = now
             });
         }
+
+        await _context.SaveChangesAsync();
     }
 
     private async Task<CourseInstance?> ResolveInstanceAsync(int courseId, int? requestedInstanceId)

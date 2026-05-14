@@ -1,0 +1,173 @@
+<UserControl x:Class="online_school_admin.Views.StudentProgressDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:m="clr-namespace:online_school_admin.Models">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Прогресс студента" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Студент" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" FontWeight="SemiBold" Text="{Binding Details.StudentName}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Email" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.Email}" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Курс" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.CourseTitle}" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Поток" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.InstanceName}" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Старт потока" />
+                        <TextBlock Grid.Row="4" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.StartDate, StringFormat=dd.MM.yyyy}" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Уроков всего" />
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.TotalLessons}" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Завершено уроков" />
+                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.CompletedLessons}" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Процент прохождения" />
+                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.CompletionPercent, StringFormat={}{0}%}" />
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="ДЗ всего / сдано" />
+                        <StackPanel Grid.Row="8" Grid.Column="1" Margin="0,0,0,6" Orientation="Horizontal">
+                            <TextBlock Text="{Binding Details.TotalHomeworkCount}" />
+                            <TextBlock Text=" / " />
+                            <TextBlock Text="{Binding Details.SubmittedHomeworkCount}" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Margin="0,0,12,6" Foreground="#6B7280" Text="Средний балл" />
+                        <TextBlock Grid.Row="9" Grid.Column="1" Margin="0,0,0,6" Text="{Binding Details.AverageHomeworkScore, TargetNullValue=—}" />
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Margin="0,0,12,0" Foreground="#6B7280" Text="Итоговый балл" />
+                        <StackPanel Grid.Row="10" Grid.Column="1" Orientation="Horizontal">
+                            <TextBlock Text="{Binding Details.TotalHomeworkScore}" />
+                            <TextBlock Text=" / " />
+                            <TextBlock Text="{Binding Details.TotalHomeworkMaxPoints}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TextBlock Margin="0,16,0,8" FontWeight="SemiBold" Foreground="#111827" Text="Структура курса и сдачи" />
+
+                <TreeView ItemsSource="{Binding Modules}" BorderBrush="#E5E7EB" BorderThickness="1" MinHeight="240">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type m:AdminProgressModuleDto}" ItemsSource="{Binding Lessons}">
+                            <TextBlock Text="{Binding ModuleTitle}" FontWeight="SemiBold" />
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type m:AdminProgressLessonDto}" ItemsSource="{Binding Assignments}">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="{Binding LessonTitle}" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Открыт: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Width="40" Text="{Binding IsOpened}" />
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Margin="8,0,0,0" Text="Доступен: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Width="40" Text="{Binding IsAvailable}" />
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Margin="8,0,0,0" Text="Завершён: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding IsCompleted}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Дата открытия: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding OpenedAt, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Завершено: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding CompletedAt, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Просмотр (с): " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding WatchTimeSeconds}" />
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Margin="12,0,0,0" Text="Последний визит: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding LastAccessed, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type m:AdminProgressAssignmentDto}" ItemsSource="{Binding SubmissionTreeChildren}">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="{Binding AssignmentTitle}" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Макс. (задание / вопросы): " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding AssignmentMaxScore}" />
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text=" / " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding QuestionsMaxPoints}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type m:AdminProgressSubmissionDto}" ItemsSource="{Binding AnswerTreeChildren}">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Сдача" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Статус: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding StatusName, TargetNullValue=—}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Балл: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding Score, TargetNullValue=—}" />
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text=" / " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding MaxPointsFromQuestions}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Text="Сдано: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding SubmittedAt, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                                    <TextBlock FontSize="12" Foreground="#6B7280" Margin="12,0,0,0" Text="Проверка: " />
+                                    <TextBlock FontSize="12" Foreground="#111827" Text="{Binding GradedAt, StringFormat=dd.MM.yyyy HH:mm, TargetNullValue=—}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <DataTemplate DataType="{x:Type m:AdminProgressAnswerPreviewDto}">
+                            <Border Margin="0,2,0,4" Padding="6" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="4">
+                                <StackPanel>
+                                    <TextBlock FontSize="11" Foreground="#6B7280" Text="{Binding QuestionType}" />
+                                    <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" Text="{Binding QuestionTextPreview}" />
+                                    <TextBlock Margin="0,4,0,0" Foreground="#374151" TextWrapping="Wrap" Text="{Binding ResponseTextPreview, TargetNullValue=—}" />
+                                    <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+                                        <TextBlock FontSize="11" Foreground="#6B7280" Text="Баллы: " />
+                                        <TextBlock FontSize="11" Foreground="#111827" Text="{Binding PointsAwarded, TargetNullValue=—}" />
+                                        <TextBlock FontSize="11" Foreground="#6B7280" Text=" / " />
+                                        <TextBlock FontSize="11" Foreground="#111827" Text="{Binding MaxPoints}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

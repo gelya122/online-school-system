@@ -1,5 +1,15 @@
 namespace OnlineSchoolAPI.Dto;
 
+/// <summary>Модуль курса для публичной страницы курса (структура программы).</summary>
+public class CourseModuleOutlineDto
+{
+    public int ModuleId { get; set; }
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+    public int ModuleOrder { get; set; }
+    public int LessonCount { get; set; }
+}
+
 public class CourseDto
 {
     public int CourseId { get; set; }
@@ -16,6 +26,15 @@ public class CourseDto
     public string? WhatYouGet { get; set; }
     public bool? IsActive { get; set; }
     public DateTime? CreatedAt { get; set; }
+
+    /// <summary>Заполняется только в GET /Courses/{id} — модули и число уроков из БД.</summary>
+    public List<CourseModuleOutlineDto>? Modules { get; set; }
+
+    /// <summary>Средняя оценка по опубликованным отзывам с рейтингом (GET /Courses/{id}).</summary>
+    public double? ReviewAverage { get; set; }
+
+    /// <summary>Число таких отзывов.</summary>
+    public int? ReviewCount { get; set; }
 }
 
 public class CreateCourseDto

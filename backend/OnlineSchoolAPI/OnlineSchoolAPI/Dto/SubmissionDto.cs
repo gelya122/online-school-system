@@ -3,7 +3,8 @@ namespace OnlineSchoolAPI.Dto;
 public class SubmissionDto
 {
     public int SubmissionId { get; set; }
-    public int ProgressId { get; set; }
+    /// <summary>Зачисление (раньше в API было progress_id).</summary>
+    public int? EnrollmentId { get; set; }
     public int AssignmentId { get; set; }
     public string? StudentAnswerText { get; set; }
     public string? AttachedFileUrl { get; set; }
@@ -19,7 +20,7 @@ public class SubmissionDto
 
 public class CreateSubmissionDto
 {
-    public int ProgressId { get; set; }
+    public int? EnrollmentId { get; set; }
     public int AssignmentId { get; set; }
     public string? StudentAnswerText { get; set; }
     public string? AttachedFileUrl { get; set; }

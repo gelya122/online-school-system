@@ -1,0 +1,81 @@
+<UserControl x:Class="online_school_admin.Views.SiteSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="Настройки сайта" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Сохранить" Command="{Binding SaveCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Баннеры" Command="{Binding OpenBannersCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="FAQ" Command="{Binding OpenFaqCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Отзывы" Command="{Binding OpenReviewsCommand}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,12" Foreground="#C0392B" Text="{Binding Error}" TextWrapping="Wrap" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Site name" />
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding SiteName}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Main page title" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding MainPageTitle}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Main page description" />
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Height="90"
+                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                         Text="{Binding MainPageDescription}" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Contact phone" />
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding ContactPhone}" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Contact email" />
+                <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding ContactEmail}" />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="VK url" />
+                <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding VkUrl}" />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Telegram url" />
+                <TextBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding TelegramUrl}" />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="YouTube url" />
+                <TextBox Grid.Row="7" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding YoutubeUrl}" />
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="SEO title" />
+                <TextBox Grid.Row="8" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Text="{Binding SeoTitle}" />
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="SEO description" />
+                <TextBox Grid.Row="9" Grid.Column="1" Margin="0,0,0,10" Padding="8,6" Height="90"
+                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                         Text="{Binding SeoDescription}" />
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Margin="0,0,12,10" VerticalAlignment="Center" Text="Maintenance mode" />
+                <CheckBox Grid.Row="10" Grid.Column="1" Margin="0,0,0,10" IsChecked="{Binding MaintenanceMode}" />
+
+                <TextBlock Grid.Row="11" Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center" Text="" />
+                <TextBlock Grid.Row="11" Grid.Column="1" Margin="0,0,0,0" Foreground="#6B7280"
+                           Text="Подсказка: поля URL можно оставить пустыми." />
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
+

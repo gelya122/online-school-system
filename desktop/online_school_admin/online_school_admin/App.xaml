@@ -1,0 +1,205 @@
+﻿<Application x:Class="online_school_admin.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:online_school_admin.ViewModels"
+             xmlns:v="clr-namespace:online_school_admin.Views">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type vm:PlaceholderPageViewModel}">
+                <v:PlaceholderPageView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                <v:DashboardView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:StudentsViewModel}">
+                <v:StudentsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:StudentDetailsViewModel}">
+                <v:StudentDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:StudentProgressForStudentViewModel}">
+                <v:StudentProgressForStudentView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:StudentEditViewModel}">
+                <v:StudentEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:EnrollStudentToInstanceViewModel}">
+                <v:EnrollStudentToInstanceView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:EmployeesViewModel}">
+                <v:EmployeesView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:EmployeeDetailsViewModel}">
+                <v:EmployeeDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:EmployeeEditViewModel}">
+                <v:EmployeeEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:CoursesViewModel}">
+                <v:CoursesView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:CourseEditViewModel}">
+                <v:CourseEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:CourseDetailsViewModel}">
+                <v:CourseDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:InstancesViewModel}">
+                <v:InstancesView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:InstanceEditViewModel}">
+                <v:InstanceEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:InstanceDetailsViewModel}">
+                <v:InstanceDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:EnrolledStudentDetailsViewModel}">
+                <v:EnrolledStudentDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:ApplicationsViewModel}">
+                <v:ApplicationsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:ApplicationDetailsViewModel}">
+                <v:ApplicationDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:ApplicationEditViewModel}">
+                <v:ApplicationEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:HomeworkReviewViewModel}">
+                <v:HomeworkReviewView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:HomeworkSubmissionDetailsViewModel}">
+                <v:HomeworkSubmissionDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:HomeworkEditorViewModel}">
+                <v:HomeworkEditorView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:StudentProgressViewModel}">
+                <v:StudentProgressView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:StudentProgressDetailsViewModel}">
+                <v:StudentProgressDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:PromoCodesViewModel}">
+                <v:PromoCodesView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:PromoCodeEditViewModel}">
+                <v:PromoCodeEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:PromoCodeUsagesViewModel}">
+                <v:PromoCodeUsagesView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:PaymentsViewModel}">
+                <v:PaymentsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:OrderDetailsViewModel}">
+                <v:OrderDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:OrderCreateViewModel}">
+                <v:OrderCreateView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:PaymentCreateViewModel}">
+                <v:PaymentCreateView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:InstallmentPlanCreateViewModel}">
+                <v:InstallmentPlanCreateView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:InstallmentDetailsViewModel}">
+                <v:InstallmentDetailsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:NotificationsViewModel}">
+                <v:NotificationsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:MailingCampaignEditViewModel}">
+                <v:MailingCampaignEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:MailingRecipientsViewModel}">
+                <v:MailingRecipientsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:SchoolSettingsViewModel}">
+                <v:SchoolSettingsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:SiteSettingsViewModel}">
+                <v:SiteSettingsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:SiteBannersViewModel}">
+                <v:SiteBannersView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:SiteBannerEditViewModel}">
+                <v:SiteBannerEditView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:FaqAdminViewModel}">
+                <v:FaqAdminView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:ReviewsAdminViewModel}">
+                <v:ReviewsAdminView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:AnalyticsViewModel}">
+                <v:AnalyticsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+                <v:ProfileView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:DictionariesViewModel}">
+                <v:DictionariesView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:AuditLogViewModel}">
+                <v:AuditLogView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:SectionStubViewModel}">
+                <v:SectionStubView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

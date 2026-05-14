@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineSchoolAPI;
 using OnlineSchoolAPI.Dto;
 using OnlineSchoolAPI.Models;
+using OnlineSchoolAPI.Services;
 
 namespace OnlineSchoolAPI.Controllers;
 
@@ -33,7 +34,8 @@ public class CourseInstancesController : ControllerBase
                 ScheduleDescription = i.ScheduleDescription,
                 MaxStudents = i.MaxStudents,
                 IsActive = i.IsActive,
-                CreatedAt = i.CreatedAt
+                CreatedAt = i.CreatedAt,
+                StatusCode = i.InstanceStatus.Code
             })
             .ToListAsync();
         return Ok(instances);
@@ -42,28 +44,35 @@ public class CourseInstancesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<CourseInstanceDto>> GetCourseInstance(int id)
     {
-        var instance = await _context.CourseInstances.FindAsync(id);
-        if (instance == null) return NotFound();
+        var row = await _context.CourseInstances
+            .Where(i => i.InstanceId == id)
+            .Select(i => new CourseInstanceDto
+            {
+                InstanceId = i.InstanceId,
+                CourseId = i.CourseId,
+                InstanceName = i.InstanceName,
+                StartDate = i.StartDate,
+                EndDate = i.EndDate,
+                TotalWeeks = i.TotalWeeks,
+                LessonsPerWeek = i.LessonsPerWeek,
+                ScheduleDescription = i.ScheduleDescription,
+                MaxStudents = i.MaxStudents,
+                IsActive = i.IsActive,
+                CreatedAt = i.CreatedAt,
+                StatusCode = i.InstanceStatus.Code
+            })
+            .FirstOrDefaultAsync();
+        if (row == null) return NotFound();
 
-        return Ok(new CourseInstanceDto
-        {
-            InstanceId = instance.InstanceId,
-            CourseId = instance.CourseId,
-            InstanceName = instance.InstanceName,
-            StartDate = instance.StartDate,
-            EndDate = instance.EndDate,
-            TotalWeeks = instance.TotalWeeks,
-            LessonsPerWeek = instance.LessonsPerWeek,
-            ScheduleDescription = instance.ScheduleDescription,
-            MaxStudents = instance.MaxStudents,
-            IsActive = instance.IsActive,
-            CreatedAt = instance.CreatedAt
-        });
+        return Ok(row);
     }
 
     [HttpPost]
     public async Task<ActionResult<CourseInstanceDto>> CreateCourseInstance(CreateCourseInstanceDto dto)
     {
+        // Новый поток всегда planned (status_id = 1).
+        var statusId = CourseInstanceStatusMap.DefaultStatusId;
+
         var instance = new CourseInstance
         {
             CourseId = dto.CourseId,
@@ -74,26 +83,33 @@ public class CourseInstancesController : ControllerBase
             LessonsPerWeek = dto.LessonsPerWeek,
             ScheduleDescription = dto.ScheduleDescription,
             MaxStudents = dto.MaxStudents,
-            IsActive = dto.IsActive
+            IsActive = dto.IsActive,
+            StatusId = statusId
         };
 
         _context.CourseInstances.Add(instance);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetCourseInstance), new { id = instance.InstanceId }, new CourseInstanceDto
-        {
-            InstanceId = instance.InstanceId,
-            CourseId = instance.CourseId,
-            InstanceName = instance.InstanceName,
-            StartDate = instance.StartDate,
-            EndDate = instance.EndDate,
-            TotalWeeks = instance.TotalWeeks,
-            LessonsPerWeek = instance.LessonsPerWeek,
-            ScheduleDescription = instance.ScheduleDescription,
-            MaxStudents = instance.MaxStudents,
-            IsActive = instance.IsActive,
-            CreatedAt = instance.CreatedAt
-        });
+        var created = await _context.CourseInstances
+            .Where(i => i.InstanceId == instance.InstanceId)
+            .Select(i => new CourseInstanceDto
+            {
+                InstanceId = i.InstanceId,
+                CourseId = i.CourseId,
+                InstanceName = i.InstanceName,
+                StartDate = i.StartDate,
+                EndDate = i.EndDate,
+                TotalWeeks = i.TotalWeeks,
+                LessonsPerWeek = i.LessonsPerWeek,
+                ScheduleDescription = i.ScheduleDescription,
+                MaxStudents = i.MaxStudents,
+                IsActive = i.IsActive,
+                CreatedAt = i.CreatedAt,
+                StatusCode = i.InstanceStatus.Code
+            })
+            .FirstAsync();
+
+        return CreatedAtAction(nameof(GetCourseInstance), new { id = instance.InstanceId }, created);
     }
 
     [HttpPut("{id}")]

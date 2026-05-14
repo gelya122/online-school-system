@@ -76,11 +76,14 @@ const MyCoursesPage = () => {
               className="cabinet-card"
               onClick={() => navigate(`/learn/courses/${r.enrollmentId}`)}
             >
-              {r.course.coverImgUrl ? (
-                <img className="cabinet-card-cover" src={r.course.coverImgUrl} alt="" />
-              ) : (
-                <div className="cabinet-card-cover" aria-hidden />
-              )}
+              <div className="cabinet-card-visual">
+                <span className="cabinet-card-badge">Курс</span>
+                {r.course.coverImgUrl ? (
+                  <img className="cabinet-card-cover" src={r.course.coverImgUrl} alt="" />
+                ) : (
+                  <div className="cabinet-card-cover cabinet-card-cover--empty" aria-hidden />
+                )}
+              </div>
               <div className="cabinet-card-body">
                 <h2 className="cabinet-card-title">{dash(r.course.title)}</h2>
                 <div className="cabinet-card-meta">

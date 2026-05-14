@@ -97,6 +97,24 @@ const CoursesPage = () => {
 
   const cartCourseIdSet = useMemo(() => new Set(items.map((x) => x.courseId)), [items]);
 
+  const examNameById = useMemo(() => {
+    const m = new Map<number, string>();
+    exams.forEach((e) => m.set(e.id, e.name));
+    return m;
+  }, [exams]);
+
+  const subjectNameById = useMemo(() => {
+    const m = new Map<number, string>();
+    subjects.forEach((s) => m.set(s.id, s.name));
+    return m;
+  }, [subjects]);
+
+  const courseBadgeLabel = (course: Course) => {
+    if (course.examId && examNameById.has(course.examId)) return examNameById.get(course.examId)!;
+    if (course.subjectId && subjectNameById.has(course.subjectId)) return subjectNameById.get(course.subjectId)!;
+    return 'Курс';
+  };
+
   return (
     <div className="courses-page">
       <h1 className="courses-title">Каталог курсов</h1>
@@ -172,11 +190,16 @@ const CoursesPage = () => {
             <div className="courses-grid">
               {filteredCourses.map((course) => (
                 <div key={course.id} className="course-card">
-                  {course.imageUrl && (
-                    <div className="course-image-wrapper">
-                      <img src={course.imageUrl} alt={course.title} className="course-image" />
-                    </div>
-                  )}
+                  <div className="course-card-visual">
+                    <span className="course-card-badge">{courseBadgeLabel(course)}</span>
+                    {course.imageUrl ? (
+                      <div className="course-image-wrapper">
+                        <img src={course.imageUrl} alt="" className="course-image" />
+                      </div>
+                    ) : (
+                      <div className="course-image-placeholder" aria-hidden />
+                    )}
+                  </div>
                   <div className="course-card-body">
                     <h3 className="course-card-title">{course.title}</h3>
                     {course.description && (
@@ -184,12 +207,12 @@ const CoursesPage = () => {
                     )}
                     <div className="course-card-footer">
                       {course.price !== undefined && (
-                        <div className="course-price">{course.price} ₽</div>
+                        <div className="course-price">{course.price.toLocaleString('ru-RU')} ₽</div>
                       )}
                       <div className="course-actions">
                         <button
                           type="button"
-                          className="btn-outline"
+                          className="course-btn-cart"
                           disabled={cartCourseIdSet.has(course.id)}
                           onClick={() => {
                             if (cartCourseIdSet.has(course.id)) return;
@@ -207,7 +230,7 @@ const CoursesPage = () => {
                         >
                           {cartCourseIdSet.has(course.id) ? 'В корзине' : 'В корзину'}
                         </button>
-                        <Link to={`/courses/${course.id}`} className="btn-primary">
+                        <Link to={`/courses/${course.id}`} className="course-link-detail">
                           Подробнее
                         </Link>
                       </div>

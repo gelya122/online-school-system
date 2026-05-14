@@ -25,6 +25,51 @@ function formatDate(iso: string | null | undefined): string {
   return `${day}.${m}.${y}`;
 }
 
+function formatTime(iso: string | null | undefined): string {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '-';
+  return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+function normalizeAnswer(v: string): string {
+  return v.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function getCorrectAnswerText(q: StudentCabinetQuestion): string | null {
+  const extended = q as StudentCabinetQuestion & {
+    correctAnswer?: string | null;
+    correctAnswerText?: string | null;
+    rightAnswer?: string | null;
+  };
+  const value = extended.correctAnswer ?? extended.correctAnswerText ?? extended.rightAnswer ?? null;
+  if (value == null) return null;
+  const trimmed = String(value).trim();
+  return trimmed ? trimmed : null;
+}
+
+/** Как на API: несколько допустимых формулировок в `correct_answer` через `|`. */
+function splitCorrectVariants(raw: string | null | undefined): string[] {
+  if (raw == null || raw === '') return [];
+  return String(raw)
+    .split('|')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
+/**
+ * null — нет авто-сравнения (развёрнутый ответ / нет эталона);
+ * true/false — для short_answer по вариантам из correct_answer.
+ */
+function autoGradeVerdict(q: StudentCabinetQuestion, studentAnswer: string): boolean | null {
+  const slug = (q.questionType ?? '').trim().toLowerCase();
+  if (slug === 'detailed_answer') return null;
+  const variants = splitCorrectVariants(getCorrectAnswerText(q));
+  if (variants.length === 0) return null;
+  const norm = normalizeAnswer(studentAnswer);
+  return variants.some((v) => normalizeAnswer(v) === norm);
+}
+
 const LessonAssignmentPage = () => {
   const { enrollmentId, lessonId, assignmentId } = useParams<{
     enrollmentId: string;
@@ -49,6 +94,7 @@ const LessonAssignmentPage = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [totalScore, setTotalScore] = useState<number | null>(null);
   const [maxScore, setMaxScore] = useState<number | null>(null);
+  const [finishedAt, setFinishedAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (studentId == null || !Number.isFinite(eid) || !Number.isFinite(lid) || !Number.isFinite(aid)) {
@@ -77,6 +123,7 @@ const LessonAssignmentPage = () => {
         setIsFinished(false);
         setTotalScore(null);
         setMaxScore(null);
+        setFinishedAt(null);
       } catch {
         if (!cancelled) setError('Урок не найден или нет доступа.');
       } finally {
@@ -89,10 +136,12 @@ const LessonAssignmentPage = () => {
   }, [studentId, eid, lid, aid]);
 
   const lessonPath = useMemo(() => `/learn/courses/${eid}/lessons/${lid}`, [eid, lid]);
-  const assignmentText = (assignment?.description ?? '').trim();
   const currentQuestion = questions[questionIndex] ?? null;
   const hasPrevQuestion = questionIndex > 0;
   const hasNextQuestion = questionIndex < questions.length - 1;
+  const effectiveMaxScore = maxScore ?? assignment?.maxScore ?? 0;
+  const effectiveTotalScore = totalScore ?? 0;
+  const resultPercent = effectiveMaxScore > 0 ? Math.round((effectiveTotalScore / effectiveMaxScore) * 100) : 0;
 
   useEffect(() => {
     if (!currentQuestion) return;
@@ -132,6 +181,7 @@ const LessonAssignmentPage = () => {
         setTotalScore(result.totalScore);
         setMaxScore(result.maxScore);
         setIsFinished(true);
+        setFinishedAt(new Date().toISOString());
       }
     } catch (e: unknown) {
       const ax = e as { response?: { data?: unknown } };
@@ -186,25 +236,6 @@ const LessonAssignmentPage = () => {
             </p>
           )}
 
-          <div className="cabinet-panel">
-            <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
-              Текст задания
-            </h2>
-            {assignmentText ? (
-              <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{assignmentText}</p>
-            ) : (
-              <p style={{ margin: 0, color: '#64748b' }}>
-                В базе пока не заполнено описание задания (`description`).
-              </p>
-            )}
-            <dl className="cabinet-dl" style={{ marginTop: '18px' }}>
-              <dt>Дней после урока</dt>
-              <dd>{dash(assignment.dueDaysAfterLesson)}</dd>
-              <dt>Расчётная дата сдачи</dt>
-              <dd>{assignment.calculatedDueDate ? formatDate(assignment.calculatedDueDate) : '-'}</dd>
-            </dl>
-          </div>
-
           {!isFinished && currentQuestion && (
             <div className="cabinet-panel">
               <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
@@ -233,7 +264,6 @@ const LessonAssignmentPage = () => {
                   color: '#111827',
                 }}
               />
-              <p style={{ marginTop: 8, color: '#64748b' }}>{answerText.length}/100</p>
               {submitError && <p className="cabinet-error" style={{ marginTop: 10 }}>{submitError}</p>}
               <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
                 {hasPrevQuestion && (
@@ -252,7 +282,7 @@ const LessonAssignmentPage = () => {
                   onClick={handleSend}
                   disabled={sending}
                 >
-                  {sending ? 'Отправка...' : hasNextQuestion ? 'Отправить и далее' : 'Отправить'}
+                  {sending ? 'Отправка...' : 'Отправить'}
                 </button>
               </div>
               {currentQuestion.studentAnswer && (
@@ -264,14 +294,77 @@ const LessonAssignmentPage = () => {
           )}
 
           {isFinished && (
-            <div className="cabinet-panel">
-              <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
-                Итог теста
-              </h2>
-              <p style={{ margin: 0 }}>
-                Набрано баллов: <strong>{totalScore ?? 0}</strong> из <strong>{maxScore ?? assignment.maxScore}</strong>.
-              </p>
-            </div>
+            <>
+              <div className="cabinet-panel">
+                <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
+                  Итог теста
+                </h2>
+                <dl className="cabinet-dl">
+                  <dt>Набранно баллов</dt>
+                  <dd>{effectiveTotalScore}</dd>
+                  <dt>Максимальное кол-во баллов</dt>
+                  <dd>{effectiveMaxScore}</dd>
+                  <dt>Выполнено, %</dt>
+                  <dd>{resultPercent}%</dd>
+                  <dt>Дата</dt>
+                  <dd>{formatDate(finishedAt)}</dd>
+                  <dt>Время</dt>
+                  <dd>{formatTime(finishedAt)}</dd>
+                </dl>
+              </div>
+              <div className="cabinet-panel">
+                <h2 className="cabinet-page-title" style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
+                  Просмотр
+                </h2>
+                {questions.map((q, idx) => {
+                  const studentAnswer = q.studentAnswer?.trim() ?? '';
+                  const correctRaw = getCorrectAnswerText(q);
+                  const variants = splitCorrectVariants(correctRaw);
+                  const verdict = autoGradeVerdict(q, studentAnswer);
+                  const isNeutral = verdict === null;
+                  const isCorrect = verdict === true;
+                  const bg = isNeutral ? '#f8fafc' : isCorrect ? '#f0fdf4' : '#fef2f2';
+                  const correctLabel =
+                    variants.length > 1 ? variants.join(' · ') : correctRaw != null && correctRaw !== '' ? correctRaw : '—';
+                  return (
+                    <div
+                      key={q.questionId}
+                      style={{
+                        marginBottom: '16px',
+                        padding: '12px',
+                        borderBottom: '1px solid #e2e8f0',
+                        borderRadius: 10,
+                        backgroundColor: bg,
+                      }}
+                    >
+                      <p style={{ margin: '0 0 8px' }}>
+                        Задание {idx + 1}. {q.questionText}
+                      </p>
+                      <p style={{ margin: '0 0 6px' }}>
+                        Ваш ответ:{' '}
+                        <span
+                          style={{
+                            color: isNeutral ? '#334155' : isCorrect ? '#15803d' : '#b91c1c',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {studentAnswer || '-'}
+                        </span>
+                      </p>
+                      <p style={{ margin: 0 }}>
+                        {isNeutral ? (
+                          <>Итог по вопросу выставляет преподаватель (авто-сравнение с эталоном не применяется).</>
+                        ) : (
+                          <>
+                            Правильный ответ: <strong>{correctLabel}</strong>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
           {!isFinished && !hasNextQuestion && currentQuestion && (
             <p style={{ color: '#64748b', marginTop: 10 }}>

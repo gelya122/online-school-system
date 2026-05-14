@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSchoolAPI;
 using OnlineSchoolAPI.Dto;
 using OnlineSchoolAPI.Models;
+using OnlineSchoolAPI.Services;
 
 namespace OnlineSchoolAPI.Controllers;
 
@@ -11,10 +14,46 @@ namespace OnlineSchoolAPI.Controllers;
 public class CoursesController : ControllerBase
 {
     private readonly OnlineSchoolDbContext _context;
+    private readonly IWebHostEnvironment _env;
 
-    public CoursesController(OnlineSchoolDbContext context)
+    public CoursesController(OnlineSchoolDbContext context, IWebHostEnvironment env)
     {
         _context = context;
+        _env = env;
+    }
+
+    /// <summary>Загрузка обложки курса (multipart). Обновляет CoverImgUrl.</summary>
+    [HttpPost("{id:int}/cover")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(PublicUploadStorage.MaxCourseCoverBytes + 65536)]
+    public async Task<ActionResult<AvatarUploadResponseDto>> UploadCourseCover(
+        int id,
+        IFormFile? file,
+        CancellationToken cancellationToken)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("Выберите файл изображения.");
+
+        var course = await _context.Courses.FindAsync(id);
+        if (course == null) return NotFound();
+
+        await using var ms = new MemoryStream((int)file.Length);
+        await file.CopyToAsync(ms, cancellationToken);
+        var bytes = ms.ToArray();
+
+        string url;
+        try
+        {
+            url = await PublicUploadStorage.SaveCourseCoverAsync(_env, bytes, id, cancellationToken);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        course.CoverImgUrl = url;
+        await _context.SaveChangesAsync(cancellationToken);
+        return Ok(new AvatarUploadResponseDto { AvatarUrl = url });
     }
 
     [HttpGet]
@@ -58,6 +97,7 @@ public class CoursesController : ControllerBase
     public async Task<ActionResult<CourseDto>> GetCourse(int id)
     {
         var course = await _context.Courses
+            .AsNoTracking()
             .Where(c => c.CourseId == id)
             .Select(c => new CourseDto
             {
@@ -74,11 +114,34 @@ public class CoursesController : ControllerBase
                 TotalHours = c.TotalHours,
                 WhatYouGet = c.WhatYouGet,
                 IsActive = c.IsActive,
-                CreatedAt = c.CreatedAt
+                CreatedAt = c.CreatedAt,
+                Modules = c.CourseModules
+                    .OrderBy(m => m.ModuleOrder)
+                    .Select(m => new CourseModuleOutlineDto
+                    {
+                        ModuleId = m.ModuleId,
+                        Title = m.Title,
+                        Description = m.Description,
+                        ModuleOrder = m.ModuleOrder,
+                        LessonCount = m.Lessons.Count()
+                    })
+                    .ToList()
             })
             .FirstOrDefaultAsync();
 
         if (course == null) return NotFound();
+
+        var ratings = await _context.Reviews.AsNoTracking()
+            .Where(r => r.CourseId == id && r.IsPublished == true && r.Rating != null && r.Rating >= 1 && r.Rating <= 5)
+            .Select(r => r.Rating!.Value)
+            .ToListAsync();
+
+        if (ratings.Count > 0)
+        {
+            course.ReviewAverage = Math.Round(ratings.Average(x => (double)x), 1, MidpointRounding.AwayFromZero);
+            course.ReviewCount = ratings.Count;
+        }
+
         return Ok(course);
     }
 

@@ -27,10 +27,8 @@ public class AssignmentsController : ControllerBase
                 LessonId = a.LessonId,
                 Title = a.Title,
                 Description = a.Description,
-                AssignmentTypeId = a.AssignmentTypeId,
                 MaxScore = a.MaxScore,
                 DueDaysAfterLesson = a.DueDaysAfterLesson,
-                CorrectAnswer = a.CorrectAnswer,
                 CreatedAt = a.CreatedAt
             })
             .ToListAsync();
@@ -49,10 +47,8 @@ public class AssignmentsController : ControllerBase
             LessonId = assignment.LessonId,
             Title = assignment.Title,
             Description = assignment.Description,
-            AssignmentTypeId = assignment.AssignmentTypeId,
             MaxScore = assignment.MaxScore,
             DueDaysAfterLesson = assignment.DueDaysAfterLesson,
-            CorrectAnswer = assignment.CorrectAnswer,
             CreatedAt = assignment.CreatedAt
         });
     }
@@ -60,15 +56,16 @@ public class AssignmentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<AssignmentDto>> CreateAssignment(CreateAssignmentDto dto)
     {
+        if (await _context.Assignments.AnyAsync(a => a.LessonId == dto.LessonId))
+            return BadRequest("К одному уроку можно добавить только одно домашнее задание.");
+
         var assignment = new Assignment
         {
             LessonId = dto.LessonId,
             Title = dto.Title,
             Description = dto.Description,
-            AssignmentTypeId = dto.AssignmentTypeId,
             MaxScore = dto.MaxScore,
-            DueDaysAfterLesson = dto.DueDaysAfterLesson,
-            CorrectAnswer = dto.CorrectAnswer
+            DueDaysAfterLesson = dto.DueDaysAfterLesson
         };
 
         _context.Assignments.Add(assignment);
@@ -80,10 +77,8 @@ public class AssignmentsController : ControllerBase
             LessonId = assignment.LessonId,
             Title = assignment.Title,
             Description = assignment.Description,
-            AssignmentTypeId = assignment.AssignmentTypeId,
             MaxScore = assignment.MaxScore,
             DueDaysAfterLesson = assignment.DueDaysAfterLesson,
-            CorrectAnswer = assignment.CorrectAnswer,
             CreatedAt = assignment.CreatedAt
         });
     }
@@ -96,10 +91,8 @@ public class AssignmentsController : ControllerBase
 
         if (dto.Title != null) assignment.Title = dto.Title;
         if (dto.Description != null) assignment.Description = dto.Description;
-        if (dto.AssignmentTypeId.HasValue) assignment.AssignmentTypeId = dto.AssignmentTypeId.Value;
         if (dto.MaxScore.HasValue) assignment.MaxScore = dto.MaxScore.Value;
         if (dto.DueDaysAfterLesson.HasValue) assignment.DueDaysAfterLesson = dto.DueDaysAfterLesson;
-        if (dto.CorrectAnswer != null) assignment.CorrectAnswer = dto.CorrectAnswer;
 
         await _context.SaveChangesAsync();
         return NoContent();
@@ -116,4 +109,3 @@ public class AssignmentsController : ControllerBase
         return NoContent();
     }
 }
-

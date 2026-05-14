@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace OnlineSchoolAPI.Models;
@@ -29,7 +29,7 @@ public partial class Enrollment
 
     public virtual Student Student { get; set; } = null!;
 
-    public virtual ICollection<StudentLessonAccess> StudentLessonAccesses { get; set; } = new List<StudentLessonAccess>();
-
     public virtual ICollection<StudentProgress> StudentProgresses { get; set; } = new List<StudentProgress>();
+
+    public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

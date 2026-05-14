@@ -13,6 +13,9 @@ public class CourseInstanceDto
     public int? MaxStudents { get; set; }
     public bool? IsActive { get; set; }
     public DateTime? CreatedAt { get; set; }
+
+    /// <summary>Код из course_instance_status.code (script5).</summary>
+    public string? StatusCode { get; set; }
 }
 
 public class CreateCourseInstanceDto
@@ -26,6 +29,9 @@ public class CreateCourseInstanceDto
     public string? ScheduleDescription { get; set; }
     public int? MaxStudents { get; set; }
     public bool? IsActive { get; set; }
+
+    /// <summary>Устарело: при создании всегда planned (id 1), поле игнорируется.</summary>
+    public string? Status { get; set; }
 }
 
 public class UpdateCourseInstanceDto

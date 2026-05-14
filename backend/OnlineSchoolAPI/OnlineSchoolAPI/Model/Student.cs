@@ -27,6 +27,8 @@ public partial class Student
 
     public DateTime? CreatedAt { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public virtual ICollection<AppOrder> AppOrders { get; set; } = new List<AppOrder>();
 
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
@@ -34,4 +36,6 @@ public partial class Student
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual User User { get; set; } = null!;
+
+    public virtual ICollection<StudentNote> StudentNotes { get; set; } = new List<StudentNote>();
 }

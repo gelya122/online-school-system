@@ -21,9 +21,9 @@ public partial class Lesson
 
     public int LessonOrder { get; set; }
 
-    public bool? IsFreePreview { get; set; }
-
     public DateTime? CreatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 
@@ -34,8 +34,6 @@ public partial class Lesson
     public virtual LessonType LessonType { get; set; } = null!;
 
     public virtual CourseModule Module { get; set; } = null!;
-
-    public virtual ICollection<StudentLessonAccess> StudentLessonAccesses { get; set; } = new List<StudentLessonAccess>();
 
     public virtual ICollection<StudentProgress> StudentProgresses { get; set; } = new List<StudentProgress>();
 }

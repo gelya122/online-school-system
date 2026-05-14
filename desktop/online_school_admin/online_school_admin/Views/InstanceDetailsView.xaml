@@ -1,0 +1,363 @@
+<UserControl x:Class="online_school_admin.Views.InstanceDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock FontSize="13" Foreground="#6B7280" VerticalAlignment="Center" Text="Потоки → Карточка" />
+            <TextBlock Margin="16,0,0,0" FontSize="22" FontWeight="SemiBold" Foreground="#111827" Text="{Binding Details.Title}" />
+            <Button Margin="16,0,0,0" Padding="12,6" Content="Обновить" Command="{Binding RefreshCommand}" />
+            <Button Margin="8,0,0,0" Padding="12,6" Content="Архивировать" Command="{Binding ArchiveCommand}"
+                    Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}" />
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="0,0,0,12"
+                   Foreground="#C0392B"
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap" />
+
+        <TabControl>
+            <TabItem Header="Общая информация">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,12,0,0">
+                        <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Курс" />
+                                <TextBlock Margin="0,4,0,0" FontSize="16" Text="{Binding Details.CourseTitle}" />
+                                <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Название потока (instance_name)" />
+                                <TextBlock Margin="0,4,0,0" Text="{Binding Details.Title}" />
+                                <TextBlock Margin="0,10,0,0" FontWeight="SemiBold" Text="Описание / расписание (schedule_description)" />
+                                <TextBlock Margin="0,4,0,0" Text="{Binding Details.Description}" TextWrapping="Wrap" Foreground="#374151" />
+                                <WrapPanel Margin="0,12,0,0">
+                                    <StackPanel Width="160">
+                                        <TextBlock Foreground="#6B7280" Text="start_date" />
+                                        <TextBlock Text="{Binding Details.StartDate, StringFormat={}{0:dd.MM.yyyy}}" />
+                                    </StackPanel>
+                                    <StackPanel Width="160" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="end_date" />
+                                        <TextBlock Text="{Binding Details.EndDate, StringFormat=dd.MM.yyyy}" />
+                                    </StackPanel>
+                                    <StackPanel Width="160" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="enrollment_start" />
+                                        <TextBlock Text="{Binding Details.EnrollmentStartDate, StringFormat=dd.MM.yyyy}" />
+                                    </StackPanel>
+                                    <StackPanel Width="160" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="enrollment_end" />
+                                        <TextBlock Text="{Binding Details.EnrollmentEndDate, StringFormat=dd.MM.yyyy}" />
+                                    </StackPanel>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <StackPanel Width="120">
+                                        <TextBlock Foreground="#6B7280" Text="max_students" />
+                                        <TextBlock Text="{Binding Details.MaxStudents, TargetNullValue=—}" />
+                                    </StackPanel>
+                                    <StackPanel Width="120" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="lessons_per_week" />
+                                        <TextBlock Text="{Binding Details.LessonsPerWeek, TargetNullValue=—}" />
+                                    </StackPanel>
+                                    <StackPanel Width="120" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="total_weeks" />
+                                        <TextBlock Text="{Binding Details.TotalWeeks, TargetNullValue=—}" />
+                                    </StackPanel>
+                                    <StackPanel Width="200" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="timezone" />
+                                        <TextBlock Text="{Binding Details.Timezone}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,12,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8"
+                                Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Статус и активность" />
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <TextBlock Foreground="#6B7280" VerticalAlignment="Center" Text="status" />
+                                    <ComboBox Width="180" Margin="8,0,0,0"
+                                              ItemsSource="{Binding StatusOptions}"
+                                              SelectedItem="{Binding NewStatus}" />
+                                    <Button Margin="8,0,0,0" Padding="12,6" Content="Применить статус" Command="{Binding PatchStatusCommand}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <CheckBox Content="Поток активен (is_active)" IsChecked="{Binding InstanceIsActive}" VerticalAlignment="Center" />
+                                    <Button Margin="12,0,0,0" Padding="12,6" Content="Сохранить активность" Command="{Binding PatchInstanceActiveCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Расписание">
+                <StackPanel Margin="0,12,0,0">
+                    <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <StackPanel>
+                            <StackPanel Visibility="{Binding ViewOnly, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        Margin="0,0,0,12">
+                                <TextBlock FontWeight="SemiBold" Text="Параметры расписания потока (только просмотр)" />
+                                <WrapPanel Margin="0,8,0,0">
+                                    <StackPanel Width="200">
+                                        <TextBlock Foreground="#6B7280" Text="Занятий в неделю" />
+                                        <TextBlock Margin="0,4,0,0" Text="{Binding ScheduleSummaryLessonsPerWeek}" />
+                                    </StackPanel>
+                                    <StackPanel Width="200" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="Дата старта курса" />
+                                        <TextBlock Margin="0,4,0,0" Text="{Binding ScheduleSummaryStartDate}" />
+                                    </StackPanel>
+                                    <StackPanel Width="200" Margin="12,0,0,0">
+                                        <TextBlock Foreground="#6B7280" Text="Время выпуска уроков" />
+                                        <TextBlock Margin="0,4,0,0" Text="{Binding ScheduleSummaryReleaseTime}" />
+                                    </StackPanel>
+                                </WrapPanel>
+                            </StackPanel>
+
+                            <StackPanel Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Padding="12,6" Content="Обновить" Command="{Binding RefreshScheduleCommand}" />
+                                    <Button Margin="8,0,0,0" Padding="12,6" Content="Сгенерировать / пересчитать" Command="{Binding GenerateScheduleCommand}" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <TextBlock Foreground="#6B7280" VerticalAlignment="Center" Text="release_day_offset" />
+                                    <TextBox Margin="8,0,0,0" Width="70" Padding="8,6" VerticalContentAlignment="Center"
+                                             Text="{Binding ScheduleReleaseDayOffsetText, UpdateSourceTrigger=PropertyChanged}"
+                                             ToolTip="Дней от start_date потока (course_schedule_plan). Если задано, имеет приоритет над датой." />
+                                    <TextBlock Margin="12,0,0,0" Foreground="#6B7280" VerticalAlignment="Center" Text="или дата открытия yyyy-MM-dd:" />
+                                    <TextBox Margin="8,0,0,0" Width="140" Padding="8,6" VerticalContentAlignment="Center"
+                                             Text="{Binding ScheduleOpenDateText, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Margin="12,0,0,0" Foreground="#6B7280" VerticalAlignment="Center" Text="release_time HH:mm:" />
+                                    <TextBox Margin="8,0,0,0" Width="90" Padding="8,6" VerticalContentAlignment="Center"
+                                             Text="{Binding ScheduleOpenTimeText, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Button Margin="12,0,0,0" Padding="12,6" Content="Сохранить план" Command="{Binding SaveScheduleRowCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <DataGrid Margin="0,12,0,0"
+                                      ItemsSource="{Binding Schedule}"
+                                      SelectedItem="{Binding SelectedSchedule}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserAddRows="False"
+                                      RowHeaderWidth="0"
+                                      Height="420">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Блок" Binding="{Binding ModuleTitle}" Width="220"/>
+                                    <DataGridTextColumn Header="Урок" Binding="{Binding LessonTitle}" Width="*"/>
+                                    <DataGridTextColumn Header="Порядок" Binding="{Binding LessonOrder}" Width="80"/>
+                                    <DataGridTextColumn Header="Смещение дн." Binding="{Binding ReleaseDayOffset}" Width="100"/>
+                                    <DataGridTextColumn Header="Дата открытия" Binding="{Binding OpenDate, StringFormat=dd.MM.yyyy}" Width="130"/>
+                                    <DataGridTextColumn Header="Время" Binding="{Binding OpenTimeDisplay}" Width="80"/>
+                                    <DataGridTextColumn Header="scheduled_at (UTC)" Binding="{Binding ScheduledAt, StringFormat=yyyy-MM-dd HH:mm}" Width="150"/>
+                                    <DataGridCheckBoxColumn Header="Опубликован" Binding="{Binding IsPublished}" Width="90"/>
+                                    <DataGridCheckBoxColumn Header="Открыть автоматически" Binding="{Binding AutoOpen}" Width="130"/>
+                                    <DataGridCheckBoxColumn Header="Ручное (не БД)" Binding="{Binding OpenedManually}" Width="110"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Сотрудники">
+                <StackPanel Margin="0,12,0,0">
+                    <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <StackPanel>
+                            <TextBlock FontWeight="SemiBold" Text="Преподаватель" />
+                            <StackPanel Margin="0,8,0,0" Orientation="Horizontal"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <ComboBox Width="300" Padding="8,5" VerticalContentAlignment="Center"
+                                          DisplayMemberPath="FullName"
+                                          SelectedValuePath="EmployeeId"
+                                          ItemsSource="{Binding EmployeeOptions}"
+                                          SelectedValue="{Binding TeacherEmployeeId}" />
+                                <CheckBox Margin="12,0,0,0" Content="Главный преподаватель" IsChecked="{Binding TeacherIsMain}" />
+                                <Button Margin="12,0,0,0" Padding="12,6" Content="Назначить" Command="{Binding AddTeacherCommand}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Снять" Command="{Binding RemoveTeacherCommand}" />
+                            </StackPanel>
+                            <DataGrid Margin="0,12,0,0"
+                                      ItemsSource="{Binding Teachers}"
+                                      SelectedItem="{Binding SelectedTeacher}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserAddRows="False"
+                                      RowHeaderWidth="0"
+                                      Height="200">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="EmployeeId" Binding="{Binding EmployeeId}" Width="90"/>
+                                    <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                                    <DataGridCheckBoxColumn Header="Главный" Binding="{Binding IsMainTeacher}" Width="80"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <TextBlock Margin="0,20,0,0" FontWeight="SemiBold" Text="Наставники" />
+                            <StackPanel Margin="0,8,0,0" Orientation="Horizontal"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <ComboBox Width="300" Padding="8,5" VerticalContentAlignment="Center"
+                                          DisplayMemberPath="FullName"
+                                          SelectedValuePath="EmployeeId"
+                                          ItemsSource="{Binding EmployeeOptions}"
+                                          SelectedValue="{Binding CoordinatorEmployeeId}" />
+                                <Button Margin="12,0,0,0" Padding="12,6" Content="Добавить" Command="{Binding AddCoordinatorCommand}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Снять" Command="{Binding RemoveCoordinatorCommand}" />
+                            </StackPanel>
+                            <DataGrid Margin="0,12,0,0"
+                                      ItemsSource="{Binding Coordinators}"
+                                      SelectedItem="{Binding SelectedCoordinator}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserAddRows="False"
+                                      RowHeaderWidth="0"
+                                      Height="220">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="EmployeeId" Binding="{Binding EmployeeId}" Width="90"/>
+                                    <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Студенты">
+                <StackPanel Margin="0,12,0,0">
+                    <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Padding="12,6" Content="Обновить" Command="{Binding RefreshStudentsCommand}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Открыть карточку" Command="{Binding OpenStudentCommand}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Прогресс" Command="{Binding OpenProgressCommand}"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Удалить из потока" Command="{Binding RemoveEnrollmentCommand}"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Foreground="#6B7280" VerticalAlignment="Center" Text="studentId:" />
+                                <TextBox Margin="8,0,0,0" Width="120" Padding="8,6" VerticalContentAlignment="Center"
+                                         Text="{Binding EnrollStudentId, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Добавить" Command="{Binding EnrollStudentCommand}" />
+
+                                <TextBlock Margin="18,0,0,0" Foreground="#6B7280" VerticalAlignment="Center" Text="bulk:" />
+                                <TextBox Margin="8,0,0,0" Width="260" Padding="8,6" VerticalContentAlignment="Center"
+                                         Text="{Binding BulkStudentIds, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTip="Список studentId через запятую" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Добавить массово" Command="{Binding EnrollBulkCommand}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Foreground="#6B7280" VerticalAlignment="Center" Text="Статус записи:" />
+                                <ComboBox Margin="8,0,0,0" Width="160"
+                                          ItemsSource="{Binding EnrollmentStatusOptions}"
+                                          SelectedItem="{Binding EnrollmentNewStatus}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Изменить статус" Command="{Binding PatchEnrollmentStatusCommand}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0"
+                                        Visibility="{Binding ShowEditChrome, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Foreground="#6B7280" VerticalAlignment="Center" Text="Наставник по записи (БД: assigned_mentor_id):" />
+                                <ComboBox Width="280" Margin="8,0,0,0"
+                                          DisplayMemberPath="Title"
+                                          SelectedValuePath="Id"
+                                          ItemsSource="{Binding InstanceTeacherPickOptions}"
+                                          SelectedValue="{Binding EnrollmentAssignedTeacherId}" />
+                                <Button Margin="8,0,0,0" Padding="12,6" Content="Сохранить" Command="{Binding PatchEnrollmentAssignedTeacherCommand}" />
+                            </StackPanel>
+
+                            <DataGrid Margin="0,12,0,0"
+                                      ItemsSource="{Binding Students}"
+                                      SelectedItem="{Binding SelectedStudent}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserAddRows="False"
+                                      RowHeaderWidth="0"
+                                      Height="360">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Студент" Binding="{Binding StudentName}" Width="200"/>
+                                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="220"/>
+                                    <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="140"/>
+                                    <DataGridTextColumn Header="Записан" Binding="{Binding EnrolledAt, StringFormat=dd.MM.yyyy HH:mm}" Width="160"/>
+                                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="110"/>
+                                    <DataGridTextColumn Header="Наставник" Binding="{Binding AssignedTeacherName}" Width="160"/>
+                                    <DataGridCheckBoxColumn Header="Оплачено" Binding="{Binding IsPaid}" Width="80"/>
+                                    <DataGridTextColumn Header="Прогресс" Binding="{Binding ProgressPercent, StringFormat={}{0}%}" Width="80"/>
+                                    <DataGridTextColumn Header="Итог" Binding="{Binding FinalScore}" Width="80"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Домашние задания">
+                <StackPanel Margin="0,12,0,0">
+                    <Border Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <DataGrid ItemsSource="{Binding InstanceHomeworks}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  RowHeaderWidth="0"
+                                  Height="420">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ДЗ" Binding="{Binding AssignmentTitle}" Width="*"/>
+                                <DataGridTextColumn Header="Урок" Binding="{Binding LessonTitle}" Width="200"/>
+                                <DataGridTextColumn Header="Блок" Binding="{Binding ModuleTitle}" Width="200"/>
+                                <DataGridTextColumn Header="Заданий" Binding="{Binding QuestionsCount}" Width="90"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                    <TextBlock Margin="0,8,0,0" Foreground="#6B7280" FontSize="12" TextWrapping="Wrap"
+                               Text="Показаны ДЗ только по урокам, для которых в этом потоке есть строка в расписании (course_schedule_plan)." />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Оплаты">
+                <StackPanel Margin="0,12,0,0">
+                    <TextBlock FontWeight="SemiBold" Text="Заказы по этому потоку" />
+                    <Border Margin="0,8,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <DataGrid ItemsSource="{Binding InstanceOrders}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  RowHeaderWidth="0"
+                                  Height="220">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="№ заказа" Binding="{Binding OrderNumber}" Width="120"/>
+                                <DataGridTextColumn Header="Студент" Binding="{Binding StudentName}" Width="*"/>
+                                <DataGridTextColumn Header="Сумма" Binding="{Binding FinalAmount}" Width="90"/>
+                                <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="110"/>
+                                <DataGridTextColumn Header="Создан" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}" Width="140"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                    <TextBlock Margin="0,16,0,0" FontWeight="SemiBold" Text="Платежи по заказам этого потока" />
+                    <Border Margin="0,8,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                        <DataGrid ItemsSource="{Binding InstancePayments}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  RowHeaderWidth="0"
+                                  Height="200">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Платёж" Binding="{Binding PaymentId}" Width="80"/>
+                                <DataGridTextColumn Header="Заказ" Binding="{Binding OrderNumber}" Width="120"/>
+                                <DataGridTextColumn Header="Сумма" Binding="{Binding Amount}" Width="90"/>
+                                <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
+                                <DataGridTextColumn Header="Оплачен" Binding="{Binding PaidAt, StringFormat=dd.MM.yyyy HH:mm}" Width="140"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Прогресс">
+                <Border Margin="0,12,0,0" Padding="16" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8">
+                    <TextBlock Foreground="#6B7280" TextWrapping="Wrap"
+                               Text="Агрегированный прогресс по потоку — используйте раздел «Прогресс студентов» или вкладку «Студенты» для выбранной записи." />
+                </Border>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>
+

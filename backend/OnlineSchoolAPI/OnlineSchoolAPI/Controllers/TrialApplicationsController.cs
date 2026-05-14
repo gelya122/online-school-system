@@ -78,8 +78,6 @@ public class TrialApplicationsController : ControllerBase
             Email = dto.Email,
             ClassNumber = dto.ClassNumber,
             SelectedSubjects = dto.SelectedSubjects,
-            // Значение по умолчанию в БД = 1, но при создании явно задаём,
-            // чтобы EF не отправлял NULL и не ломал default.
             ApplicationStatusId = dto.ApplicationStatusId ?? 1
         };
 
@@ -129,4 +127,3 @@ public class TrialApplicationsController : ControllerBase
         return NoContent();
     }
 }
-

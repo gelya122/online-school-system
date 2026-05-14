@@ -26,8 +26,7 @@ public class SubjectsController : ControllerBase
                 SubjectId = s.SubjectId,
                 SubjectName = s.SubjectName,
                 Description = s.Description,
-                IsActive = s.IsActive,
-                CreatedAt = s.CreatedAt
+                IsActive = s.IsActive
             })
             .ToListAsync();
 
@@ -45,8 +44,7 @@ public class SubjectsController : ControllerBase
             SubjectId = subject.SubjectId,
             SubjectName = subject.SubjectName,
             Description = subject.Description,
-            IsActive = subject.IsActive,
-            CreatedAt = subject.CreatedAt
+            IsActive = subject.IsActive
         });
     }
 
@@ -68,8 +66,7 @@ public class SubjectsController : ControllerBase
             SubjectId = subject.SubjectId,
             SubjectName = subject.SubjectName,
             Description = subject.Description,
-            IsActive = subject.IsActive,
-            CreatedAt = subject.CreatedAt
+            IsActive = subject.IsActive
         });
     }
 

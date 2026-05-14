@@ -11,9 +11,15 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    // Чтобы при переходах по ссылкам всегда попадать в начало страницы.
+    const hash = location.hash.replace(/^#/, '');
+    if (hash) {
+      const t = window.setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+      return () => window.clearTimeout(t);
+    }
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location.pathname, location.hash]);
 
   const hideFooter = location.pathname === '/profile' || location.pathname.startsWith('/learn');
 

@@ -26,8 +26,7 @@ public class ExamsController : ControllerBase
                 ExamId = e.ExamId,
                 ExamName = e.ExamName,
                 Description = e.Description,
-                IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt
+                IsActive = e.IsActive
             })
             .ToListAsync();
 
@@ -45,8 +44,7 @@ public class ExamsController : ControllerBase
             ExamId = exam.ExamId,
             ExamName = exam.ExamName,
             Description = exam.Description,
-            IsActive = exam.IsActive,
-            CreatedAt = exam.CreatedAt
+            IsActive = exam.IsActive
         });
     }
 
@@ -68,8 +66,7 @@ public class ExamsController : ControllerBase
             ExamId = exam.ExamId,
             ExamName = exam.ExamName,
             Description = exam.Description,
-            IsActive = exam.IsActive,
-            CreatedAt = exam.CreatedAt
+            IsActive = exam.IsActive
         });
     }
 
